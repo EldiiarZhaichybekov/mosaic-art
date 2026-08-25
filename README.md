@@ -10,4 +10,9 @@
 - **Экспорт:** SVG с точной геометрией (1 единица = 1 мм)
 - **Языки:** русский, English, 中文
 
-Просто откройте `index.html` — работает в любом современном браузере.
+## Хостинг
+
+- GitHub Pages: https://eldiiarzhaichybekov.github.io/mosaic-art/
+- Vercel (нейтральный URL): `npx vercel login` затем `npx vercel --prod --yes`
+  в этой папке; нужный поддомен (например `mosaic-art.vercel.app`) задаётся в
+  Vercel → Dashboard → Project → Settings → Domains.
