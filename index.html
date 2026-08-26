@@ -205,6 +205,14 @@
         </select>
       </div>
       <div class="ctrl">
+        <label data-i18n="trace.label">Трассировка контура</label>
+        <div class="mode-seg" id="trace-seg">
+          <button type="button" data-trace="auto" class="active" data-i18n="trace.auto">Авто (геометрия)</button>
+          <button type="button" data-trace="ai" data-i18n="trace.ai">ИИ (Gemini)</button>
+        </div>
+        <div class="hint" data-i18n="trace.hint">Авто: альфа-канал или порог яркости. ИИ: распознаёт главный объект на фото через сервер.</div>
+      </div>
+      <div class="ctrl">
         <div class="row"><label for="threshold" data-i18n="threshold.label">Порог</label><output id="val-thr">128</output></div>
         <input type="range" id="threshold" min="32" max="240" value="128" step="4">
       </div>
@@ -364,6 +372,10 @@ const I18N = {
     "preset.dragonfly": "Стрекоза",
     "preset.custom": "— Загруженное изображение —",
     "threshold.label": "Порог",
+    "trace.label": "Трассировка контура",
+    "trace.auto": "Авто (геометрия)",
+    "trace.ai": "ИИ (Gemini)",
+    "trace.hint": "Авто: альфа-канал или порог яркости. ИИ: распознаёт главный объект на фото через сервер.",
     "sec.canvas": "Холст (формат листа)",
     "canvas.30x30": "30 × 30 см",
     "canvas.30x40": "30 × 40 см",
@@ -414,6 +426,8 @@ const I18N = {
     "msg.noShape": "Сначала выберите силуэт (пресет или изображение).",
     "msg.noImage": "Выберите изображение PNG или JPG.",
     "msg.noSilhouette": "Силуэт не найден — попробуйте более контрастное изображение или измените порог.",
+    "msg.tracing": "Распознаю контур…",
+    "msg.traceFail": "ИИ-трассировка не удалась — использован геометрический метод.",
     "msg.readError": "Не удалось прочитать файл изображения.",
     "msg.pixelError": "Не удалось прочитать пиксели изображения (canvas был заблокирован браузером).",
     "msg.underTarget": "Для этого силуэта и параметров доступно максимум {n} деталей — ограничение не достигнуто.",
@@ -446,6 +460,10 @@ const I18N = {
     "preset.dragonfly": "Dragonfly",
     "preset.custom": "— Uploaded image —",
     "threshold.label": "Threshold",
+    "trace.label": "Contour tracing",
+    "trace.auto": "Auto (geometry)",
+    "trace.ai": "AI (Gemini)",
+    "trace.hint": "Auto: alpha channel or luminance threshold. AI: recognizes the main object in a photo via the server.",
     "sec.canvas": "Canvas (sheet format)",
     "canvas.30x30": "30 × 30 cm",
     "canvas.30x40": "30 × 40 cm",
@@ -496,6 +514,8 @@ const I18N = {
     "msg.noShape": "Load a shape first (preset or image).",
     "msg.noImage": "Please choose a PNG or JPG image.",
     "msg.noSilhouette": "No silhouette detected — try a higher-contrast image or adjust the threshold.",
+    "msg.tracing": "Tracing the contour…",
+    "msg.traceFail": "AI tracing failed — used the geometric method instead.",
     "msg.readError": "Could not read that image file.",
     "msg.pixelError": "Could not read image pixels (the canvas was blocked by the browser).",
     "msg.underTarget": "This silhouette and these parameters allow at most {n} pieces — the limit was not reached.",
@@ -528,6 +548,10 @@ const I18N = {
     "preset.dragonfly": "蜻蜓",
     "preset.custom": "— 已上传图片 —",
     "threshold.label": "阈值",
+    "trace.label": "轮廓追踪",
+    "trace.auto": "自动（几何）",
+    "trace.ai": "AI（Gemini）",
+    "trace.hint": "自动：Alpha 通道或亮度阈值。AI：通过服务器识别照片中的主体。",
     "sec.canvas": "画布（板材规格）",
     "canvas.30x30": "30 × 30 厘米",
     "canvas.30x40": "30 × 40 厘米",
@@ -578,6 +602,8 @@ const I18N = {
     "msg.noShape": "请先选择轮廓（预设或图片）。",
     "msg.noImage": "请选择 PNG 或 JPG 图片。",
     "msg.noSilhouette": "未检测到轮廓——请尝试对比度更高的图片或调整阈值。",
+    "msg.tracing": "正在识别轮廓…",
+    "msg.traceFail": "AI 追踪失败——已改用几何方法。",
     "msg.readError": "无法读取图片文件。",
     "msg.pixelError": "无法读取图片像素（浏览器阻止了画布访问）。",
     "msg.underTarget": "此轮廓与参数下最多可放置 {n} 块板件——未达到限制数量。",
@@ -1746,6 +1772,33 @@ function polygonSelfIntersects(pts) {
   return false;
 }
 
+// Shared post-processing for a raw pixel-space contour loop (from the geometric
+// extractor or from Gemini): DP simplification of a noisy contour can produce
+// tiny kinks that self-intersect — increase the tolerance progressively until
+// the outline is a simple (non-self-intersecting) polygon, smooth it, then map
+// into world units.
+function finalizeContourLoop(loop, targetSize) {
+  if (!loop || loop.length < 8) return null;
+  let closed = loop;
+  if (loop[0][0] !== loop[loop.length - 1][0] || loop[0][1] !== loop[loop.length - 1][1]) {
+    closed = loop.concat([loop[0]]);
+  }
+  let cand = null;
+  for (let tol = 3; tol <= 30 && !cand; tol = Math.round(tol * 1.7)) {
+    const simp = simplifyPath(closed, tol);
+    if (simp.length < 4) continue;
+    const sm = smoothPath(simp, 0.5, 1);
+    const pick = polygonSelfIntersects(sm) ? simp : sm;
+    if (!polygonSelfIntersects(pick)) cand = pick;
+  }
+  if (!cand) {
+    const simp = simplifyPath(closed, 30);
+    cand = simp.length >= 4 && !polygonSelfIntersects(simp) ? simp : null;
+  }
+  if (!cand) return null;
+  return contourToWorld(cand, targetSize || 400);
+}
+
 function traceShapeFromImage(img, threshold, targetSize) {
   let m = imageToMask(img, threshold);
   let clean = cleanMask(m.mask, m.w, m.h);
@@ -1759,23 +1812,36 @@ function traceShapeFromImage(img, threshold, targetSize) {
     clean = cleanMask(m.mask, m.w, m.h);
   }
   const loop = extractContour(clean, m.w, m.h);
-  if (!loop || loop.length < 8) return null;
-  // DP simplification of a noisy photo contour can produce tiny kinks that
-  // self-intersect — increase the tolerance progressively until the outline
-  // is a simple (non-self-intersecting) polygon.
-  let cand = null;
-  for (let tol = 3; tol <= 30 && !cand; tol = Math.round(tol * 1.7)) {
-    const simp = simplifyPath(loop, tol);
-    if (simp.length < 4) continue;
-    const sm = smoothPath(simp, 0.5, 1);
-    const pick = polygonSelfIntersects(sm) ? simp : sm;
-    if (!polygonSelfIntersects(pick)) cand = pick;
-  }
-  if (!cand) {
-    const simp = simplifyPath(loop, 30);
-    cand = simp.length >= 4 ? simp : loop;
-  }
-  return contourToWorld(cand, targetSize || 400);
+  return finalizeContourLoop(loop, targetSize || 400);
+}
+
+// AI tracing: downscale the image, POST it to the /api/trace proxy (Vercel
+// serverless → Gemini), and return the main object's contour as a world-space
+// polygon. Throws on failure so the caller can fall back to geometric tracing.
+async function traceShapeWithAI(img, apiUrl) {
+  const scale = Math.min(1, 1024 / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(img, 0, 0, w, h);
+  const dataUrl = c.toDataURL("image/jpeg", 0.88);
+  const resp = await fetch(apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: dataUrl }),
+  });
+  if (!resp.ok) throw new Error("trace API HTTP " + resp.status);
+  const data = await resp.json();
+  const pts = data && Array.isArray(data.points) ? data.points : null;
+  if (!pts || pts.length < 8) throw new Error("trace API returned no polygon");
+  const loop = pts.map(([x, y]) => [Number(x), Number(y)]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1]));
+  const poly = finalizeContourLoop(loop, 400);
+  if (!poly) throw new Error("trace polygon unusable");
+  return poly;
 }
 
 /* ------------------------- UI wiring ------------------------------------- */
@@ -1788,7 +1854,7 @@ function initUI() {
     lang: $("lang"),
     density: $("density"), gap: $("gap"),
     valD: $("val-density"), valG: $("val-gap"),
-    modeSeg: $("mode-seg"), sizeSeg: $("size-seg"), guide: $("guide"),
+    modeSeg: $("mode-seg"), sizeSeg: $("size-seg"), traceSeg: $("trace-seg"), guide: $("guide"),
     limitOn: $("limit-on"), limit: $("limit"),
     btnGen: $("btn-gen"), btnSvg: $("btn-svg"), btnJpg: $("btn-jpg"),
     msg: $("msg"),
@@ -1920,17 +1986,21 @@ function initUI() {
   });
 
   // ---- image upload: drag & drop + click ----
+  const traceMode = () => el.traceSeg.querySelector("button.active").dataset.trace;
+  el.traceSeg.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    for (const x of el.traceSeg.querySelectorAll("button")) x.classList.toggle("active", x === b);
+  });
+  // optional deep-link ?traceApi=… lets local development point at the deployed proxy
+  let traceApi = "/api/trace";
+  try { const q = new URLSearchParams(location.search); if (q.has("traceApi")) traceApi = q.get("traceApi"); } catch (e) {}
+
   const handleFile = file => {
     if (!file || !file.type.startsWith("image/")) { el.msg.textContent = t("msg.noImage"); return; }
     const url = URL.createObjectURL(file);
     const img = new Image();
-    img.onload = () => {
-      let poly = null;
-      try {
-        poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
-      } catch (err) {
-        el.msg.textContent = err.message;
-      }
+    const finish = poly => {
       URL.revokeObjectURL(url);
       if (!poly) {
         if (!el.msg.textContent) el.msg.textContent = t("msg.noSilhouette");
@@ -1940,6 +2010,30 @@ function initUI() {
       el.preset.value = "custom";
       el.preset.querySelector('[value="custom"]').disabled = false;
       run();
+    };
+    img.onload = () => {
+      const useAI = traceMode() === "ai";
+      if (!useAI) {
+        let poly = null;
+        try {
+          poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
+        } catch (err) {
+          el.msg.textContent = err.message;
+        }
+        finish(poly);
+        return;
+      }
+      el.msg.textContent = t("msg.tracing");
+      traceShapeWithAI(img, traceApi)
+        .then(poly => { el.msg.textContent = ""; finish(poly); })
+        .catch(() => {
+          // graceful fallback to the geometric method (offline / key missing / model hiccup)
+          el.msg.textContent = "";
+          let poly = null;
+          try { poly = traceShapeFromImage(img, Number(el.threshold.value), 400); } catch (err) {}
+          finish(poly);                        // may run() and wipe msg — re-set afterwards
+          if (poly) el.msg.textContent = t("msg.traceFail");
+        });
     };
     img.onerror = () => { URL.revokeObjectURL(url); el.msg.textContent = t("msg.readError"); };
     img.src = url;
@@ -2053,6 +2147,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
     exportSVG, resamplePath, farthestPointSubset, CANVAS_SIZES, fitPolysToCanvas,
     I18N, LANGS, t, applyLanguage,
     cleanMask, smoothPath, imageToMask, polygonSelfIntersects,
+    finalizeContourLoop, traceShapeFromImage, traceShapeWithAI,
     detectInitialLang,
   };
 }
