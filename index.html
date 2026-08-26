@@ -115,6 +115,7 @@
   .ctrl label { font-size: 12.5px; font-weight: 600; }
   .ctrl output { font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 700; }
   .ctrl .hint { font-size: 10.5px; color: var(--dim); }
+  .ctrl input[type="range"]:disabled { opacity: 0.35; }
   input[type="range"] { width: 100%; margin: 2px 0 0; accent-color: var(--accent); cursor: pointer; height: 20px; }
 
   .check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer; }
@@ -215,6 +216,7 @@
       <div class="ctrl">
         <div class="row"><label for="threshold" data-i18n="threshold.label">Порог</label><output id="val-thr">128</output></div>
         <input type="range" id="threshold" min="32" max="240" value="128" step="4">
+        <div class="hint" data-i18n="threshold.hint">Авто: яркость → силуэт; применяется к загруженному фото сразу. В режиме «ИИ» не используется.</div>
       </div>
     </div>
 
@@ -372,6 +374,7 @@ const I18N = {
     "preset.dragonfly": "Стрекоза",
     "preset.custom": "— Загруженное изображение —",
     "threshold.label": "Порог",
+    "threshold.hint": "Авто: яркость → силуэт; применяется к загруженному фото сразу. В режиме «ИИ» не используется.",
     "trace.label": "Трассировка контура",
     "trace.auto": "Авто (геометрия)",
     "trace.ai": "ИИ (Gemini)",
@@ -428,6 +431,7 @@ const I18N = {
     "msg.noSilhouette": "Силуэт не найден — попробуйте более контрастное изображение или измените порог.",
     "msg.tracing": "Распознаю контур…",
     "msg.traceFail": "ИИ-трассировка не удалась — использован геометрический метод.",
+    "msg.thresholdNoSilhouette": "При этом пороге силуэт не найден — оставлен предыдущий контур.",
     "msg.readError": "Не удалось прочитать файл изображения.",
     "msg.pixelError": "Не удалось прочитать пиксели изображения (canvas был заблокирован браузером).",
     "msg.underTarget": "Для этого силуэта и параметров доступно максимум {n} деталей — ограничение не достигнуто.",
@@ -460,6 +464,7 @@ const I18N = {
     "preset.dragonfly": "Dragonfly",
     "preset.custom": "— Uploaded image —",
     "threshold.label": "Threshold",
+    "threshold.hint": "Auto: luminance → silhouette; applies to the uploaded photo immediately. Not used in AI mode.",
     "trace.label": "Contour tracing",
     "trace.auto": "Auto (geometry)",
     "trace.ai": "AI (Gemini)",
@@ -516,6 +521,7 @@ const I18N = {
     "msg.noSilhouette": "No silhouette detected — try a higher-contrast image or adjust the threshold.",
     "msg.tracing": "Tracing the contour…",
     "msg.traceFail": "AI tracing failed — used the geometric method instead.",
+    "msg.thresholdNoSilhouette": "No silhouette at this threshold — keeping the previous outline.",
     "msg.readError": "Could not read that image file.",
     "msg.pixelError": "Could not read image pixels (the canvas was blocked by the browser).",
     "msg.underTarget": "This silhouette and these parameters allow at most {n} pieces — the limit was not reached.",
@@ -548,6 +554,7 @@ const I18N = {
     "preset.dragonfly": "蜻蜓",
     "preset.custom": "— 已上传图片 —",
     "threshold.label": "阈值",
+    "threshold.hint": "自动：亮度 → 轮廓；立即应用于上传的图片。AI 模式不使用。",
     "trace.label": "轮廓追踪",
     "trace.auto": "自动（几何）",
     "trace.ai": "AI（Gemini）",
@@ -604,6 +611,7 @@ const I18N = {
     "msg.noSilhouette": "未检测到轮廓——请尝试对比度更高的图片或调整阈值。",
     "msg.tracing": "正在识别轮廓…",
     "msg.traceFail": "AI 追踪失败——已改用几何方法。",
+    "msg.thresholdNoSilhouette": "此阈值下未找到轮廓——保留之前的轮廓。",
     "msg.readError": "无法读取图片文件。",
     "msg.pixelError": "无法读取图片像素（浏览器阻止了画布访问）。",
     "msg.underTarget": "此轮廓与参数下最多可放置 {n} 块板件——未达到限制数量。",
@@ -1935,9 +1943,19 @@ function initUI() {
   };
   el.density.addEventListener("input", onSlider);
   el.gap.addEventListener("input", onSlider);
-  el.threshold.addEventListener("input", onSlider);
   el.limitOn.addEventListener("change", onSlider);
   el.limit.addEventListener("input", onSlider);
+
+  // threshold is a geometric-tracing control: re-trace the uploaded photo
+  // live (Auto mode only; disabled in AI mode)
+  let thrTimer = null;
+  el.threshold.addEventListener("input", () => {
+    el.valThr.textContent = el.threshold.value;
+    if (state.uploaded && traceMode() === "auto") {
+      clearTimeout(thrTimer);
+      thrTimer = setTimeout(retraceFromUpload, 250);
+    }
+  });
 
   for (const b of el.modeSeg.querySelectorAll("button")) {
     b.addEventListener("click", () => {
@@ -1957,6 +1975,8 @@ function initUI() {
   el.preset.addEventListener("change", () => {
     const key = el.preset.value;
     if (PRESETS[key]) {
+      state.uploaded = false;
+      state.uploadedImg = null;
       setShape(PRESETS[key].polys.map(p => p.map(([x, y]) => [x, y])), key);
       run();
     }
@@ -1991,10 +2011,28 @@ function initUI() {
     const b = e.target.closest("button");
     if (!b) return;
     for (const x of el.traceSeg.querySelectorAll("button")) x.classList.toggle("active", x === b);
+    el.threshold.disabled = traceMode() === "ai";   // threshold is geometric-only
   });
   // optional deep-link ?traceApi=… lets local development point at the deployed proxy
   let traceApi = "/api/trace";
   try { const q = new URLSearchParams(location.search); if (q.has("traceApi")) traceApi = q.get("traceApi"); } catch (e) {}
+
+  // Re-run the geometric trace on the last uploaded photo with the current
+  // threshold (used by the live threshold slider).
+  const retraceFromUpload = () => {
+    const img = state.uploadedImg;
+    if (!img) return;
+    let poly = null;
+    try {
+      poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
+    } catch (err) {
+      el.msg.textContent = err.message;
+      return;
+    }
+    if (!poly) { el.msg.textContent = t("msg.thresholdNoSilhouette"); return; }
+    setShape([poly], "custom");
+    run();
+  };
 
   const handleFile = file => {
     if (!file || !file.type.startsWith("image/")) { el.msg.textContent = t("msg.noImage"); return; }
@@ -2012,6 +2050,8 @@ function initUI() {
       run();
     };
     img.onload = () => {
+      state.uploadedImg = img;          // keep for live threshold re-tracing
+      state.uploaded = true;
       const useAI = traceMode() === "ai";
       if (!useAI) {
         let poly = null;
