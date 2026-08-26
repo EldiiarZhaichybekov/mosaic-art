@@ -264,7 +264,10 @@
       <div class="section-title" data-i18n="sec.actions">Действия</div>
       <div class="actions">
         <button id="btn-gen" data-i18n="btn.generate">Сгенерировать мозаику</button>
+      </div>
+      <div class="actions">
         <button id="btn-svg" data-i18n="btn.export" data-i18n-attr="title:btn.exportTitle">Экспорт в SVG</button>
+        <button id="btn-jpg" data-i18n="btn.exportJpg" data-i18n-attr="title:btn.exportJpgTitle">Экспорт в JPG</button>
       </div>
     </div>
 
@@ -390,6 +393,8 @@ const I18N = {
     "btn.generate": "Сгенерировать мозаику",
     "btn.export": "Экспорт в SVG",
     "btn.exportTitle": "Скачать точную геометрию в SVG (1 единица = 1 мм)",
+    "btn.exportJpg": "Экспорт в JPG",
+    "btn.exportJpgTitle": "Скачать растровое изображение мозаики (JPG, 6 px/мм)",
     "sec.notes": "Примечания",
     "sec.diag": "Диагностика",
     "stat.countA": "Пластины 30 мм",
@@ -470,6 +475,8 @@ const I18N = {
     "btn.generate": "Generate Mosaic",
     "btn.export": "Export SVG",
     "btn.exportTitle": "Download exact geometry as SVG (1 unit = 1 mm)",
+    "btn.exportJpg": "Export JPG",
+    "btn.exportJpgTitle": "Download a raster image of the mosaic (JPG, 6 px/mm)",
     "sec.notes": "Notes",
     "sec.diag": "Diagnostics",
     "stat.countA": "30 mm plates",
@@ -550,6 +557,8 @@ const I18N = {
     "btn.generate": "生成马赛克",
     "btn.export": "导出 SVG",
     "btn.exportTitle": "下载精确几何的 SVG（1 单位 = 1 毫米）",
+    "btn.exportJpg": "导出 JPG",
+    "btn.exportJpgTitle": "下载马赛克位图（JPG，6 像素/毫米）",
     "sec.notes": "备注",
     "sec.diag": "诊断",
     "stat.countA": "30 毫米板件",
@@ -1471,8 +1480,14 @@ function draw(rects, guidePolys, showGuide, cw, ch) {
 
   // world transform: y-down world → y-down screen, centred
   ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * W / 2, dpr * H / 2);
-  ctx.lineJoin = "round";
+  paintMosaic(ctx, rects, guidePolys, showGuide, cw, ch);
+}
 
+// Paints guide + sheet frame + black rectangle outlines. Assumes the context
+// transform maps world units (mm) to device pixels with the sheet centred at
+// the origin; shared by the on-screen canvas and the high-res JPG export.
+function paintMosaic(ctx, rects, guidePolys, showGuide, cw, ch) {
+  ctx.lineJoin = "round";
   if (showGuide) {
     ctx.lineWidth = 0.6;
     ctx.setLineDash([4, 4]);
@@ -1507,6 +1522,22 @@ function draw(rects, guidePolys, showGuide, cw, ch) {
     ctx.closePath();
     ctx.stroke();
   }
+}
+
+// High-resolution raster export (JPG): renders the sheet at 6 px/mm.
+function exportJPGDataURL(rects, guidePolys, showGuide, cw, ch) {
+  const scale = 6;                                  // px per mm
+  const W = Math.max(2, Math.round(cw * scale));
+  const H = Math.max(2, Math.round(ch * scale));
+  const oc = document.createElement("canvas");
+  oc.width = W; oc.height = H;
+  const ctx = oc.getContext("2d");
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, W, H);
+  ctx.setTransform(scale, 0, 0, scale, W / 2, H / 2);
+  paintMosaic(ctx, rects, guidePolys, showGuide, cw, ch);
+  return oc.toDataURL("image/jpeg", 0.95);
 }
 
 /* ------------------------- SVG export (1 unit = 1 mm) -------------------- */
@@ -1759,7 +1790,7 @@ function initUI() {
     valD: $("val-density"), valG: $("val-gap"),
     modeSeg: $("mode-seg"), sizeSeg: $("size-seg"), guide: $("guide"),
     limitOn: $("limit-on"), limit: $("limit"),
-    btnGen: $("btn-gen"), btnSvg: $("btn-svg"),
+    btnGen: $("btn-gen"), btnSvg: $("btn-svg"), btnJpg: $("btn-jpg"),
     msg: $("msg"),
     sCount: $("s-count"), sCountA: $("s-countA"), sCountB: $("s-countB"),
     sTime: $("s-time"), sGap: $("s-gap"), chip: $("gap-chip"),
@@ -1877,6 +1908,16 @@ function initUI() {
     const sz = el.sizeSeg.querySelector("button.active").dataset.size;
     download("mosaic-" + state.shapeName + "-" + sz + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.svg", svg, "image/svg+xml");
   });
+  el.btnJpg.addEventListener("click", () => {
+    if (!state.rects.length) run();
+    const sz = el.sizeSeg.querySelector("button.active").dataset.size;
+    const url = exportJPGDataURL(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mosaic-" + state.shapeName + "-" + sz + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.jpg";
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { a.remove(); }, 400);
+  });
 
   // ---- image upload: drag & drop + click ----
   const handleFile = file => {
@@ -1976,6 +2017,7 @@ function initUI() {
     applyLanguage(el.lang.value);
     if (state.stats) renderStats(state.stats);   // refresh chip / messages / units
   });
+
 
 
 
