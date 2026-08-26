@@ -35,7 +35,7 @@
     box-shadow: 0 22px 60px rgba(30,41,59,.18);
     overflow: hidden; flex: 0 0 auto;
   }
-  #cv { display: block; width: 800px; height: 800px; max-width: 100%; height: auto; }
+  #cv { display: block; width: 800px; height: auto; max-width: 100%; }
 
   /* ---------- panel ---------- */
   #panel {
@@ -43,6 +43,18 @@
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
     padding: 20px; display: flex; flex-direction: column; gap: 16px;
     box-shadow: 0 22px 55px rgba(30,41,59,.14);
+  }
+
+  /* ---------- responsive / mobile ---------- */
+  @media (max-width: 920px) {
+    body { padding: 10px; align-items: flex-start; }
+    #app { flex-direction: column; align-items: stretch; gap: 12px; }
+    #stage { width: 100%; flex: 1 1 auto; }
+    #cv { width: 100%; height: auto; }
+    #panel { width: 100%; max-width: 100%; padding: 16px; }
+    .actions button { padding: 13px 0; font-size: 14px; }
+    .mode-seg button, .mode-seg.quad button { padding: 12px 2px; font-size: 12px; }
+    #lang { padding: 6px 8px; }
   }
   .brand h1 { margin: 0; font-size: 14px; letter-spacing: .12em; font-weight: 800; text-transform: uppercase; color: var(--txt); }
   .brand p { margin: 6px 0 0; font-size: 11.5px; color: var(--dim); line-height: 1.55; }
@@ -120,6 +132,7 @@
     cursor: pointer; transition: transform .1s ease, filter .15s ease; letter-spacing: .02em;
   }
   .actions button:active { transform: scale(.97); }
+  button, select, input, label, #drop { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   #btn-gen { color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; box-shadow: 0 8px 22px rgba(37,99,235,.3); }
   #btn-gen:hover { filter: brightness(1.07); }
   #btn-svg { color: var(--accent); background: transparent; border: 1px solid #c7d2fe; }
@@ -1952,6 +1965,7 @@ function initUI() {
     applyLanguage(el.lang.value);
     if (state.stats) renderStats(state.stats);   // refresh chip / messages / units
   });
+
 
 
   // initial: butterfly preset
