@@ -12,7 +12,9 @@
 
 ## Хостинг
 
-- GitHub Pages: https://eldiiarzhaichybekov.github.io/mosaic-art/
-- Vercel (нейтральный URL): `npx vercel login` затем `npx vercel --prod --yes`
-  в этой папке; нужный поддомен (например `mosaic-art.vercel.app`) задаётся в
-  Vercel → Dashboard → Project → Settings → Domains.
+- **Vercel (основной):** https://mosaic-art-rho.vercel.app/
+  (деплой из репозитория GitHub `EldiiarZhaichybekov/mosaic-art`; чистый поддомен
+  без суффикса, например `mosaic-art.vercel.app`, задаётся в Vercel →
+  Dashboard → Project → Settings → Domains)
+- GitHub Pages (запасной): https://eldiiarzhaichybekov.github.io/mosaic-art/
+- Локальная сборка: просто открыть `index.html` в браузере
