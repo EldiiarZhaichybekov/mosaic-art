@@ -13,6 +13,8 @@
  * var is set — the repository is public, so a key committed here is exposed.
  *
  * Model: process.env.GEMINI_MODEL (default gemini-2.0-flash, free tier).
+ *
+ * CommonJS (module.exports) — the most compatible format for Vercel api/*.js.
  */
 
 const FALLBACK_KEY = ""; // temporary key goes here until env var is configured
@@ -51,7 +53,7 @@ function sanitizeContour(raw) {
   return pts;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -126,8 +128,8 @@ export default async function handler(req, res) {
     }
 
     const points = sanitizeContour(parsed);
-    return json(res, 200, { points, model, w: mimeType });
+    return json(res, 200, { points, model });
   } catch (err) {
     return json(res, 502, { error: err.message || String(err) });
   }
-}
+};
