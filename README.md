@@ -24,7 +24,7 @@
 
 1. Vercel → Dashboard → ваш проект → Settings → Environment Variables.
 2. Добавьте `GEMINI_API_KEY` = ваш ключ (модель по умолчанию —
-   `gemini-2.0-flash`; можно переопределить через `GEMINI_MODEL`).
+   `gemini-3.6-flash`; можно переопределить через `GEMINI_MODEL`).
 3. Redeploy (Vercel сам предложит пересобрать после изменения переменных).
 
 Без ключа ИИ-режим мягко откатывается к геометрической трассировке.

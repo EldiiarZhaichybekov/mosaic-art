@@ -12,12 +12,16 @@
  * only a stop-gap for the user's temporary key and MUST be removed once the env
  * var is set — the repository is public, so a key committed here is exposed.
  *
- * Model: process.env.GEMINI_MODEL (default gemini-2.0-flash, free tier).
+ * Model: process.env.GEMINI_MODEL (default gemini-3.6-flash).
  *
  * CommonJS (module.exports) — the most compatible format for Vercel api/*.js.
+ *
+ * NOTE: never commit a key here — GitHub secret scanning blocks pushes that
+ * contain one. Configure GEMINI_API_KEY in Vercel → Project → Settings →
+ * Environment Variables instead.
  */
 
-const FALLBACK_KEY = ""; // temporary key goes here until env var is configured
+const FALLBACK_KEY = "";
 
 function json(res, status, obj) {
   res.status(status).json(obj);
@@ -71,7 +75,7 @@ module.exports = async function handler(req, res) {
   const key = process.env.GEMINI_API_KEY || FALLBACK_KEY;
   if (!key) return json(res, 500, { error: "GEMINI_API_KEY not configured" });
 
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.6-flash";
   const prompt =
     "Find the MAIN object in this image (the prominent subject). Return its outer " +
     "silhouette boundary as ONE closed polygon. Ignore the background, shadows, " +
