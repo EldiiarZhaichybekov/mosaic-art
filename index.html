@@ -584,6 +584,22 @@ function t(key, params) {
   if (params !== undefined) s = String(s).replace(/\{n\}/g, params);
   return s;
 }
+// Resolve the UI language: explicit URL param → saved choice → browser
+// preference list (zh* or en* anywhere in the user's language list) → ru.
+function detectInitialLang(qpLang, saved, navLang, navLangs) {
+  if (qpLang && LANGS.includes(qpLang)) return qpLang;
+  if (saved && LANGS.includes(saved)) return saved;
+  // the ordered preference list is authoritative; fall back to the single
+  // navigator.language when the browser does not expose navigator.languages
+  const list = (navLangs && navLangs.length) ? navLangs : (navLang ? [navLang] : []);
+  for (const l of list) {
+    const n = String(l || "").toLowerCase();
+    if (n.startsWith("zh")) return "zh";
+    if (n.startsWith("en")) return "en";
+  }
+  return "ru";
+}
+
 // Apply a language to the whole static DOM; dynamic strings are refreshed by
 // the caller (renderStats etc. already call t()).
 function applyLanguage(lang) {
@@ -1928,20 +1944,15 @@ function initUI() {
   } catch (e) { /* ignore */ }
 
   // language priority: ?lang= → localStorage → browser preference → ru
-  let initialLang = "";
-  if (qp && qp.has("lang") && LANGS.includes(qp.get("lang"))) initialLang = qp.get("lang");
-  if (!initialLang) {
-    try {
-      const saved = localStorage.getItem("mosaic-lang");
-      if (saved && LANGS.includes(saved)) initialLang = saved;
-    } catch (e) { /* ignore */ }
+  let qpLang = (qp && qp.has("lang") && LANGS.includes(qp.get("lang"))) ? qp.get("lang") : "";
+  let savedLang = "";
+  try { savedLang = localStorage.getItem("mosaic-lang") || ""; } catch (e) { /* ignore */ }
+  let navLang = "", navLangs = null;
+  if (typeof navigator !== "undefined") {
+    navLang = navigator.language || "";
+    navLangs = navigator.languages || null;
   }
-  if (!initialLang && typeof navigator !== "undefined") {
-    const nav = (navigator.language || "").toLowerCase();
-    if (nav.startsWith("zh")) initialLang = "zh";
-    else if (nav.startsWith("en")) initialLang = "en";
-  }
-  if (!initialLang) initialLang = "ru";
+  const initialLang = detectInitialLang(qpLang, savedLang, navLang, navLangs);
   el.lang.value = initialLang;
   applyLanguage(initialLang);
 
@@ -1965,6 +1976,7 @@ function initUI() {
     applyLanguage(el.lang.value);
     if (state.stats) renderStats(state.stats);   // refresh chip / messages / units
   });
+
 
 
 
@@ -1999,6 +2011,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
     exportSVG, resamplePath, farthestPointSubset, CANVAS_SIZES, fitPolysToCanvas,
     I18N, LANGS, t, applyLanguage,
     cleanMask, smoothPath, imageToMask, polygonSelfIntersects,
+    detectInitialLang,
   };
 }
 </script>
