@@ -209,15 +209,13 @@
         <label data-i18n="trace.label">Трассировка контура</label>
         <div class="mode-seg" id="trace-seg">
           <button type="button" data-trace="auto" class="active" data-i18n="trace.auto">Авто (геометрия)</button>
-          <button type="button" data-trace="ai" data-i18n="trace.ai">ИИ (Gemini)</button>
-          <button type="button" data-trace="deepseek" data-i18n="trace.deepseek">ИИ (DeepSeek)</button>
         </div>
-        <div class="hint" data-i18n="trace.hint">Авто: альфа-канал или порог яркости. ИИ (Gemini / DeepSeek): распознаёт главный объект на фото через сервер.</div>
+        <div class="hint" data-i18n="trace.hint">Контур по порогу яркости или альфа-каналу: тёмный объект на светлом фоне (и наоборот) определяется автоматически, с сохранением тонких деталей. Подстройте порог для точности — он применяется к фото сразу.</div>
       </div>
       <div class="ctrl">
         <div class="row"><label for="threshold" data-i18n="threshold.label">Порог</label><output id="val-thr">128</output></div>
         <input type="range" id="threshold" min="32" max="240" value="128" step="4">
-        <div class="hint" data-i18n="threshold.hint">Авто: яркость → силуэт; применяется к загруженному фото сразу. В режиме «ИИ» не используется.</div>
+        <div class="hint" data-i18n="threshold.hint">Порог яркости → силуэт; применяется к загруженному фото сразу.</div>
       </div>
     </div>
 
@@ -362,12 +360,10 @@ const I18N = {
     "preset.dragonfly": "Стрекоза",
     "preset.custom": "— Загруженное изображение —",
     "threshold.label": "Порог",
-    "threshold.hint": "Авто: яркость → силуэт; применяется к загруженному фото сразу. В режиме «ИИ» не используется.",
+    "threshold.hint": "Порог яркости → силуэт; применяется к загруженному фото сразу.",
     "trace.label": "Трассировка контура",
     "trace.auto": "Авто (геометрия)",
-    "trace.ai": "ИИ (Gemini)",
-    "trace.deepseek": "ИИ (DeepSeek)",
-    "trace.hint": "Авто: альфа-канал или порог яркости. ИИ (Gemini / DeepSeek): распознаёт главный объект на фото через сервер.",
+    "trace.hint": "Контур по порогу яркости или альфа-каналу: тёмный объект на светлом фоне (и наоборот) определяется автоматически, с сохранением тонких деталей. Подстройте порог для точности — он применяется к фото сразу.",
     "sec.canvas": "Холст (формат листа)",
     "canvas.30x40": "30 × 40 см",
     "canvas.40x40": "40 × 40 см",
@@ -410,8 +406,6 @@ const I18N = {
     "msg.noShape": "Сначала выберите силуэт (пресет или изображение).",
     "msg.noImage": "Выберите изображение PNG или JPG.",
     "msg.noSilhouette": "Силуэт не найден — попробуйте более контрастное изображение или измените порог.",
-    "msg.tracing": "Распознаю контур…",
-    "msg.traceFail": "ИИ-трассировка не удалась — использован геометрический метод.",
     "msg.thresholdNoSilhouette": "При этом пороге силуэт не найден — оставлен предыдущий контур.",
     "msg.readError": "Не удалось прочитать файл изображения.",
     "msg.pixelError": "Не удалось прочитать пиксели изображения (canvas был заблокирован браузером).",
@@ -448,9 +442,7 @@ const I18N = {
     "threshold.hint": "Auto: luminance → silhouette; applies to the uploaded photo immediately. Not used in AI mode.",
     "trace.label": "Contour tracing",
     "trace.auto": "Auto (geometry)",
-    "trace.ai": "AI (Gemini)",
-    "trace.deepseek": "AI (DeepSeek)",
-    "trace.hint": "Auto: alpha channel or luminance threshold. AI (Gemini / DeepSeek): recognizes the main object in a photo via the server.",
+    "trace.hint": "Contour by luminance threshold or alpha channel: a dark object on a light background (or the reverse) is detected automatically while keeping fine detail. Adjust the threshold for accuracy — it applies to the photo immediately.",
     "sec.canvas": "Canvas (sheet format)",
     "canvas.30x40": "30 × 40 cm",
     "canvas.40x40": "40 × 40 cm",
@@ -493,8 +485,6 @@ const I18N = {
     "msg.noShape": "Load a shape first (preset or image).",
     "msg.noImage": "Please choose a PNG or JPG image.",
     "msg.noSilhouette": "No silhouette detected — try a higher-contrast image or adjust the threshold.",
-    "msg.tracing": "Tracing the contour…",
-    "msg.traceFail": "AI tracing failed — used the geometric method instead.",
     "msg.thresholdNoSilhouette": "No silhouette at this threshold — keeping the previous outline.",
     "msg.readError": "Could not read that image file.",
     "msg.pixelError": "Could not read image pixels (the canvas was blocked by the browser).",
@@ -531,9 +521,7 @@ const I18N = {
     "threshold.hint": "自动：亮度 → 轮廓；立即应用于上传的图片。AI 模式不使用。",
     "trace.label": "轮廓追踪",
     "trace.auto": "自动（几何）",
-    "trace.ai": "AI（Gemini）",
-    "trace.deepseek": "AI（DeepSeek）",
-    "trace.hint": "自动：Alpha 通道或亮度阈值。AI（Gemini / DeepSeek）：通过服务器识别照片中的主体。",
+    "trace.hint": "通过亮度阈值或 Alpha 通道提取轮廓：浅色背景上的深色主体（或反之）自动识别，同时保留细节。调整阈值以获得精确结果——它会立即应用于图片。",
     "sec.canvas": "画布（板材规格）",
     "canvas.30x40": "30 × 40 厘米",
     "canvas.40x40": "40 × 40 厘米",
@@ -576,8 +564,6 @@ const I18N = {
     "msg.noShape": "请先选择轮廓（预设或图片）。",
     "msg.noImage": "请选择 PNG 或 JPG 图片。",
     "msg.noSilhouette": "未检测到轮廓——请尝试对比度更高的图片或调整阈值。",
-    "msg.tracing": "正在识别轮廓…",
-    "msg.traceFail": "AI 追踪失败——已改用几何方法。",
     "msg.thresholdNoSilhouette": "此阈值下未找到轮廓——保留之前的轮廓。",
     "msg.readError": "无法读取图片文件。",
     "msg.pixelError": "无法读取图片像素（浏览器阻止了画布访问）。",
@@ -1603,7 +1589,7 @@ function download(filename, text, mime) {
 //   · polarity is auto-detected from the border (background is usually the
 //     dominant border colour) — works for dark-on-light AND light-on-dark.
 function imageToMask(img, threshold, forceInvert) {
-  const maxDim = 420;
+  const maxDim = 900;                          // high-res mask keeps thin wings/limbs
   const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
   const w = Math.max(2, Math.round(img.width * scale));
   const h = Math.max(2, Math.round(img.height * scale));
@@ -1795,35 +1781,6 @@ function traceShapeFromImage(img, threshold, targetSize) {
   return finalizeContourLoop(loop, targetSize || 400);
 }
 
-// AI tracing: downscale the image, POST it to the /api/trace proxy (Vercel
-// serverless → Gemini), and return the main object's contour as a world-space
-// polygon. Throws on failure so the caller can fall back to geometric tracing.
-async function traceShapeWithAI(img, apiUrl, provider) {
-  const scale = Math.min(1, 1024 / Math.max(img.naturalWidth, img.naturalHeight));
-  const w = Math.max(1, Math.round(img.naturalWidth * scale));
-  const h = Math.max(1, Math.round(img.naturalHeight * scale));
-  const c = document.createElement("canvas");
-  c.width = w; c.height = h;
-  const ctx = c.getContext("2d");
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, w, h);
-  ctx.drawImage(img, 0, 0, w, h);
-  const dataUrl = c.toDataURL("image/jpeg", 0.88);
-  const resp = await fetch(apiUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image: dataUrl, provider: provider || "gemini" }),
-  });
-  if (!resp.ok) throw new Error("trace API HTTP " + resp.status);
-  const data = await resp.json();
-  const pts = data && Array.isArray(data.points) ? data.points : null;
-  if (!pts || pts.length < 8) throw new Error("trace API returned no polygon");
-  const loop = pts.map(([x, y]) => [Number(x), Number(y)]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1]));
-  const poly = finalizeContourLoop(loop, 400);
-  if (!poly) throw new Error("trace polygon unusable");
-  return poly;
-}
-
 /* ------------------------- UI wiring ------------------------------------- */
 function initUI() {
   const $ = id => document.getElementById(id);
@@ -1926,12 +1883,11 @@ function initUI() {
   el.limitOn.addEventListener("change", onSlider);
   el.limit.addEventListener("input", onSlider);
 
-  // threshold is a geometric-tracing control: re-trace the uploaded photo
-  // live (Auto mode only; disabled in AI mode)
+  // threshold is a geometric-tracing control: re-trace the uploaded photo live
   let thrTimer = null;
   el.threshold.addEventListener("input", () => {
     el.valThr.textContent = el.threshold.value;
-    if (state.uploaded && traceMode() === "auto") {
+    if (state.uploaded) {
       clearTimeout(thrTimer);
       thrTimer = setTimeout(retraceFromUpload, 250);
     }
@@ -1977,17 +1933,6 @@ function initUI() {
   });
 
   // ---- image upload: drag & drop + click ----
-  const traceMode = () => el.traceSeg.querySelector("button.active").dataset.trace;
-  el.traceSeg.addEventListener("click", e => {
-    const b = e.target.closest("button");
-    if (!b) return;
-    for (const x of el.traceSeg.querySelectorAll("button")) x.classList.toggle("active", x === b);
-    el.threshold.disabled = traceMode() !== "auto";   // threshold is geometric-only
-  });
-  // optional deep-link ?traceApi=… lets local development point at the deployed proxy
-  let traceApi = "/api/trace";
-  try { const q = new URLSearchParams(location.search); if (q.has("traceApi")) traceApi = q.get("traceApi"); } catch (e) {}
-
   // Re-run the geometric trace on the last uploaded photo with the current
   // threshold (used by the live threshold slider).
   const retraceFromUpload = () => {
@@ -2023,28 +1968,13 @@ function initUI() {
     img.onload = () => {
       state.uploadedImg = img;          // keep for live threshold re-tracing
       state.uploaded = true;
-      const useAI = traceMode() !== "auto";
-      if (!useAI) {
-        let poly = null;
-        try {
-          poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
-        } catch (err) {
-          el.msg.textContent = err.message;
-        }
-        finish(poly);
-        return;
+      let poly = null;
+      try {
+        poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
+      } catch (err) {
+        el.msg.textContent = err.message;
       }
-      el.msg.textContent = t("msg.tracing");
-      traceShapeWithAI(img, traceApi, traceMode())
-        .then(poly => { el.msg.textContent = ""; finish(poly); })
-        .catch(() => {
-          // graceful fallback to the geometric method (offline / key missing / model hiccup)
-          el.msg.textContent = "";
-          let poly = null;
-          try { poly = traceShapeFromImage(img, Number(el.threshold.value), 400); } catch (err) {}
-          finish(poly);                        // may run() and wipe msg — re-set afterwards
-          if (poly) el.msg.textContent = t("msg.traceFail");
-        });
+      finish(poly);
     };
     img.onerror = () => { URL.revokeObjectURL(url); el.msg.textContent = t("msg.readError"); };
     img.src = url;
@@ -2154,7 +2084,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
     MAX_PIECES, maxPiecesFor,
     I18N, LANGS, t, applyLanguage,
     cleanMask, smoothPath, imageToMask, polygonSelfIntersects,
-    finalizeContourLoop, traceShapeFromImage, traceShapeWithAI,
+    finalizeContourLoop, traceShapeFromImage,
     detectInitialLang,
   };
 }
