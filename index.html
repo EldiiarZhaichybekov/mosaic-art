@@ -26,16 +26,17 @@
     font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex; justify-content: center; align-items: flex-start;
     padding: 20px;
+    height: 100vh; overflow: hidden;
   }
-  #app { display: flex; gap: 20px; align-items: flex-start; justify-content: center; flex-wrap: wrap; max-width: 1260px; width: 100%; }
+  #app { display: flex; gap: 20px; align-items: flex-start; justify-content: center; flex-wrap: nowrap; max-width: 1260px; width: 100%; height: 100%; margin: 0 auto; }
 
   /* ---------- stage ---------- */
   #stage {
     background: #fff; border: 1px solid var(--line); border-radius: 14px;
     box-shadow: 0 22px 60px rgba(30,41,59,.18);
-    overflow: hidden; flex: 0 0 auto;
+    overflow: hidden; flex: 1 1 auto; min-width: 0; max-width: 812px; align-self: flex-start;
   }
-  #cv { display: block; width: 800px; height: auto; max-width: 100%; }
+  #cv { display: block; width: 100%; height: auto; max-height: calc(100vh - 72px); object-fit: contain; }
 
   /* ---------- panel ---------- */
   #panel {
@@ -43,21 +44,27 @@
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
     padding: 20px; display: flex; flex-direction: column; gap: 16px;
     box-shadow: 0 22px 55px rgba(30,41,59,.14);
+    height: 100%; overflow-y: auto;
   }
 
   /* ---------- responsive / mobile ---------- */
   @media (max-width: 920px) {
-    body { padding: 10px; align-items: flex-start; }
-    #app { flex-direction: column; align-items: stretch; gap: 12px; }
+    body { padding: 10px; align-items: flex-start; height: auto; overflow: visible; }
+    #app { flex-direction: column; align-items: stretch; gap: 12px; height: auto; }
     #stage { width: 100%; flex: 1 1 auto; }
     #cv { width: 100%; height: auto; }
-    #panel { width: 100%; max-width: 100%; padding: 16px; }
+    #panel { width: 100%; max-width: 100%; padding: 16px; height: auto; overflow: visible; }
     .actions button { padding: 13px 0; font-size: 14px; }
     .mode-seg button, .mode-seg.quad button { padding: 12px 2px; font-size: 12px; }
     #lang { padding: 6px 8px; }
   }
   .brand h1 { margin: 0; font-size: 14px; letter-spacing: .12em; font-weight: 800; text-transform: uppercase; color: var(--txt); }
   .brand p { margin: 6px 0 0; font-size: 11.5px; color: var(--dim); line-height: 1.55; }
+  /* long descriptions/hints are hidden by default so the panel stays compact;
+     the "show descriptions" toggle reveals them. */
+  .hint, #panel .brand p { display: none; }
+  body.show-desc .hint, body.show-desc #panel .brand p { display: block; }
+  .hints-toggle { font-size: 11px; color: var(--dim); }
   .brand-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .brand-row h1 { flex: 1; }
   #lang {
@@ -176,6 +183,7 @@
         </select>
       </div>
       <p data-i18n-html="brand.desc">Упаковывает акриловые пластины <b>30 × 2.5 мм</b> (прямоугольники, 1 единица = 1 мм) в любой силуэт — по вашему изображению или из пресета. Движок SAT гарантирует ноль пересечений, а каждый зазор строго в пределах 3–8 мм.</p>
+      <label class="check hints-toggle"><input type="checkbox" id="hints-on"> <span data-i18n="hints.label">Показывать описания</span></label>
     </div>
 
     <div class="section" id="sec-shape">
@@ -339,6 +347,7 @@ const I18N = {
     "app.title": "Параметрический генератор мозаики — пластины 30 × 2.5 мм",
     "brand.title": "Параметрический генератор мозаики",
     "brand.desc": "Упаковывает акриловые пластины <b>30 × 2.5 мм</b> (прямоугольники, 1 единица = 1 мм) в любой силуэт — по вашему изображению или из пресета. Движок SAT гарантирует ноль пересечений, а каждый зазор строго в пределах 3–8 мм.",
+    "hints.label": "Показывать описания",
     "sec.shape": "Источник силуэта",
     "drop.title": "Загрузить изображение-силуэт",
     "drop.ext": "(PNG / JPG)",
@@ -418,6 +427,7 @@ const I18N = {
     "app.title": "Parametric Mosaic Generator — 30 × 2.5 mm Plates",
     "brand.title": "Parametric Mosaic Generator",
     "brand.desc": "Packs <b>30 × 2.5 mm</b> acrylic plates (rectangles, 1 unit = 1 mm) into any silhouette — from your own image or a preset. The SAT engine guarantees zero intersections and every gap strictly within 3–8 mm.",
+    "hints.label": "Show descriptions",
     "sec.shape": "Shape Source",
     "drop.title": "Upload silhouette image",
     "drop.ext": "(PNG / JPG)",
@@ -497,6 +507,7 @@ const I18N = {
     "app.title": "参数化马赛克生成器 — 30 × 2.5 毫米板材",
     "brand.title": "参数化马赛克生成器",
     "brand.desc": "将 <b>30 × 2.5 毫米</b> 的亚克力板（矩形，1 单位 = 1 毫米）装入任意轮廓——来自您上传的图片或预设。SAT 引擎保证零交叉，所有间隙严格保持在 3–8 毫米。",
+    "hints.label": "显示说明",
     "sec.shape": "轮廓来源",
     "drop.title": "上传轮廓图片",
     "drop.ext": "(PNG / JPG)",
@@ -1975,6 +1986,18 @@ function initUI() {
   });
 
   el.guide.addEventListener("change", () => draw(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]));
+
+  // long descriptions & hints are hidden by default; the toggle reveals them.
+  // Kept compact so the side panel does not grow too tall.
+  const hintsOn = $("hints-on");
+  let savedHints = "";
+  try { savedHints = localStorage.getItem("mosaic-hints") || ""; } catch (e) { /* ignore */ }
+  hintsOn.checked = savedHints === "1";
+  document.body.classList.toggle("show-desc", hintsOn.checked);
+  hintsOn.addEventListener("change", () => {
+    document.body.classList.toggle("show-desc", hintsOn.checked);
+    try { localStorage.setItem("mosaic-hints", hintsOn.checked ? "1" : "0"); } catch (e) { /* ignore */ }
+  });
   el.canvasFmt.addEventListener("change", () => { state.seed = (Math.random() * 0x7fffffff) | 0; run(); });
   el.btnGen.addEventListener("click", () => {
     state.seed = (Math.random() * 0x7fffffff) | 0;   // fresh random layout
