@@ -92,7 +92,7 @@ const PROMPT =
   "The polygon is ONE closed loop with no holes and no inner contours — only the outermost " +
   "edge. Exclude the background, shadows and reflections; do not merge the subject with the " +
   "sky, ground, or any other object.\n\n" +
-  "Use 80 to 240 points, spread evenly around the boundary and denser where the contour is " +
+  "Use 60 to 170 points, spread evenly around the boundary and denser where the contour is " +
   "curvy or has thin/spiky features. Coordinates are image pixel coordinates: x = column " +
   "(0..width), y = row (0..height), origin top-left, in the same space as the supplied " +
   "image.\n\n" +
@@ -129,7 +129,7 @@ async function callGemini(key, model, mimeType, base64) {
         },
       }),
     },
-    35000
+    45000
   );
 
   const gData = await gResp.json();
@@ -164,7 +164,7 @@ async function callDeepSeek(key, model, mimeType, base64) {
       response_format: { type: "json_object" },
       temperature: 0,
     }),
-  }, 35000);
+  }, 45000);
 
   const dData = await dResp.json();
   if (!dResp.ok) {
