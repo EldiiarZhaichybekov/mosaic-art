@@ -82,11 +82,21 @@ function parseContourText(text) {
 }
 
 const PROMPT =
-  "Find the MAIN object in this image (the prominent subject). Return its outer " +
-  "silhouette boundary as ONE closed polygon. Ignore the background, shadows, " +
-  "reflections and small internal details. Use 16 to 120 points, in image pixel " +
-  "coordinates (x = column, y = row, origin top-left). Do not include holes or " +
-  "inner contours — only the outer edge. Return JSON: {\"points\": [[x, y], ...]}.";
+  "You are a precise silhouette tracer. Identify the SINGLE MAIN object in this image " +
+  "(the prominent subject; ignore the background and any secondary objects) and return " +
+  "ONLY its outer silhouette as one closed polygon.\n\n" +
+  "Trace the outer boundary PRECISELY and IN DETAIL: include every protrusion, concavity, " +
+  "thin and elongated part of the subject — such as wings, wing membranes and fingers, head, " +
+  "ears, tail, limbs and feet. Do NOT simplify, smooth away, or drop narrow features; keep " +
+  "the real outline, not an abstracted blob.\n\n" +
+  "The polygon is ONE closed loop with no holes and no inner contours — only the outermost " +
+  "edge. Exclude the background, shadows and reflections; do not merge the subject with the " +
+  "sky, ground, or any other object.\n\n" +
+  "Use 80 to 240 points, spread evenly around the boundary and denser where the contour is " +
+  "curvy or has thin/spiky features. Coordinates are image pixel coordinates: x = column " +
+  "(0..width), y = row (0..height), origin top-left, in the same space as the supplied " +
+  "image.\n\n" +
+  "Return JSON: {\"points\": [[x, y], ...]}.";
 
 /* Gemini: structured-output generateContent. */
 async function callGemini(key, model, mimeType, base64) {
@@ -153,6 +163,7 @@ async function callDeepSeek(key, model, mimeType, base64) {
       }],
       response_format: { type: "json_object" },
       temperature: 0,
+      max_tokens: 4096,
     }),
   }, 35000);
 
