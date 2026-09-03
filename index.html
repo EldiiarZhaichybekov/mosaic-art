@@ -1563,18 +1563,17 @@ function exportDashesJPG(dashes, cw, ch) {
   return oc.toDataURL("image/jpeg", 0.95);
 }
 
-// POST the uploaded photo to the Python/OpenCV contour function and return
-// {dashes, contour, meta}. Falls back (rejects) so the caller can keep the
-// client-side dashes.
-async function fetchServerDashes(img, cw, ch) {
-  const scale = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
-  const w = Math.max(1, Math.round(img.naturalWidth * scale));
-  const h = Math.max(1, Math.round(img.naturalHeight * scale));
-  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
-  const ctx = cv.getContext("2d");
-  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, w, h);
-  ctx.drawImage(img, 0, 0, w, h);
-  const dataUrl = cv.toDataURL("image/jpeg", 0.9);
+// POST the uploaded photo to the Python/OpenCV contour function as the raw file
+// bytes (the server decodes it with OpenCV, so webp/alpha is handled directly and
+// no canvas compositing is involved). Returns {dashes, contour, meta}; rejects on
+// failure so the caller can react.
+async function fetchServerDashes(file, cw, ch) {
+  const dataUrl = await new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);          // data URL of the ORIGINAL file bytes
+  });
   const resp = await fetch("/api/contour", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -2114,7 +2113,7 @@ function initUI() {
     const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
     if (state.uploaded && state.uploadedImg) {          // re-fetch for the new sheet
       el.msg.textContent = t("msg.contourWait");
-      fetchServerDashes(state.uploadedImg, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => {
+      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => {
         state.dashSource = "client"; state.seed = (Math.random() * 0x7fffffff) | 0; run();
       });
       return;
@@ -2128,7 +2127,7 @@ function initUI() {
     if (state.uploaded && state.uploadedImg) {
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
       el.msg.textContent = t("msg.contourWait");
-      fetchServerDashes(state.uploadedImg, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => { el.msg.textContent = ""; });
+      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => { el.msg.textContent = ""; });
       return;
     }
     state.seed = (Math.random() * 0x7fffffff) | 0;
@@ -2187,12 +2186,12 @@ function initUI() {
       run();
     };
     img.onload = () => {
-      state.uploadedImg = img;          // keep for live threshold re-tracing
+      state.uploadedImg = img; state.uploadedFile = file;   // keep for live threshold re-tracing
       state.uploaded = true;
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
       el.msg.textContent = t("msg.contourWait");
       // precise Python/OpenCV contour dashes from /api/contour
-      fetchServerDashes(img, cw, ch).then(data => {
+      fetchServerDashes(file, cw, ch).then(data => {
         URL.revokeObjectURL(url);
         el.preset.value = "custom";
         el.preset.querySelector('[value="custom"]').disabled = false;
