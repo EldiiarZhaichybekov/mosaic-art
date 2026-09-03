@@ -414,6 +414,7 @@ const I18N = {
     "msg.noShape": "Сначала выберите силуэт (пресет или изображение).",
     "msg.noImage": "Выберите изображение PNG или JPG.",
     "msg.noSilhouette": "Силуэт не найден — попробуйте более контрастное изображение или измените порог.",
+    "msg.contourWait": "Распознаю контур…",
     "msg.thresholdNoSilhouette": "При этом пороге силуэт не найден — оставлен предыдущий контур.",
     "msg.readError": "Не удалось прочитать файл изображения.",
     "msg.pixelError": "Не удалось прочитать пиксели изображения (canvas был заблокирован браузером).",
@@ -494,6 +495,7 @@ const I18N = {
     "msg.noShape": "Load a shape first (preset or image).",
     "msg.noImage": "Please choose a PNG or JPG image.",
     "msg.noSilhouette": "No silhouette detected — try a higher-contrast image or adjust the threshold.",
+    "msg.contourWait": "Tracing the contour…",
     "msg.thresholdNoSilhouette": "No silhouette at this threshold — keeping the previous outline.",
     "msg.readError": "Could not read that image file.",
     "msg.pixelError": "Could not read image pixels (the canvas was blocked by the browser).",
@@ -575,6 +577,7 @@ const I18N = {
     "msg.noShape": "请先选择轮廓（预设或图片）。",
     "msg.noImage": "请选择 PNG 或 JPG 图片。",
     "msg.noSilhouette": "未检测到轮廓——请尝试对比度更高的图片或调整阈值。",
+    "msg.contourWait": "正在识别轮廓…",
     "msg.thresholdNoSilhouette": "此阈值下未找到轮廓——保留之前的轮廓。",
     "msg.readError": "无法读取图片文件。",
     "msg.pixelError": "无法读取图片像素（浏览器阻止了画布访问）。",
@@ -1980,6 +1983,21 @@ function initUI() {
 
   let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", dashes: [], dashSource: "client", contourMeta: null, seed: (Math.random() * 0x7fffffff) | 0 };
 
+  // Show the server (OpenCV) contour result: precise dashes already in mm space.
+  function showServerContour(data, cw, ch) {
+    state.dashes = data.dashes;
+    state.dashSource = "server";
+    state.contourMeta = data.meta || null;
+    state.canvas = [cw, ch];
+    state.rects = [];
+    state.polys = [];
+    state.scaled = data.contour ? [data.contour] : [];
+    state.shapeName = "custom";
+    el.msg.textContent = "";
+    drawDashes(state.dashes, cw, ch);
+    renderContourInfo(state.scaled, cw, ch);
+  }
+
   function setShape(polys, name) {
     state.polys = polys;
     state.shapeName = name;
@@ -2090,20 +2108,27 @@ function initUI() {
     try { localStorage.setItem("mosaic-hints", hintsOn.checked ? "1" : "0"); } catch (e) { /* ignore */ }
   });
   el.canvasFmt.addEventListener("change", () => {
+    const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
+    if (state.uploaded && state.uploadedImg) {          // re-fetch for the new sheet
+      el.msg.textContent = t("msg.contourWait");
+      fetchServerDashes(state.uploadedImg, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => {
+        state.dashSource = "client"; state.seed = (Math.random() * 0x7fffffff) | 0; run();
+      });
+      return;
+    }
     state.seed = (Math.random() * 0x7fffffff) | 0;
     state.dashSource = "client";
     run();
-    if (state.uploaded && state.uploadedImg) {          // re-fetch for the new sheet
-      const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
-      fetchServerDashes(state.uploadedImg, cw, ch).then(data => {
-        state.dashes = data.dashes; state.dashSource = "server"; state.contourMeta = data.meta || null;
-        drawDashes(state.dashes, cw, ch);
-        renderContourInfo(state.scaled, cw, ch);
-      }).catch(() => { /* keep client-side dashes */ });
-    }
   });
   el.btnGen.addEventListener("click", () => {
-    state.seed = (Math.random() * 0x7fffffff) | 0;   // fresh random layout
+    // for an uploaded photo the precise contour comes from /api/contour
+    if (state.uploaded && state.uploadedImg) {
+      const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
+      el.msg.textContent = t("msg.contourWait");
+      fetchServerDashes(state.uploadedImg, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => { el.msg.textContent = ""; });
+      return;
+    }
+    state.seed = (Math.random() * 0x7fffffff) | 0;
     run();
   });
   el.btnSvg.addEventListener("click", () => {
@@ -2127,6 +2152,9 @@ function initUI() {
   const retraceFromUpload = () => {
     const img = state.uploadedImg;
     if (!img) return;
+    // the precise contour comes from /api/contour (OpenCV); the threshold slider
+    // only affects the geometric fallback, so for server contours it's a no-op.
+    if (state.dashSource === "server") return;
     let poly = null;
     try {
       poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
@@ -2143,6 +2171,7 @@ function initUI() {
     if (!file || !file.type.startsWith("image/")) { el.msg.textContent = t("msg.noImage"); return; }
     const url = URL.createObjectURL(file);
     const img = new Image();
+    // Client-side geometric trace, used only as an offline fallback.
     const finish = poly => {
       URL.revokeObjectURL(url);
       if (!poly) {
@@ -2157,22 +2186,20 @@ function initUI() {
     img.onload = () => {
       state.uploadedImg = img;          // keep for live threshold re-tracing
       state.uploaded = true;
-      let poly = null;
-      try {
-        poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
-      } catch (err) {
-        el.msg.textContent = err.message;
-      }
-      finish(poly);                     // immediate client-side contour + dashes
-      // upgrade to the precise Python/OpenCV contour dashes from /api/contour
-      const cw = state.canvas[0], ch = state.canvas[1];
+      const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
+      el.msg.textContent = t("msg.contourWait");
+      // precise Python/OpenCV contour dashes from /api/contour
       fetchServerDashes(img, cw, ch).then(data => {
-        state.dashes = data.dashes;
-        state.dashSource = "server";
-        state.contourMeta = data.meta || null;
-        drawDashes(state.dashes, cw, ch);
-        renderContourInfo(state.scaled, cw, ch);
-      }).catch(() => { /* keep client-side dashes */ });
+        URL.revokeObjectURL(url);
+        el.preset.value = "custom";
+        el.preset.querySelector('[value="custom"]').disabled = false;
+        showServerContour(data, cw, ch);
+      }).catch(() => {
+        // offline / function missing → fall back to the geometric trace
+        let poly = null;
+        try { poly = traceShapeFromImage(img, Number(el.threshold.value), 400); } catch (err) { el.msg.textContent = err.message; }
+        finish(poly);
+      });
     };
     img.onerror = () => { URL.revokeObjectURL(url); el.msg.textContent = t("msg.readError"); };
     img.src = url;
