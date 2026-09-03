@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Параметрический генератор мозаики — пластины 30/20 × 2.5 мм</title>
+<title>Параметрический генератор мозаики — пластины 30 × 2.5 мм</title>
 <style>
   :root {
     --bg: #eef1f6;
@@ -175,7 +175,7 @@
           <option value="zh">中文</option>
         </select>
       </div>
-      <p data-i18n-html="brand.desc">Упаковывает акриловые пластины <b>30 × 2.5 мм</b> и <b>20 × 2.5 мм</b> (прямоугольники, 1 единица = 1 мм) в любой силуэт — по вашему изображению или из пресета. Движок SAT гарантирует ноль пересечений, а каждый зазор строго в пределах 3–8 мм.</p>
+      <p data-i18n-html="brand.desc">Упаковывает акриловые пластины <b>30 × 2.5 мм</b> (прямоугольники, 1 единица = 1 мм) в любой силуэт — по вашему изображению или из пресета. Движок SAT гарантирует ноль пересечений, а каждый зазор строго в пределах 3–8 мм.</p>
     </div>
 
     <div class="section" id="sec-shape">
@@ -223,12 +223,10 @@
     <div class="section" id="sec-canvas" data-default-collapsed="1">
       <div class="section-title" data-i18n="sec.canvas">Холст (формат листа)</div>
       <select id="canvas-format">
-        <option value="30x30" data-i18n="canvas.30x30">30 × 30 см</option>
         <option value="30x40" data-i18n="canvas.30x40">30 × 40 см</option>
         <option value="40x40" selected data-i18n="canvas.40x40">40 × 40 см</option>
-        <option value="40x50" data-i18n="canvas.40x50">40 × 50 см</option>
       </select>
-      <div class="hint" data-i18n="canvas.hint">Силуэт автоматически масштабируется под выбранный лист (1 см = 10 мм); рамка показывает границы холста в рендере и SVG.</div>
+      <div class="hint" data-i18n="canvas.hint">Силуэт автоматически масштабируется под выбранный лист (1 см = 10 мм); рамка показывает границы холста в рендере и SVG. Максимальное количество деталей зависит от формата: 40 × 40 см — до 150 шт., 30 × 40 см — до 120 шт.</div>
     </div>
 
     <div class="section" id="sec-packing">
@@ -254,18 +252,9 @@
         <div class="hint" data-i18n="fill.hint">Случайный: детали с произвольной ориентацией, равномерно по силуэту (плотнее к центру). Кнопка «Сгенерировать мозаику» даёт новый случайный расклад.</div>
       </div>
       <div class="ctrl">
-        <label data-i18n="size.label">Размер пластин</label>
-        <div class="mode-seg" id="size-seg">
-          <button data-size="A" class="active" data-i18n="size.A">Только 30 мм</button>
-          <button data-size="B" data-i18n="size.B">Только 20 мм</button>
-          <button data-size="mix" data-i18n="size.mix">Микс</button>
-        </div>
-        <div class="hint" data-i18n="size.hint">Микс: сначала пробуется пластина 30 мм; если она столкнётся или выйдет за контур — ставится 20 мм. Мелкие пластины закрывают тесные места и внешнюю кромку.</div>
-      </div>
-      <div class="ctrl">
         <label class="check"><input type="checkbox" id="limit-on"> <span data-i18n="limit.label">Ограничить количество деталей</span></label>
-        <input type="number" id="limit" min="1" max="2000" step="1" value="70" disabled>
-        <div class="hint" data-i18n="limit.hint">Сгенерировать ровно N деталей: плотная укладка прореживается равномерно (от центра и краёв). В разреженном режиме зазоры между соседями могут превышать 8 мм.</div>
+        <input type="number" id="limit" min="1" max="150" step="1" value="70" disabled>
+        <div class="hint" data-i18n="limit.hint">Сгенерировать ровно N деталей (не больше лимита выбранного формата: 150 шт. для 40 × 40 см, 120 шт. для 30 × 40 см): плотная укладка прореживается равномерно (от центра и краёв). В разреженном режиме зазоры между соседями могут превышать 8 мм.</div>
       </div>
       <label class="check"><input type="checkbox" id="guide" checked> <span data-i18n="guide.label">Показывать контур-направляющую (пунктир)</span></label>
     </div>
@@ -286,7 +275,6 @@
       <div id="msg"></div>
       <div class="stats">
         <div class="stat"><div class="k" data-i18n="stat.countA">Пластины 30 мм</div><div class="v" id="s-countA">—</div></div>
-        <div class="stat"><div class="k" data-i18n="stat.countB">Пластины 20 мм</div><div class="v" id="s-countB">—</div></div>
         <div class="stat"><div class="k" data-i18n="stat.count">Всего деталей</div><div class="v" id="s-count">—</div></div>
         <div class="stat"><div class="k" data-i18n="stat.time">Время генерации</div><div class="v" id="s-time">—</div></div>
         <div class="stat"><div class="k" data-i18n="stat.canvas">Холст (мм)</div><div class="v" id="s-canvas">—</div></div>
@@ -298,7 +286,7 @@
 
     <div class="section notes" id="sec-notes" data-default-collapsed="1">
       <div class="section-title" data-i18n="sec.notes">Примечания</div>
-      <div data-i18n-html="notes.text"><b>Ограничения</b> — каждая деталь ровно <code>30 × 2.5</code> (A) или <code>20 × 2.5</code> (B); SAT с запасом 3.01&nbsp;мм отклоняет любую деталь ближе 3&nbsp;мм; минимальное расстояние по всем парам проверяется и лежит строго в (3,&nbsp;8) в плотном режиме. Формат холста: 30×30 / 30×40 / 40×40 / 40×50&nbsp;см — силуэт масштабируется под лист, SVG экспортируется точно в размере листа (1&nbsp;ед. = 1&nbsp;мм). Сначала контур закрывается по касательной: контурные детали могут отступать от линии до 20% своей длины (допуск на крутых изгибах), внутренние детали — строго внутри контура. Внутренность заполняется от центра наружу; в режиме «Микс» мелкие пластины закрывают тесные места и внешнюю кромку. «Ограничить количество деталей» равномерно прореживает валидную укладку до точного числа N.</div>
+      <div data-i18n-html="notes.text"><b>Ограничения</b> — каждая деталь ровно <code>30 × 2.5</code> мм; SAT с запасом 3.01&nbsp;мм отклоняет любую деталь ближе 3&nbsp;мм; минимальное расстояние по всем парам проверяется и лежит строго в (3,&nbsp;8) в плотном режиме. Формат холста: 30×40 или 40×40&nbsp;см — силуэт масштабируется под лист, SVG экспортируется точно в размере листа (1&nbsp;ед. = 1&nbsp;мм). Сначала контур закрывается по касательной: контурные детали могут отступать от линии до 20% своей длины (допуск на крутых изгибах), внутренние детали — строго внутри контура. Внутренность заполняется от центра наружу. «Ограничить количество деталей» равномерно прореживает валидную укладку до точного числа N.</div>
       <div class="keys" data-i18n-html="notes.keys"><kbd>G</kbd> — генерация · <kbd>S</kbd> — экспорт SVG</div>
     </div>
   </aside>
@@ -310,9 +298,8 @@
 /* ============================================================================
    PARAMETRIC MOSAIC GENERATOR — MULTI-SIZE
    ----------------------------------------------------------------------------
-   Packs 30 × 2.5 mm (size A) and 20 × 2.5 mm (size B) unit rectangles
-   (1 unit = 1 mm) into an arbitrary silhouette. Size modes: A only, B only,
-   or Mix (large first, small fallback for tight spots and the edge band).
+   Packs 30 × 2.5 mm unit rectangles (1 unit = 1 mm) into an arbitrary
+   silhouette. Only the single 30 mm plate size is used.
    Two shape sources:
      1. Uploaded image  → alpha / luminance mask → marching-squares contour
         (largest loop) → Douglas–Peucker simplification → world polygon.
@@ -350,9 +337,9 @@ function mulberry32(seed) {
 const LANGS = ["ru", "en", "zh"];
 const I18N = {
   ru: {
-    "app.title": "Параметрический генератор мозаики — пластины 30/20 × 2.5 мм",
+    "app.title": "Параметрический генератор мозаики — пластины 30 × 2.5 мм",
     "brand.title": "Параметрический генератор мозаики",
-    "brand.desc": "Упаковывает акриловые пластины <b>30 × 2.5 мм</b> и <b>20 × 2.5 мм</b> (прямоугольники, 1 единица = 1 мм) в любой силуэт — по вашему изображению или из пресета. Движок SAT гарантирует ноль пересечений, а каждый зазор строго в пределах 3–8 мм.",
+    "brand.desc": "Упаковывает акриловые пластины <b>30 × 2.5 мм</b> (прямоугольники, 1 единица = 1 мм) в любой силуэт — по вашему изображению или из пресета. Движок SAT гарантирует ноль пересечений, а каждый зазор строго в пределах 3–8 мм.",
     "sec.shape": "Источник силуэта",
     "drop.title": "Загрузить изображение-силуэт",
     "drop.ext": "(PNG / JPG)",
@@ -380,11 +367,9 @@ const I18N = {
     "trace.ai": "ИИ (Gemini)",
     "trace.hint": "Авто: альфа-канал или порог яркости. ИИ: распознаёт главный объект на фото через сервер.",
     "sec.canvas": "Холст (формат листа)",
-    "canvas.30x30": "30 × 30 см",
     "canvas.30x40": "30 × 40 см",
     "canvas.40x40": "40 × 40 см",
-    "canvas.40x50": "40 × 50 см",
-    "canvas.hint": "Силуэт автоматически масштабируется под выбранный лист (1 см = 10 мм); рамка показывает границы холста в рендере и SVG.",
+    "canvas.hint": "Силуэт автоматически масштабируется под выбранный лист (1 см = 10 мм); рамка показывает границы холста в рендере и SVG. Максимальное количество деталей зависит от формата: 40 × 40 см — до 150 шт., 30 × 40 см — до 120 шт.",
     "sec.packing": "Параметры упаковки",
     "density.label": "Плотность / шаг",
     "density.hint": "Задаёт угловой шаг лучей (радиальное заполнение) и множитель целевого зазора (во всех режимах).",
@@ -396,13 +381,8 @@ const I18N = {
     "fill.vertical": "Вертикальный",
     "fill.random": "Случайный",
     "fill.hint": "Случайный: детали с произвольной ориентацией, равномерно по силуэту (плотнее к центру). Кнопка «Сгенерировать мозаику» даёт новый случайный расклад.",
-    "size.label": "Размер пластин",
-    "size.A": "Только 30 мм",
-    "size.B": "Только 20 мм",
-    "size.mix": "Микс",
-    "size.hint": "Микс: сначала пробуется пластина 30 мм; если она столкнётся или выйдет за контур — ставится 20 мм. Мелкие пластины закрывают тесные места и внешнюю кромку.",
     "limit.label": "Ограничить количество деталей",
-    "limit.hint": "Сгенерировать ровно N деталей: плотная укладка прореживается равномерно (от центра и краёв). В разреженном режиме зазоры между соседями могут превышать 8 мм.",
+    "limit.hint": "Сгенерировать ровно N деталей (не больше лимита выбранного формата: 150 шт. для 40 × 40 см, 120 шт. для 30 × 40 см): плотная укладка прореживается равномерно (от центра и краёв). В разреженном режиме зазоры между соседями могут превышать 8 мм.",
     "guide.label": "Показывать контур-направляющую (пунктир)",
     "sec.actions": "Действия",
     "btn.generate": "Сгенерировать мозаику",
@@ -413,14 +393,13 @@ const I18N = {
     "sec.notes": "Примечания",
     "sec.diag": "Диагностика",
     "stat.countA": "Пластины 30 мм",
-    "stat.countB": "Пластины 20 мм",
     "stat.count": "Всего деталей",
     "stat.time": "Время генерации",
     "stat.canvas": "Холст (мм)",
     "stat.below": "Зазоры < 3 мм",
     "stat.gap": "Мин. зазор (все пары)",
     "stat.area": "Площадь силуэта (мм²)",
-    "notes.text": "<b>Ограничения</b> — каждая деталь ровно <code>30 × 2.5</code> (A) или <code>20 × 2.5</code> (B); SAT с запасом 3.01&nbsp;мм отклоняет любую деталь ближе 3&nbsp;мм; минимальное расстояние по всем парам проверяется и лежит строго в (3,&nbsp;8) в плотном режиме. Формат холста: 30×30 / 30×40 / 40×40 / 40×50&nbsp;см. Сначала контур закрывается по касательной: контурные детали могут отступать от линии до 20% своей длины (допуск на крутых изгибах), внутренние детали — строго внутри контура. Внутренность заполняется от центра наружу; в режиме «Микс» мелкие пластины закрывают тесные места и внешнюю кромку.",
+    "notes.text": "<b>Ограничения</b> — каждая деталь ровно <code>30 × 2.5</code> мм; SAT с запасом 3.01&nbsp;мм отклоняет любую деталь ближе 3&nbsp;мм; минимальное расстояние по всем парам проверяется и лежит строго в (3,&nbsp;8) в плотном режиме. Формат холста: 30×40 или 40×40&nbsp;см. Сначала контур закрывается по касательной: контурные детали могут отступать от линии до 20% своей длины (допуск на крутых изгибах), внутренние детали — строго внутри контура. Внутренность заполняется от центра наружу.",
     "notes.keys": "<kbd>G</kbd> — генерация · <kbd>S</kbd> — экспорт SVG",
     "chip.ok": "ОК 3–8",
     "chip.below": "МЕНЬШЕ 3",
@@ -440,9 +419,9 @@ const I18N = {
     "unit.ms": "мс",
   },
   en: {
-    "app.title": "Parametric Mosaic Generator — 30/20 × 2.5 mm Plates",
+    "app.title": "Parametric Mosaic Generator — 30 × 2.5 mm Plates",
     "brand.title": "Parametric Mosaic Generator",
-    "brand.desc": "Packs <b>30 × 2.5 mm</b> and <b>20 × 2.5 mm</b> acrylic plates (rectangles, 1 unit = 1 mm) into any silhouette — from your own image or a preset. The SAT engine guarantees zero intersections and every gap strictly within 3–8 mm.",
+    "brand.desc": "Packs <b>30 × 2.5 mm</b> acrylic plates (rectangles, 1 unit = 1 mm) into any silhouette — from your own image or a preset. The SAT engine guarantees zero intersections and every gap strictly within 3–8 mm.",
     "sec.shape": "Shape Source",
     "drop.title": "Upload silhouette image",
     "drop.ext": "(PNG / JPG)",
@@ -470,11 +449,9 @@ const I18N = {
     "trace.ai": "AI (Gemini)",
     "trace.hint": "Auto: alpha channel or luminance threshold. AI: recognizes the main object in a photo via the server.",
     "sec.canvas": "Canvas (sheet format)",
-    "canvas.30x30": "30 × 30 cm",
     "canvas.30x40": "30 × 40 cm",
     "canvas.40x40": "40 × 40 cm",
-    "canvas.40x50": "40 × 50 cm",
-    "canvas.hint": "The silhouette is scaled automatically to the selected sheet (1 cm = 10 mm); the frame shows the canvas bounds in the render and in SVG.",
+    "canvas.hint": "The silhouette is scaled automatically to the selected sheet (1 cm = 10 mm); the frame shows the canvas bounds in the render and in SVG. The maximum piece count depends on the format: 40 × 40 cm — up to 150, 30 × 40 cm — up to 120.",
     "sec.packing": "Packing Parameters",
     "density.label": "Density / step",
     "density.hint": "Controls the angular ray step (radial fill) and the gap-target multiplier (all fills).",
@@ -486,13 +463,8 @@ const I18N = {
     "fill.vertical": "Vertical",
     "fill.random": "Random",
     "fill.hint": "Random: pieces with arbitrary orientation, spread evenly across the silhouette (denser toward the core). “Generate Mosaic” rolls a fresh random layout.",
-    "size.label": "Plate size",
-    "size.A": "30 mm only",
-    "size.B": "20 mm only",
-    "size.mix": "Mix",
-    "size.hint": "Mix: tries a 30 mm plate first; falls back to a 20 mm plate when it would collide or cross the boundary — small plates handle tight spots and the outer edge band.",
     "limit.label": "Limit piece count",
-    "limit.hint": "Generate exactly N pieces: the valid packing is thinned evenly (from the centre and the edges). In sparse mode gaps between neighbours may exceed 8 mm.",
+    "limit.hint": "Generate exactly N pieces (no more than the limit of the selected format: 150 for 40 × 40 cm, 120 for 30 × 40 cm): the valid packing is thinned evenly (from the centre and the edges). In sparse mode gaps between neighbours may exceed 8 mm.",
     "guide.label": "Show silhouette guide (dashed)",
     "sec.actions": "Actions",
     "btn.generate": "Generate Mosaic",
@@ -503,14 +475,13 @@ const I18N = {
     "sec.notes": "Notes",
     "sec.diag": "Diagnostics",
     "stat.countA": "30 mm plates",
-    "stat.countB": "20 mm plates",
     "stat.count": "Total pieces",
     "stat.time": "Generation time",
     "stat.canvas": "Canvas (mm)",
     "stat.below": "Gaps < 3 mm",
     "stat.gap": "Min gap (all pairs)",
     "stat.area": "Silhouette area (mm²)",
-    "notes.text": "<b>Constraints</b> — every piece is exactly <code>30 × 2.5</code> (A) or <code>20 × 2.5</code> (B); SAT with a 3.01&nbsp;mm margin rejects any piece closer than 3&nbsp;mm; the minimum distance over all pairs is verified to lie strictly in (3,&nbsp;8) in dense mode. Canvas formats: 30×30 / 30×40 / 40×40 / 40×50&nbsp;cm. The contour is closed first along tangents: contour pieces may deviate from the line by up to 20% of their length (tolerance on sharp curves), interior pieces stay strictly inside. The interior is filled from the centre outward; in Mix mode small plates fill tight spots and the edge band.",
+    "notes.text": "<b>Constraints</b> — every piece is exactly <code>30 × 2.5</code> mm; SAT with a 3.01&nbsp;mm margin rejects any piece closer than 3&nbsp;mm; the minimum distance over all pairs is verified to lie strictly in (3,&nbsp;8) in dense mode. Canvas formats: 30×40 or 40×40&nbsp;cm. The contour is closed first along tangents: contour pieces may deviate from the line by up to 20% of their length (tolerance on sharp curves), interior pieces stay strictly inside. The interior is filled from the centre outward.",
     "notes.keys": "<kbd>G</kbd> — generate · <kbd>S</kbd> — export SVG",
     "chip.ok": "OK 3–8",
     "chip.below": "BELOW 3",
@@ -530,9 +501,9 @@ const I18N = {
     "unit.ms": "ms",
   },
   zh: {
-    "app.title": "参数化马赛克生成器 — 30/20 × 2.5 毫米板材",
+    "app.title": "参数化马赛克生成器 — 30 × 2.5 毫米板材",
     "brand.title": "参数化马赛克生成器",
-    "brand.desc": "将 <b>30 × 2.5 毫米</b> 与 <b>20 × 2.5 毫米</b> 的亚克力板（矩形，1 单位 = 1 毫米）装入任意轮廓——来自您上传的图片或预设。SAT 引擎保证零交叉，所有间隙严格保持在 3–8 毫米。",
+    "brand.desc": "将 <b>30 × 2.5 毫米</b> 的亚克力板（矩形，1 单位 = 1 毫米）装入任意轮廓——来自您上传的图片或预设。SAT 引擎保证零交叉，所有间隙严格保持在 3–8 毫米。",
     "sec.shape": "轮廓来源",
     "drop.title": "上传轮廓图片",
     "drop.ext": "(PNG / JPG)",
@@ -560,11 +531,9 @@ const I18N = {
     "trace.ai": "AI（Gemini）",
     "trace.hint": "自动：Alpha 通道或亮度阈值。AI：通过服务器识别照片中的主体。",
     "sec.canvas": "画布（板材规格）",
-    "canvas.30x30": "30 × 30 厘米",
     "canvas.30x40": "30 × 40 厘米",
     "canvas.40x40": "40 × 40 厘米",
-    "canvas.40x50": "40 × 50 厘米",
-    "canvas.hint": "轮廓自动缩放以适配所选板材（1 厘米 = 10 毫米）；边框在渲染与 SVG 中显示画布边界。",
+    "canvas.hint": "轮廓自动缩放以适配所选板材（1 厘米 = 10 毫米）；边框在渲染与 SVG 中显示画布边界。最大板件数取决于规格：40 × 40 厘米 — 最多 150 块，30 × 40 厘米 — 最多 120 块。",
     "sec.packing": "填充参数",
     "density.label": "密度 / 步长",
     "density.hint": "控制径向填充的角度步长以及所有模式下的目标间隙倍率。",
@@ -576,13 +545,8 @@ const I18N = {
     "fill.vertical": "垂直",
     "fill.random": "随机",
     "fill.hint": "随机：方向任意的板件均匀分布（中心更密）。点击“生成马赛克”获得新的随机布局。",
-    "size.label": "板件尺寸",
-    "size.A": "仅 30 毫米",
-    "size.B": "仅 20 毫米",
-    "size.mix": "混合",
-    "size.hint": "混合：优先尝试 30 毫米板件；若碰撞或超出轮廓则改用 20 毫米。小板件填充狭窄处与外缘。",
     "limit.label": "限制板件数量",
-    "limit.hint": "生成恰好 N 块板件：对有效布局均匀抽稀（从中心与边缘）。稀疏模式下相邻间隙可能超过 8 毫米。",
+    "limit.hint": "生成恰好 N 块板件（不超过所选规格上限：40 × 40 厘米 150 块，30 × 40 厘米 120 块）：对有效布局均匀抽稀（从中心与边缘）。稀疏模式下相邻间隙可能超过 8 毫米。",
     "guide.label": "显示轮廓参考线（虚线）",
     "sec.actions": "操作",
     "btn.generate": "生成马赛克",
@@ -593,14 +557,13 @@ const I18N = {
     "sec.notes": "备注",
     "sec.diag": "诊断",
     "stat.countA": "30 毫米板件",
-    "stat.countB": "20 毫米板件",
     "stat.count": "板件总数",
     "stat.time": "生成时间",
     "stat.canvas": "画布（毫米）",
     "stat.below": "间隙 < 3 毫米",
     "stat.gap": "最小间隙（所有对）",
     "stat.area": "轮廓面积（平方毫米）",
-    "notes.text": "<b>约束</b> — 每块板件恰好 <code>30 × 2.5</code>（A）或 <code>20 × 2.5</code>（B）；SAT 以 3.01&nbsp;毫米余量拒绝任何小于 3&nbsp;毫米的板件；密集模式下所有配对的最小距离严格位于 (3,&nbsp;8)。画布规格：30×30 / 30×40 / 40×40 / 40×50&nbsp;厘米。先沿切线闭合轮廓：轮廓板件可偏离线条最多自身长度的 20%（急弯处容差），内部板件严格位于轮廓内。内部从中心向外填充；混合模式下小板件填充狭窄处与外缘。",
+    "notes.text": "<b>约束</b> — 每块板件恰好 <code>30 × 2.5</code> 毫米；SAT 以 3.01&nbsp;毫米余量拒绝任何小于 3&nbsp;毫米的板件；密集模式下所有配对的最小距离严格位于 (3,&nbsp;8)。画布规格：30×40 或 40×40&nbsp;厘米。先沿切线闭合轮廓：轮廓板件可偏离线条最多自身长度的 20%（急弯处容差），内部板件严格位于轮廓内。内部从中心向外填充。",
     "notes.keys": "<kbd>G</kbd> — 生成 · <kbd>S</kbd> — 导出 SVG",
     "chip.ok": "正常 3–8",
     "chip.below": "小于 3",
@@ -674,13 +637,13 @@ function pointInPolygon(px, py, poly) {
 
 function makeRect(x, y, a, sz) {
   a = normAngle(a);
-  const half = sz === "B" ? 10 : 15;           // A = 30 mm long, B = 20 mm long
+  const half = 15;                             // 30 mm long (half-length = 15)
   return {
     x, y, a,
     ux: Math.cos(a), uy: Math.sin(a),          // unit long axis (length side)
     vx: -Math.sin(a), vy: Math.cos(a),         // unit short axis (2.5 side)
-    hx: half, hy: 1.25,                        // half-length per size; width 2.5 mm
-    size: sz === "B" ? "B" : "A",
+    hx: half, hy: 1.25,                        // half-length; width 2.5 mm
+    size: "A",
     r: Math.hypot(x, y),
   };
 }
@@ -826,11 +789,14 @@ function unionCentroid(polys) {
 // Working sheet sizes in mm (1 cm = 10 mm). The silhouette is scaled to fit
 // the chosen sheet, preserving its aspect ratio and centred at the origin.
 const CANVAS_SIZES = {
-  "30x30": [300, 300],
   "30x40": [300, 400],
   "40x40": [400, 400],
-  "40x50": [400, 500],
 };
+// Maximum number of 30 × 2.5 mm pieces per sheet format (hard cap).
+const MAX_PIECES = { "30x40": 120, "40x40": 150 };
+function maxPiecesFor(canvasKey) {
+  return MAX_PIECES[canvasKey] || 150;   // default to the 40 × 40 cm cap
+}
 // Scale the multi-polygon silhouette so its bounding box fits inside a
 // w × h sheet (fill ≈ 0.95 leaves a small margin around the frame).
 function fitPolysToCanvas(polys, w, h, fill) {
@@ -1239,10 +1205,7 @@ const PRESETS = {
 };
 
 /* ------------------------- packing --------------------------------------- */
-// Two plate sizes: A = 30 × 2.5 mm, B = 20 × 2.5 mm. Mode "A"/"B" uses only
-// that size; "mix" tries a large piece first and falls back to a small one
-// when it would collide or cross the boundary — so small plates fill tight
-// spots and edge bands while large plates fill the core.
+// Single plate size: 30 × 2.5 mm. Only the 30 mm plate is packed.
 // Contour-first: tangential pieces along every polygon boundary. Interior
 // fill: radial (polar rays from the centroid) or a horizontal / vertical
 // parallel sweep, with a density gradient (gaps grow from the gap slider
@@ -1255,8 +1218,8 @@ function generateMosaic(polys, opts) {
   const density = clamp01(opts.density);
   const offsetRad = (opts.offsetDeg || 0) * DEG;
   const mode = opts.mode || "radial";
-  const sizeMode = opts.sizeMode === "B" ? "B" : opts.sizeMode === "mix" ? "mix" : "A";
-  const sizes = sizeMode === "mix" ? ["A", "B"] : [sizeMode];
+  const sizeMode = "A";                      // only the 30 mm plate is packed
+  const sizes = ["A"];
 
   const rects = [];
   const grid = new SpatialGrid(36);
@@ -1273,7 +1236,7 @@ function generateMosaic(polys, opts) {
   // by up to 20% of its own length, so sharp curves still get closed even
   // though the piece is straight. Interior pieces stay strictly inside.
   const CONTOUR_TOL = 0.2;
-  const tolFor = sz => CONTOUR_TOL * (sz === "B" ? 20 : 30);
+  const tolFor = () => CONTOUR_TOL * 30;
 
   const validAt = (R, tol) => {
     if (!rectInsideShape(R, raster, edges, tol || 0)) return false;
@@ -1399,32 +1362,37 @@ function generateMosaic(polys, opts) {
       }
     }
   };
-  if (sizeMode === "mix") {
-    fillInterior(["A"]);
-    fillInterior(["B"]);
-  } else {
-    fillInterior([sizeMode]);
-  }
+  fillInterior(["A"]);
 
-  // --- 3. optional piece-count limit: thin the valid packing to exactly N ---
+  // --- 3. piece-count limit: thin the valid packing to exactly N ---
+  // The user may impose an exact count (`limit`); a per-format hard cap
+  // (`maxPieces`) is always enforced so a sheet never exceeds its maximum.
   const limit = Math.max(0, Math.floor(opts.limit || 0));
+  const cap = Math.max(0, Math.floor(opts.maxPieces || 0));
+  let thinned = false;
   if (limit > 0 && rects.length > limit) {
     const subset = farthestPointSubset(rects, limit, centroid[0], centroid[1]);
     rects.length = 0;
     for (const R of subset) rects.push(R);
+    thinned = true;
+  }
+  if (cap > 0 && rects.length > cap) {
+    const subset = farthestPointSubset(rects, cap, centroid[0], centroid[1]);
+    rects.length = 0;
+    for (const R of subset) rects.push(R);
+    thinned = true;
   }
 
   const stats = validateAll(rects);
   stats.timeMs = Math.round(now() - t0);
   stats.count = rects.length;
-  stats.countA = rects.filter(r => r.size !== "B").length;
-  stats.countB = rects.filter(r => r.size === "B").length;
+  stats.countA = rects.length;                // every piece is a 30 mm plate
   stats.contourPoints = edges.length;
   stats.area = Math.abs(polys.reduce((a, p) => a + polySignedArea(p), 0));
-  stats.limited = limit > 0;
-  stats.target = limit;
+  stats.limited = thinned;
+  stats.target = thinned ? (limit > 0 ? limit : cap) : 0;
   stats.underTarget = limit > 0 && rects.length < limit;
-  stats.params = { density, gap: gapSlider, offsetDeg: opts.offsetDeg, mode, sizeMode, limit };
+  stats.params = { density, gap: gapSlider, offsetDeg: opts.offsetDeg, mode, sizeMode, limit, cap };
   return { rects, stats };
 }
 
@@ -1599,7 +1567,7 @@ function exportSVG(rects, guidePolys, showGuide, cw, ch) {
     L.push('<svg xmlns="http://www.w3.org/2000/svg" width="' + w.toFixed(2) + 'mm" height="' + h.toFixed(2) + 'mm" viewBox="' + vb + '">');
     L.push('<rect x="' + (minX - pad) + '" y="' + (minY - pad) + '" width="' + w + '" height="' + h + '" fill="#ffffff"/>');
   }
-  L.push('<!-- Parametric mosaic — ' + rects.length + ' rectangles, each exactly 30×2.5mm or 20×2.5mm (1 unit = 1mm) -->');
+  L.push('<!-- Parametric mosaic — ' + rects.length + ' rectangles, each exactly 30×2.5mm (1 unit = 1mm) -->');
   if (showGuide) {
     for (const p of guidePolys) {
       const pts = p.map(([x, y]) => x.toFixed(3) + "," + y.toFixed(3)).join(" ");
@@ -1862,11 +1830,11 @@ function initUI() {
     lang: $("lang"),
     density: $("density"), gap: $("gap"),
     valD: $("val-density"), valG: $("val-gap"),
-    modeSeg: $("mode-seg"), sizeSeg: $("size-seg"), traceSeg: $("trace-seg"), guide: $("guide"),
+    modeSeg: $("mode-seg"), traceSeg: $("trace-seg"), guide: $("guide"),
     limitOn: $("limit-on"), limit: $("limit"),
     btnGen: $("btn-gen"), btnSvg: $("btn-svg"), btnJpg: $("btn-jpg"),
     msg: $("msg"),
-    sCount: $("s-count"), sCountA: $("s-countA"), sCountB: $("s-countB"),
+    sCount: $("s-count"), sCountA: $("s-countA"),
     sTime: $("s-time"), sGap: $("s-gap"), chip: $("gap-chip"),
     sBelow: $("s-below"), sArea: $("s-area"), sCanvas: $("s-canvas"),
   };
@@ -1880,15 +1848,24 @@ function initUI() {
     state.seed = (Math.random() * 0x7fffffff) | 0;   // fresh random layout per shape
   }
 
+  // Keep the manual piece-count input within the current sheet's maximum.
+  function setLimitCap(cap) {
+    el.limit.max = cap;
+    if (Number(el.limit.value) > cap) el.limit.value = cap;
+  }
+
   function run() {
+    const cap = maxPiecesFor(el.canvasFmt.value);
+    setLimitCap(cap);
     const opts = {
       density: Number(el.density.value) / 100,
       gap: Number(el.gap.value),
       offsetDeg: 0,
       seed: state.seed,
       mode: el.modeSeg.querySelector("button.active").dataset.mode,
-      sizeMode: el.sizeSeg.querySelector("button.active").dataset.size,
-      limit: el.limitOn.checked ? (Number(el.limit.value) || 0) : 0,
+      sizeMode: "A",
+      limit: el.limitOn.checked ? clamp(Number(el.limit.value) || 0, 1, cap) : 0,
+      maxPieces: cap,
     };
     if (!state.polys.length) { el.msg.textContent = t("msg.noShape"); return; }
     el.msg.textContent = "";
@@ -1906,7 +1883,6 @@ function initUI() {
 
   function renderStats(st) {
     el.sCountA.textContent = st.countA.toLocaleString("en-US");
-    el.sCountB.textContent = st.countB.toLocaleString("en-US");
     el.sCount.textContent = st.count.toLocaleString("en-US");
     el.sTime.textContent = st.timeMs + " " + t("unit.ms");
     el.sBelow.textContent = st.belowMin === 0 ? "0 ✓" : st.belowMin + " ✗";
@@ -1964,13 +1940,6 @@ function initUI() {
       run();
     });
   }
-  for (const b of el.sizeSeg.querySelectorAll("button")) {
-    b.addEventListener("click", () => {
-      for (const x of el.sizeSeg.querySelectorAll("button")) x.classList.remove("active");
-      b.classList.add("active");
-      run();
-    });
-  }
 
   el.preset.addEventListener("change", () => {
     const key = el.preset.value;
@@ -1991,16 +1960,14 @@ function initUI() {
   el.btnSvg.addEventListener("click", () => {
     if (!state.rects.length) run();
     const svg = exportSVG(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]);
-    const sz = el.sizeSeg.querySelector("button.active").dataset.size;
-    download("mosaic-" + state.shapeName + "-" + sz + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.svg", svg, "image/svg+xml");
+    download("mosaic-" + state.shapeName + "-30mm-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.svg", svg, "image/svg+xml");
   });
   el.btnJpg.addEventListener("click", () => {
     if (!state.rects.length) run();
-    const sz = el.sizeSeg.querySelector("button.active").dataset.size;
     const url = exportJPGDataURL(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "mosaic-" + state.shapeName + "-" + sz + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.jpg";
+    a.download = "mosaic-" + state.shapeName + "-30mm-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.jpg";
     document.body.appendChild(a); a.click();
     setTimeout(() => { a.remove(); }, 400);
   });
@@ -2090,7 +2057,7 @@ function initUI() {
     if (e.key === "s" || e.key === "S") el.btnSvg.click();
   });
 
-  // optional deep-link parameters (?preset=wolf&mode=random&size=mix&density=70&gap=6&seed=42&limit=80)
+  // optional deep-link parameters (?preset=wolf&mode=random&density=70&gap=6&seed=42&canvas=40x40&limit=80)
   let qp = null;
   try {
     qp = new URLSearchParams(location.search);
@@ -2101,19 +2068,14 @@ function initUI() {
         for (const b of el.modeSeg.querySelectorAll("button")) b.classList.toggle("active", b.dataset.mode === m);
       }
     }
-    if (qp.has("size")) {
-      const sz = qp.get("size");
-      if (["A", "B", "mix"].includes(sz)) {
-        for (const b of el.sizeSeg.querySelectorAll("button")) b.classList.toggle("active", b.dataset.size === sz);
-      }
-    }
     if (qp.has("density")) el.density.value = clamp(Number(qp.get("density")) || 50, 1, 100);
     if (qp.has("gap")) el.gap.value = clamp(Number(qp.get("gap")) || 5, 3, 8);
     if (qp.has("canvas") && CANVAS_SIZES[qp.get("canvas")]) el.canvasFmt.value = qp.get("canvas");
     if (qp.has("seed")) state.seed = Math.floor(Number(qp.get("seed")) || 1) >>> 0;
     if (qp.has("limit")) {
       el.limitOn.checked = true;
-      el.limit.value = clamp(Math.floor(Number(qp.get("limit")) || 70), 1, 2000);
+      const cap = maxPiecesFor(el.canvasFmt.value);
+      el.limit.value = clamp(Math.floor(Number(qp.get("limit")) || 70), 1, cap);
       el.limit.disabled = false;
     }
   } catch (e) { /* ignore */ }
@@ -2185,6 +2147,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
     rectInsideShape, buildEdgeList, segSegIntersect, distToPolys, extractContour,
     simplifyPath, contourToWorld, polySignedArea, unionBounds, unionCentroid,
     exportSVG, resamplePath, farthestPointSubset, CANVAS_SIZES, fitPolysToCanvas,
+    MAX_PIECES, maxPiecesFor,
     I18N, LANGS, t, applyLanguage,
     cleanMask, smoothPath, imageToMask, polygonSelfIntersects,
     finalizeContourLoop, traceShapeFromImage, traceShapeWithAI,
