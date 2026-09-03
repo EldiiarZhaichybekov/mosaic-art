@@ -1525,7 +1525,7 @@ function drawDashes(dashes, cw, ch) {
     ctx.strokeRect(0, 0, cw, ch); ctx.setLineDash([]);
   }
   // the 30 mm strokes
-  ctx.lineWidth = 0.85; ctx.strokeStyle = "#111827"; ctx.lineJoin = "round"; ctx.lineCap = "round";
+  ctx.lineWidth = 0.5; ctx.strokeStyle = "#111827"; ctx.lineJoin = "round"; ctx.lineCap = "round";
   for (const d of dashes) {
     ctx.beginPath(); ctx.moveTo(d[0][0], d[0][1]);
     for (let i = 1; i < d.length; i++) ctx.lineTo(d[i][0], d[i][1]);
@@ -1541,7 +1541,7 @@ function exportDashesSVG(dashes, cw, ch) {
   L.push(`  <rect x="0" y="0" width="${cw}" height="${ch}" fill="#ffffff"/>`);
   for (const d of dashes) {
     const p = d.map(pt => pt[0].toFixed(3) + "," + pt[1].toFixed(3)).join(" L ");
-    L.push(`  <path d="M ${p}" fill="none" stroke="#111827" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>`);
+    L.push(`  <path d="M ${p}" fill="none" stroke="#111827" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>`);
   }
   L.push('</svg>');
   return L.join("\n") + "\n";
@@ -1555,7 +1555,7 @@ function exportDashesJPG(dashes, cw, ch) {
   const ctx = oc.getContext("2d");
   ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
-  ctx.lineWidth = 0.7; ctx.strokeStyle = "#111827"; ctx.lineJoin = "round"; ctx.lineCap = "round";
+  ctx.lineWidth = 0.5; ctx.strokeStyle = "#111827"; ctx.lineJoin = "round"; ctx.lineCap = "round";
   for (const d of dashes) { ctx.beginPath(); ctx.moveTo(d[0][0], d[0][1]); for (let i = 1; i < d.length; i++) ctx.lineTo(d[i][0], d[i][1]); ctx.stroke(); }
   return oc.toDataURL("image/jpeg", 0.95);
 }
@@ -2023,7 +2023,7 @@ function initUI() {
     // contour-only mode: split the silhouette into 30 mm strokes. Presets are
     // dashed client-side; an uploaded photo uses the server /api/contour dashes.
     if (state.dashSource !== "server") {
-      state.dashes = generateDashes(scaled.map(p => p.map(([x, y]) => [x + cw / 2, y + ch / 2])), 30, 12, 150);
+      state.dashes = generateDashes(scaled.map(p => p.map(([x, y]) => [x + cw / 2, y + ch / 2])), 30, 1.0, 150);
       state.dashSource = "client";
     }
     drawDashes(state.dashes, cw, ch);
