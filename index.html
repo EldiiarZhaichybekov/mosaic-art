@@ -415,6 +415,7 @@ const I18N = {
     "msg.noImage": "Выберите изображение PNG или JPG.",
     "msg.noSilhouette": "Силуэт не найден — попробуйте более контрастное изображение или измените порог.",
     "msg.contourWait": "Распознаю контур…",
+    "msg.contourFail": "Контур недоступен: сервер /api/contour не отвечает.",
     "msg.thresholdNoSilhouette": "При этом пороге силуэт не найден — оставлен предыдущий контур.",
     "msg.readError": "Не удалось прочитать файл изображения.",
     "msg.pixelError": "Не удалось прочитать пиксели изображения (canvas был заблокирован браузером).",
@@ -496,6 +497,7 @@ const I18N = {
     "msg.noImage": "Please choose a PNG or JPG image.",
     "msg.noSilhouette": "No silhouette detected — try a higher-contrast image or adjust the threshold.",
     "msg.contourWait": "Tracing the contour…",
+    "msg.contourFail": "Contour unavailable: the /api/contour server did not respond.",
     "msg.thresholdNoSilhouette": "No silhouette at this threshold — keeping the previous outline.",
     "msg.readError": "Could not read that image file.",
     "msg.pixelError": "Could not read image pixels (the canvas was blocked by the browser).",
@@ -578,6 +580,7 @@ const I18N = {
     "msg.noImage": "请选择 PNG 或 JPG 图片。",
     "msg.noSilhouette": "未检测到轮廓——请尝试对比度更高的图片或调整阈值。",
     "msg.contourWait": "正在识别轮廓…",
+    "msg.contourFail": "轮廓不可用：/api/contour 服务器未响应。",
     "msg.thresholdNoSilhouette": "此阈值下未找到轮廓——保留之前的轮廓。",
     "msg.readError": "无法读取图片文件。",
     "msg.pixelError": "无法读取图片像素（浏览器阻止了画布访问）。",
@@ -2195,10 +2198,9 @@ function initUI() {
         el.preset.querySelector('[value="custom"]').disabled = false;
         showServerContour(data, cw, ch);
       }).catch(() => {
-        // offline / function missing → fall back to the geometric trace
-        let poly = null;
-        try { poly = traceShapeFromImage(img, Number(el.threshold.value), 400); } catch (err) { el.msg.textContent = err.message; }
-        finish(poly);
+        // server unavailable → the client-side luminance trace is unreliable for
+        // complex subjects, so show a clear message instead of a broken outline.
+        el.msg.textContent = t("msg.contourFail");
       });
     };
     img.onerror = () => { URL.revokeObjectURL(url); el.msg.textContent = t("msg.readError"); };

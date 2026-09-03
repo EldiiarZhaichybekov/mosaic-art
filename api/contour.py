@@ -24,6 +24,14 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+
+@app.after_request
+def add_cors(resp):
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    resp.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+    return resp
+
 CANVAS = 400.0        # мм
 FILL = 0.88
 DASH_MM = 30.0
