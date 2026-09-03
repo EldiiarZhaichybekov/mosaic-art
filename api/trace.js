@@ -29,6 +29,18 @@ function json(res, status, obj) {
   res.status(status).json(obj);
 }
 
+/* fetchJSON with a hard timeout: a slow provider must fail fast and let the
+ * client fall back to the geometric tracer instead of hanging the function. */
+async function fetchJSON(url, opts, timeoutMs) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs || 30000);
+  try {
+    return await fetch(url, { ...opts, signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /* Turn whatever the model returned into a clean list of [x, y] pairs in image
  * pixel coordinates. Throws on anything unusable. */
 function sanitizeContour(raw) {
@@ -78,7 +90,7 @@ const PROMPT =
 
 /* Gemini: structured-output generateContent. */
 async function callGemini(key, model, mimeType, base64) {
-  const gResp = await fetch(
+  const gResp = await fetchJSON(
     "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(key),
     {
       method: "POST",
@@ -106,7 +118,8 @@ async function callGemini(key, model, mimeType, base64) {
           },
         },
       }),
-    }
+    },
+    35000
   );
 
   const gData = await gResp.json();
@@ -123,7 +136,7 @@ async function callGemini(key, model, mimeType, base64) {
 
 /* DeepSeek: OpenAI-compatible chat completions with a vision model. */
 async function callDeepSeek(key, model, mimeType, base64) {
-  const dResp = await fetch("https://api.deepseek.com/chat/completions", {
+  const dResp = await fetchJSON("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -141,7 +154,7 @@ async function callDeepSeek(key, model, mimeType, base64) {
       response_format: { type: "json_object" },
       temperature: 0,
     }),
-  });
+  }, 35000);
 
   const dData = await dResp.json();
   if (!dResp.ok) {
