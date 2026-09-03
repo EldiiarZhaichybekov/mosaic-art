@@ -141,7 +141,10 @@ def compute_contour(img, canvas_w=None, canvas_h=None):
 
 
 @app.route("/", methods=["POST"])
-def trace():
+@app.route("/api/contour", methods=["POST"])
+@app.route("/api/contour/", methods=["POST"])
+@app.route("/<path:path>", methods=["POST"])
+def trace(path="/"):
     data = request.get_json(force=True, silent=True) or {}
     img = decode_dataurl(data.get("image"))
     if img is None:
@@ -157,5 +160,7 @@ def trace():
 
 
 @app.route("/", methods=["GET"])
-def ping():
+@app.route("/api/contour", methods=["GET"])
+@app.route("/api/contour/", methods=["GET"])
+def ping(path="/"):
     return jsonify({"ok": True, "service": "contour", "opencv": cv2.__version__})
