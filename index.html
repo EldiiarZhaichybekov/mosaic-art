@@ -1612,7 +1612,27 @@ function imageToMask(img, threshold, forceInvert) {
   if (hasAlpha) {
     const mask = new Uint8Array(total);
     for (let p = 0, i = 0; i < data.length; i += 4, p++) mask[p] = data[i + 3] >= 128 ? 1 : 0;
-    return { mask, w, h, hasAlpha: true };
+    return { mask: morphClose(mask, w, h, 1), w, h, hasAlpha: true };
+  }
+
+  // Blue-dominant background (e.g. a warm/dark subject against blue sky): the
+  // subject's own colour distance from the sky is a more robust split than
+  // luminance, and keeps translucent/backlit parts of a complex object (thin
+  // wings, membranes) that a brightness threshold might drop. Object = not
+  // strongly blue (B − R small). Only used when the border is blue-dominant.
+  let borderBlue = 0, bN = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (x !== 0 && x !== w - 1 && y !== 0 && y !== h - 1) continue;
+      const i = (y * w + x) * 4;
+      if (data[i + 2] - data[i] > 20) borderBlue++;
+      bN++;
+    }
+  }
+  if (borderBlue / bN > 0.5) {
+    const m = new Uint8Array(total);
+    for (let p = 0, i = 0; i < data.length; i += 4, p++) m[p] = (data[i + 2] - data[i]) <= 28 ? 1 : 0;
+    return { mask: morphClose(m, w, h, 1), w, h, hasAlpha: false, blueBg: true };
   }
 
   // grayscale + light box blur (kills pixel noise before thresholding)
@@ -1656,7 +1676,50 @@ function imageToMask(img, threshold, forceInvert) {
   for (let p = 0; p < total; p++) {
     mask[p] = darkBg ? (blur[p] >= threshold ? 1 : 0) : (blur[p] <= threshold ? 1 : 0);
   }
-  return { mask, w, h, hasAlpha: false, darkBg };
+  return { mask: morphClose(mask, w, h, 1), w, h, hasAlpha: false, darkBg };
+}
+
+// Binary morphological close (dilate then erode, 3×3). Connects thin or
+// fragile parts (translucent wings, limbs, antennae) so a complex silhouette
+// stays one solid region and the extracted contour is clean, not fragmented.
+function morphClose(mask, w, h, iters) {
+  let m = mask;
+  for (let k = 0; k < (iters || 1); k++) {
+    // dilate
+    let d = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        if (m[y * w + x]) { d[y * w + x] = 1; continue; }
+        let hit = false;
+        for (let dy = -1; dy <= 1 && !hit; dy++) {
+          const yy = y + dy; if (yy < 0 || yy >= h) continue;
+          for (let dx = -1; dx <= 1 && !hit; dx++) {
+            const xx = x + dx; if (xx < 0 || xx >= w) continue;
+            if (m[yy * w + xx]) { hit = true; break; }
+          }
+        }
+        d[y * w + x] = hit ? 1 : 0;
+      }
+    }
+    // erode
+    let e = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        let all = true;
+        for (let dy = -1; dy <= 1; dy++) {
+          const yy = y + dy; if (yy < 0 || yy >= h) continue;
+          for (let dx = -1; dx <= 1; dx++) {
+            const xx = x + dx; if (xx < 0 || xx >= w) continue;
+            if (!d[yy * w + xx]) { all = false; break; }
+          }
+          if (!all) break;
+        }
+        e[y * w + x] = all ? 1 : 0;
+      }
+    }
+    m = e;
+  }
+  return m;
 }
 
 // Cleans a raw binary mask: keeps only the LARGEST 4-connected component
