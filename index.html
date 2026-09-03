@@ -997,6 +997,9 @@ function extractContour(mask, w, h) {
       const bl = pad[(y + 1) * pw + x];
       const br = pad[(y + 1) * pw + x + 1];
       const c = tl | (tr << 1) | (bl << 2) | (br << 3);
+      // Asymptotic-decider value (0..1): resolves the ambiguous saddle cells so
+      // the traced loop stays simple and detail is not lost to over-simplifying.
+      const center = (tl + tr + bl + br) / 4;
       const tm = mkey(x + 0.5, y), lm = mkey(x, y + 0.5),
             rm = mkey(x + 1, y + 0.5), bm = mkey(x + 0.5, y + 1);
       switch (c) {
@@ -1005,10 +1008,14 @@ function extractContour(mask, w, h) {
         case 3:  addSeg(lm, rm); break;              // TL+TR
         case 4:  addSeg(lm, bm); break;              // BL
         case 5:  addSeg(tm, bm); break;              // TL+BL
-        case 6:  addSeg(tm, lm); addSeg(bm, rm); break;   // TL+BR (saddle A)
+        case 6:  // TL+BR (saddle): choose by the centre value
+          if (center >= 0.5) { addSeg(tm, rm); addSeg(lm, bm); } else { addSeg(tm, lm); addSeg(bm, rm); }
+          break;
         case 7:  addSeg(rm, bm); break;              // TL+TR+BL
         case 8:  addSeg(rm, bm); break;              // BR
-        case 9:  addSeg(tm, rm); addSeg(lm, bm); break;   // TR+BL (saddle B)
+        case 9:  // TR+BL (saddle): choose by the centre value
+          if (center >= 0.5) { addSeg(tm, lm); addSeg(bm, rm); } else { addSeg(tm, rm); addSeg(lm, bm); }
+          break;
         case 10: addSeg(tm, bm); break;              // TR+BR
         case 11: addSeg(lm, bm); break;              // TL+TR+BR
         case 12: addSeg(lm, rm); break;              // BL+BR
