@@ -283,7 +283,7 @@
       <div class="section-title" data-i18n="sec.diag">Диагностика</div>
       <div id="msg"></div>
       <div class="stats">
-        <div class="stat"><div class="k" data-i18n="stat.points">Точек контура</div><div class="v" id="s-count">—</div></div>
+        <div class="stat"><div class="k" data-i18n="stat.points">Штрихов</div><div class="v" id="s-count">—</div></div>
         <div class="stat"><div class="k" data-i18n="stat.perim">Периметр (мм)</div><div class="v" id="s-perim">—</div></div>
         <div class="stat"><div class="k" data-i18n="stat.canvas">Холст (мм)</div><div class="v" id="s-canvas">—</div></div>
         <div class="stat wide"><div class="v dim" id="s-note">—</div></div>
@@ -401,7 +401,7 @@ const I18N = {
     "stat.countA": "Пластины 30 мм",
     "stat.count": "Всего деталей",
     "stat.time": "Время генерации",
-    "stat.points": "Точек контура",
+    "stat.points": "Штрихов",
     "stat.canvas": "Холст (мм)",
     "stat.perim": "Периметр (мм)",
     "stat.area": "Площадь силуэта (мм²)",
@@ -481,7 +481,7 @@ const I18N = {
     "stat.countA": "30 mm plates",
     "stat.count": "Total pieces",
     "stat.time": "Generation time",
-    "stat.points": "Contour points",
+    "stat.points": "Strokes",
     "stat.canvas": "Canvas (mm)",
     "stat.perim": "Perimeter (mm)",
     "stat.area": "Silhouette area (mm²)",
@@ -561,7 +561,7 @@ const I18N = {
     "stat.countA": "30 毫米板件",
     "stat.count": "板件总数",
     "stat.time": "生成时间",
-    "stat.points": "轮廓点数",
+    "stat.points": "笔画",
     "stat.canvas": "画布（毫米）",
     "stat.perim": "周长（毫米）",
     "stat.area": "轮廓面积（平方毫米）",
@@ -1463,6 +1463,124 @@ function validateAll(rects) {
 }
 
 /* ------------------------- rendering (white / black lines) --------------- */
+/* --------- contour dashes (each exactly 30 mm arc length) --------------- */
+// Split closed polygons into separate strokes, each with arc length exactly
+// dashLen mm. Uniform gaps absorb the remainder, so there is never a short
+// final dash; count is capped at maxDash. Points are in sheet mm space.
+function generateDashes(polys, dashLen, gapTgt, maxDash) {
+  dashLen = dashLen || 30; gapTgt = gapTgt == null ? 12 : gapTgt; maxDash = maxDash || 150;
+  const out = []; let budget = maxDash;
+  for (const poly of polys) {
+    const p = poly.map(q => [q[0], q[1]]); const n = p.length;
+    if (n < 3 || budget <= 0) continue;
+    const seg = []; let L = 0;
+    for (let i = 0; i < n; i++) { const a = p[i], b = p[(i + 1) % n]; const l = Math.hypot(a[0] - b[0], a[1] - b[1]); seg.push(l); L += l; }
+    if (L < dashLen) continue;
+    let k = Math.floor(L / (dashLen + gapTgt)); if (k < 1) k = 1; if (k > budget) k = budget;
+    const period = L / k;
+    const pp = p.concat(p); const s2 = []; const pos = [0];
+    for (let i = 0; i < pp.length - 1; i++) { const l = Math.hypot(pp[i + 1][0] - pp[i][0], pp[i + 1][1] - pp[i][1]); s2.push(l); pos.push(pos[i] + l); }
+    const interp = s => {
+      let lo = 0, hi = pos.length - 1;
+      while (lo < hi) { const m = (lo + hi + 1) >> 1; if (pos[m] <= s) lo = m; else hi = m - 1; }
+      let j = lo; if (j > pp.length - 2) j = pp.length - 2;
+      const t0 = (s - pos[j]) / (s2[j] || 1e-12);
+      const t = t0 < 0 ? 0 : (t0 > 1 ? 1 : t0);
+      return [pp[j][0] * (1 - t) + pp[j + 1][0] * t, pp[j][1] * (1 - t) + pp[j + 1][1] * t];
+    };
+    for (let i = 0; i < k; i++) {
+      const s0 = i * period, s1 = s0 + dashLen;
+      const d = [interp(s0)];
+      for (let j = 0; j < pp.length - 1; j++) if (pos[j] > s0 && pos[j] < s1) d.push(pp[j]);
+      d.push(interp(s1));
+      out.push(d);
+    }
+    budget -= k;
+  }
+  return out;
+}
+
+// Draw contour dashes on the sheet (dashes in [0..cw]x[0..ch] mm space).
+function drawDashes(dashes, cw, ch) {
+  const cv = document.getElementById("cv");
+  const ctx = cv.getContext("2d");
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = 800, H = 800;
+  cv.width = W * dpr; cv.height = H * dpr;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const add = (x, y) => { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; };
+  for (const d of dashes) for (const [x, y] of d) add(x, y);
+  if (cw && ch) { add(0, 0); add(cw, ch); }
+  const pad = 30;
+  const s = Math.min((W - 2 * pad) / Math.max(1, maxX - minX), (H - 2 * pad) / Math.max(1, maxY - minY));
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
+  ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * (W / 2 - ((minX + maxX) / 2) * s), dpr * (H / 2 - ((minY + maxY) / 2) * s));
+  // sheet frame
+  if (cw && ch) {
+    ctx.lineWidth = 0.5; ctx.strokeStyle = "rgba(100,116,139,0.85)"; ctx.setLineDash([6, 4]);
+    ctx.strokeRect(0, 0, cw, ch); ctx.setLineDash([]);
+  }
+  // the 30 mm strokes
+  ctx.lineWidth = 0.85; ctx.strokeStyle = "#111827"; ctx.lineJoin = "round"; ctx.lineCap = "round";
+  for (const d of dashes) {
+    ctx.beginPath(); ctx.moveTo(d[0][0], d[0][1]);
+    for (let i = 1; i < d.length; i++) ctx.lineTo(d[i][0], d[i][1]);
+    ctx.stroke();
+  }
+}
+
+// Export the 30 mm strokes as a true-vector SVG (dashes already in mm space).
+function exportDashesSVG(dashes, cw, ch) {
+  const L = [];
+  L.push('<?xml version="1.0" encoding="UTF-8"?>');
+  L.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${cw}mm" height="${ch}mm" viewBox="0 0 ${cw} ${ch}">`);
+  L.push(`  <rect x="0" y="0" width="${cw}" height="${ch}" fill="#ffffff"/>`);
+  for (const d of dashes) {
+    const p = d.map(pt => pt[0].toFixed(3) + "," + pt[1].toFixed(3)).join(" L ");
+    L.push(`  <path d="M ${p}" fill="none" stroke="#111827" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>`);
+  }
+  L.push('</svg>');
+  return L.join("\n") + "\n";
+}
+
+// High-res raster preview of the strokes (6 px/mm).
+function exportDashesJPG(dashes, cw, ch) {
+  const scale = 6, W = Math.max(2, Math.round(cw * scale)), H = Math.max(2, Math.round(ch * scale));
+  const oc = document.createElement("canvas");
+  oc.width = W; oc.height = H;
+  const ctx = oc.getContext("2d");
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  ctx.lineWidth = 0.7; ctx.strokeStyle = "#111827"; ctx.lineJoin = "round"; ctx.lineCap = "round";
+  for (const d of dashes) { ctx.beginPath(); ctx.moveTo(d[0][0], d[0][1]); for (let i = 1; i < d.length; i++) ctx.lineTo(d[i][0], d[i][1]); ctx.stroke(); }
+  return oc.toDataURL("image/jpeg", 0.95);
+}
+
+// POST the uploaded photo to the Python/OpenCV contour function and return
+// {dashes, contour, meta}. Falls back (rejects) so the caller can keep the
+// client-side dashes.
+async function fetchServerDashes(img, cw, ch) {
+  const scale = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(img, 0, 0, w, h);
+  const dataUrl = cv.toDataURL("image/jpeg", 0.9);
+  const resp = await fetch("/api/contour", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: dataUrl, canvas: [cw, ch] }),
+  });
+  if (!resp.ok) throw new Error("contour API HTTP " + resp.status);
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error);
+  if (!data.dashes || !data.dashes.length) throw new Error("no dashes");
+  return data;
+}
+
 function draw(rects, guidePolys, showGuide, cw, ch) {
   const cv = document.getElementById("cv");
   const ctx = cv.getContext("2d");
@@ -1860,7 +1978,7 @@ function initUI() {
     sPerim: $("s-perim"), sNote: $("s-note"),
   };
 
-  let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", seed: (Math.random() * 0x7fffffff) | 0 };
+  let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", dashes: [], dashSource: "client", contourMeta: null, seed: (Math.random() * 0x7fffffff) | 0 };
 
   function setShape(polys, name) {
     state.polys = polys;
@@ -1883,10 +2001,14 @@ function initUI() {
     const scaled = fitPolysToCanvas(state.polys, cw, ch, 0.95);
     state.canvas = [cw, ch];
     state.scaled = scaled;
-    // contour-only mode for now: draw the silhouette as a small dashed outline,
-    // no 30 mm plates are packed.
     state.rects = [];
-    draw([], scaled, true, cw, ch);
+    // contour-only mode: split the silhouette into 30 mm strokes. Presets are
+    // dashed client-side; an uploaded photo uses the server /api/contour dashes.
+    if (state.dashSource !== "server") {
+      state.dashes = generateDashes(scaled.map(p => p.map(([x, y]) => [x + cw / 2, y + ch / 2])), 30, 12, 150);
+      state.dashSource = "client";
+    }
+    drawDashes(state.dashes, cw, ch);
     renderContourInfo(scaled, cw, ch);
   }
 
@@ -1900,10 +2022,16 @@ function initUI() {
         perim += Math.hypot(a[0] - b[0], a[1] - b[1]);
       }
     }
-    el.sCount.textContent = pts.toLocaleString("en-US");
-    el.sPerim.textContent = Math.round(perim) + " " + t("unit.mm");
+    el.sCount.textContent = state.dashes.length.toLocaleString("en-US");
+    if (state.contourMeta) {
+      el.sPerim.textContent = Math.round(state.contourMeta.contour_len) + " " + t("unit.mm");
+    } else {
+      el.sPerim.textContent = Math.round(perim) + " " + t("unit.mm");
+    }
     el.sCanvas.textContent = cw + " × " + ch;
-    el.sNote.textContent = "";
+    el.sNote.textContent = (state.dashSource === "server")
+      ? state.dashes.length + " × 30 мм (OpenCV)"
+      : state.dashes.length + " × 30 мм";
   }
 
   let timer = null;
@@ -1948,7 +2076,7 @@ function initUI() {
     }
   });
 
-  el.guide.addEventListener("change", () => draw(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]));
+  el.guide.addEventListener("change", () => drawDashes(state.dashes, state.canvas[0], state.canvas[1]));
 
   // long descriptions & hints are hidden by default; the toggle reveals them.
   // Kept compact so the side panel does not grow too tall.
@@ -1961,19 +2089,31 @@ function initUI() {
     document.body.classList.toggle("show-desc", hintsOn.checked);
     try { localStorage.setItem("mosaic-hints", hintsOn.checked ? "1" : "0"); } catch (e) { /* ignore */ }
   });
-  el.canvasFmt.addEventListener("change", () => { state.seed = (Math.random() * 0x7fffffff) | 0; run(); });
+  el.canvasFmt.addEventListener("change", () => {
+    state.seed = (Math.random() * 0x7fffffff) | 0;
+    state.dashSource = "client";
+    run();
+    if (state.uploaded && state.uploadedImg) {          // re-fetch for the new sheet
+      const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
+      fetchServerDashes(state.uploadedImg, cw, ch).then(data => {
+        state.dashes = data.dashes; state.dashSource = "server"; state.contourMeta = data.meta || null;
+        drawDashes(state.dashes, cw, ch);
+        renderContourInfo(state.scaled, cw, ch);
+      }).catch(() => { /* keep client-side dashes */ });
+    }
+  });
   el.btnGen.addEventListener("click", () => {
     state.seed = (Math.random() * 0x7fffffff) | 0;   // fresh random layout
     run();
   });
   el.btnSvg.addEventListener("click", () => {
-    if (!state.rects.length) run();
-    const svg = exportSVG(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]);
+    if (!state.dashes.length) run();
+    const svg = exportDashesSVG(state.dashes, state.canvas[0], state.canvas[1]);
     download("contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.svg", svg, "image/svg+xml");
   });
   el.btnJpg.addEventListener("click", () => {
-    if (!state.rects.length) run();
-    const url = exportJPGDataURL(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]);
+    if (!state.dashes.length) run();
+    const url = exportDashesJPG(state.dashes, state.canvas[0], state.canvas[1]);
     const a = document.createElement("a");
     a.href = url;
     a.download = "contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.jpg";
@@ -2023,7 +2163,16 @@ function initUI() {
       } catch (err) {
         el.msg.textContent = err.message;
       }
-      finish(poly);
+      finish(poly);                     // immediate client-side contour + dashes
+      // upgrade to the precise Python/OpenCV contour dashes from /api/contour
+      const cw = state.canvas[0], ch = state.canvas[1];
+      fetchServerDashes(img, cw, ch).then(data => {
+        state.dashes = data.dashes;
+        state.dashSource = "server";
+        state.contourMeta = data.meta || null;
+        drawDashes(state.dashes, cw, ch);
+        renderContourInfo(state.scaled, cw, ch);
+      }).catch(() => { /* keep client-side dashes */ });
     };
     img.onerror = () => { URL.revokeObjectURL(url); el.msg.textContent = t("msg.readError"); };
     img.src = url;
@@ -2134,6 +2283,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
     I18N, LANGS, t, applyLanguage,
     cleanMask, smoothPath, imageToMask, polygonSelfIntersects,
     finalizeContourLoop, traceShapeFromImage,
+    generateDashes, exportDashesSVG,
     detectInitialLang,
   };
 }
