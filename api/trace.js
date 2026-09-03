@@ -163,7 +163,6 @@ async function callDeepSeek(key, model, mimeType, base64) {
       }],
       response_format: { type: "json_object" },
       temperature: 0,
-      max_tokens: 4096,
     }),
   }, 35000);
 
