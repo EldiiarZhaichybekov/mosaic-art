@@ -65,6 +65,8 @@
   .hint, #panel .brand p { display: none; }
   body.show-desc .hint, body.show-desc #panel .brand p { display: block; }
   .hints-toggle { font-size: 11px; color: var(--dim); }
+  /* contour-only mode: the plate-packing controls are hidden for now */
+  #sec-packing { display: none; }
   .brand-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .brand-row h1 { flex: 1; }
   #lang {
@@ -269,7 +271,7 @@
     <div class="section" id="sec-actions">
       <div class="section-title" data-i18n="sec.actions">Действия</div>
       <div class="actions">
-        <button id="btn-gen" data-i18n="btn.generate">Сгенерировать мозаику</button>
+        <button id="btn-gen" data-i18n="btn.generate">Трассировать контур</button>
       </div>
       <div class="actions">
         <button id="btn-svg" data-i18n="btn.export" data-i18n-attr="title:btn.exportTitle">Экспорт в SVG</button>
@@ -281,13 +283,10 @@
       <div class="section-title" data-i18n="sec.diag">Диагностика</div>
       <div id="msg"></div>
       <div class="stats">
-        <div class="stat"><div class="k" data-i18n="stat.countA">Пластины 30 мм</div><div class="v" id="s-countA">—</div></div>
-        <div class="stat"><div class="k" data-i18n="stat.count">Всего деталей</div><div class="v" id="s-count">—</div></div>
-        <div class="stat"><div class="k" data-i18n="stat.time">Время генерации</div><div class="v" id="s-time">—</div></div>
+        <div class="stat"><div class="k" data-i18n="stat.points">Точек контура</div><div class="v" id="s-count">—</div></div>
+        <div class="stat"><div class="k" data-i18n="stat.perim">Периметр (мм)</div><div class="v" id="s-perim">—</div></div>
         <div class="stat"><div class="k" data-i18n="stat.canvas">Холст (мм)</div><div class="v" id="s-canvas">—</div></div>
-        <div class="stat"><div class="k" data-i18n="stat.below">Зазоры &lt; 3 мм</div><div class="v ok" id="s-below">—</div></div>
-        <div class="stat wide"><div class="k" data-i18n="stat.gap">Мин. зазор (все пары)</div><div class="v" id="s-gap">—<span id="gap-chip"></span></div></div>
-        <div class="stat wide"><div class="k" data-i18n="stat.area">Площадь силуэта (мм²)</div><div class="v" id="s-area">—</div></div>
+        <div class="stat wide"><div class="v dim" id="s-note">—</div></div>
       </div>
     </div>
 
@@ -392,19 +391,19 @@ const I18N = {
     "limit.hint": "Сгенерировать ровно N деталей (не больше лимита выбранного формата: 150 шт. для 40 × 40 см, 120 шт. для 30 × 40 см): плотная укладка прореживается равномерно (от центра и краёв). В разреженном режиме зазоры между соседями могут превышать 8 мм.",
     "guide.label": "Показывать контур-направляющую (пунктир)",
     "sec.actions": "Действия",
-    "btn.generate": "Сгенерировать мозаику",
+    "btn.generate": "Трассировать контур",
     "btn.export": "Экспорт в SVG",
-    "btn.exportTitle": "Скачать точную геометрию в SVG (1 единица = 1 мм)",
+    "btn.exportTitle": "Скачать контур в SVG (1 единица = 1 мм)",
     "btn.exportJpg": "Экспорт в JPG",
-    "btn.exportJpgTitle": "Скачать растровое изображение мозаики (JPG, 6 px/мм)",
+    "btn.exportJpgTitle": "Скачать контур в JPG (6 px/мм)",
     "sec.notes": "Примечания",
     "sec.diag": "Диагностика",
     "stat.countA": "Пластины 30 мм",
     "stat.count": "Всего деталей",
     "stat.time": "Время генерации",
+    "stat.points": "Точек контура",
     "stat.canvas": "Холст (мм)",
-    "stat.below": "Зазоры < 3 мм",
-    "stat.gap": "Мин. зазор (все пары)",
+    "stat.perim": "Периметр (мм)",
     "stat.area": "Площадь силуэта (мм²)",
     "notes.text": "<b>Ограничения</b> — каждая деталь ровно <code>30 × 2.5</code> мм; SAT с запасом 3.01&nbsp;мм отклоняет любую деталь ближе 3&nbsp;мм; минимальное расстояние по всем парам проверяется и лежит строго в (3,&nbsp;8) в плотном режиме. Формат холста: 30×40 или 40×40&nbsp;см. Сначала контур закрывается по касательной: контурные детали могут отступать от линии до 20% своей длины (допуск на крутых изгибах), внутренние детали — строго внутри контура. Внутренность заполняется от центра наружу.",
     "notes.keys": "<kbd>G</kbd> — генерация · <kbd>S</kbd> — экспорт SVG",
@@ -472,19 +471,19 @@ const I18N = {
     "limit.hint": "Generate exactly N pieces (no more than the limit of the selected format: 150 for 40 × 40 cm, 120 for 30 × 40 cm): the valid packing is thinned evenly (from the centre and the edges). In sparse mode gaps between neighbours may exceed 8 mm.",
     "guide.label": "Show silhouette guide (dashed)",
     "sec.actions": "Actions",
-    "btn.generate": "Generate Mosaic",
+    "btn.generate": "Trace contour",
     "btn.export": "Export SVG",
-    "btn.exportTitle": "Download exact geometry as SVG (1 unit = 1 mm)",
+    "btn.exportTitle": "Download the contour as SVG (1 unit = 1 mm)",
     "btn.exportJpg": "Export JPG",
-    "btn.exportJpgTitle": "Download a raster image of the mosaic (JPG, 6 px/mm)",
+    "btn.exportJpgTitle": "Download the contour as JPG (6 px/mm)",
     "sec.notes": "Notes",
     "sec.diag": "Diagnostics",
     "stat.countA": "30 mm plates",
     "stat.count": "Total pieces",
     "stat.time": "Generation time",
+    "stat.points": "Contour points",
     "stat.canvas": "Canvas (mm)",
-    "stat.below": "Gaps < 3 mm",
-    "stat.gap": "Min gap (all pairs)",
+    "stat.perim": "Perimeter (mm)",
     "stat.area": "Silhouette area (mm²)",
     "notes.text": "<b>Constraints</b> — every piece is exactly <code>30 × 2.5</code> mm; SAT with a 3.01&nbsp;mm margin rejects any piece closer than 3&nbsp;mm; the minimum distance over all pairs is verified to lie strictly in (3,&nbsp;8) in dense mode. Canvas formats: 30×40 or 40×40&nbsp;cm. The contour is closed first along tangents: contour pieces may deviate from the line by up to 20% of their length (tolerance on sharp curves), interior pieces stay strictly inside. The interior is filled from the centre outward.",
     "notes.keys": "<kbd>G</kbd> — generate · <kbd>S</kbd> — export SVG",
@@ -552,19 +551,20 @@ const I18N = {
     "limit.hint": "生成恰好 N 块板件（不超过所选规格上限：40 × 40 厘米 150 块，30 × 40 厘米 120 块）：对有效布局均匀抽稀（从中心与边缘）。稀疏模式下相邻间隙可能超过 8 毫米。",
     "guide.label": "显示轮廓参考线（虚线）",
     "sec.actions": "操作",
-    "btn.generate": "生成马赛克",
+    "btn.generate": "追踪轮廓",
     "btn.export": "导出 SVG",
-    "btn.exportTitle": "下载精确几何的 SVG（1 单位 = 1 毫米）",
+    "btn.exportTitle": "下载轮廓 SVG（1 单位 = 1 毫米）",
     "btn.exportJpg": "导出 JPG",
-    "btn.exportJpgTitle": "下载马赛克位图（JPG，6 像素/毫米）",
+    "btn.exportJpgTitle": "下载轮廓 JPG（6 px/毫米）",
     "sec.notes": "备注",
     "sec.diag": "诊断",
     "stat.countA": "30 毫米板件",
     "stat.count": "板件总数",
     "stat.time": "生成时间",
+    "stat.points": "轮廓点数",
     "stat.canvas": "画布（毫米）",
-    "stat.below": "间隙 < 3 毫米",
-    "stat.gap": "最小间隙（所有对）",
+    "stat.perim": "周长（毫米）",
+    "stat.area": "轮廓面积（平方毫米）",
     "stat.area": "轮廓面积（平方毫米）",
     "notes.text": "<b>约束</b> — 每块板件恰好 <code>30 × 2.5</code> 毫米；SAT 以 3.01&nbsp;毫米余量拒绝任何小于 3&nbsp;毫米的板件；密集模式下所有配对的最小距离严格位于 (3,&nbsp;8)。画布规格：30×40 或 40×40&nbsp;厘米。先沿切线闭合轮廓：轮廓板件可偏离线条最多自身长度的 20%（急弯处容差），内部板件严格位于轮廓内。内部从中心向外填充。",
     "notes.keys": "<kbd>G</kbd> — 生成 · <kbd>S</kbd> — 导出 SVG",
@@ -1492,14 +1492,14 @@ function draw(rects, guidePolys, showGuide, cw, ch) {
 function paintMosaic(ctx, rects, guidePolys, showGuide, cw, ch) {
   ctx.lineJoin = "round";
   if (showGuide) {
-    ctx.lineWidth = 0.6;
-    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 0.9;
+    ctx.setLineDash([4, 3]);
     for (const p of guidePolys) {
       ctx.beginPath();
       ctx.moveTo(p[0][0], p[0][1]);
       for (let i = 1; i < p.length; i++) ctx.lineTo(p[i][0], p[i][1]);
       ctx.closePath();
-      ctx.strokeStyle = "rgba(120,130,150,0.55)";
+      ctx.strokeStyle = "rgba(15,23,42,0.92)";
       ctx.stroke();
     }
     ctx.setLineDash([]);
@@ -1849,9 +1849,8 @@ function initUI() {
     limitOn: $("limit-on"), limit: $("limit"),
     btnGen: $("btn-gen"), btnSvg: $("btn-svg"), btnJpg: $("btn-jpg"),
     msg: $("msg"),
-    sCount: $("s-count"), sCountA: $("s-countA"),
-    sTime: $("s-time"), sGap: $("s-gap"), chip: $("gap-chip"),
-    sBelow: $("s-below"), sArea: $("s-area"), sCanvas: $("s-canvas"),
+    sCount: $("s-count"), sCanvas: $("s-canvas"),
+    sPerim: $("s-perim"), sNote: $("s-note"),
   };
 
   let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", seed: (Math.random() * 0x7fffffff) | 0 };
@@ -1870,18 +1869,6 @@ function initUI() {
   }
 
   function run() {
-    const cap = maxPiecesFor(el.canvasFmt.value);
-    setLimitCap(cap);
-    const opts = {
-      density: Number(el.density.value) / 100,
-      gap: Number(el.gap.value),
-      offsetDeg: 0,
-      seed: state.seed,
-      mode: el.modeSeg.querySelector("button.active").dataset.mode,
-      sizeMode: "A",
-      limit: el.limitOn.checked ? clamp(Number(el.limit.value) || 0, 1, cap) : 0,
-      maxPieces: cap,
-    };
     if (!state.polys.length) { el.msg.textContent = t("msg.noShape"); return; }
     el.msg.textContent = "";
     // scale the source silhouette to the selected sheet format
@@ -1889,38 +1876,27 @@ function initUI() {
     const scaled = fitPolysToCanvas(state.polys, cw, ch, 0.95);
     state.canvas = [cw, ch];
     state.scaled = scaled;
-    const res = generateMosaic(scaled, opts);
-    state.rects = res.rects;
-    state.stats = res.stats;
-    draw(state.rects, scaled, el.guide.checked, cw, ch);
-    renderStats(res.stats);
+    // contour-only mode for now: draw the silhouette as a small dashed outline,
+    // no 30 mm plates are packed.
+    state.rects = [];
+    draw([], scaled, true, cw, ch);
+    renderContourInfo(scaled, cw, ch);
   }
 
-  function renderStats(st) {
-    el.sCountA.textContent = st.countA.toLocaleString("en-US");
-    el.sCount.textContent = st.count.toLocaleString("en-US");
-    el.sTime.textContent = st.timeMs + " " + t("unit.ms");
-    el.sBelow.textContent = st.belowMin === 0 ? "0 ✓" : st.belowMin + " ✗";
-    el.sBelow.className = "v " + (st.belowMin === 0 ? "ok" : "bad");
-    const g = st.minGap;
-    const ok = g > 3 && g < 8;
-    if (st.underTarget) {
-      el.msg.textContent = t("msg.underTarget", st.count);
-    } else if (st.limited && g > 8) {
-      el.msg.textContent = t("msg.sparse", st.count);
-    } else {
-      el.msg.textContent = "";
+  // Diagnostics for contour mode: point count + outline length + sheet.
+  function renderContourInfo(scaled, cw, ch) {
+    let pts = 0, perim = 0;
+    for (const p of scaled) {
+      pts += p.length;
+      for (let i = 0; i < p.length; i++) {
+        const a = p[i], b = p[(i + 1) % p.length];
+        perim += Math.hypot(a[0] - b[0], a[1] - b[1]);
+      }
     }
-    el.sGap.childNodes[0].textContent = g.toFixed(2) + " " + t("unit.mm");
-    if (st.limited && g > 8) {
-      el.chip.textContent = t("chip.sparse");
-      el.chip.className = "warn";
-    } else {
-      el.chip.textContent = ok ? t("chip.ok") : (g < 3 ? t("chip.below") : t("chip.above"));
-      el.chip.className = ok ? "ok" : (g < 3 ? "bad" : "warn");
-    }
-    el.sArea.textContent = Math.round(st.area).toLocaleString("en-US");
-    el.sCanvas.textContent = state.canvas[0] + " × " + state.canvas[1];
+    el.sCount.textContent = pts.toLocaleString("en-US");
+    el.sPerim.textContent = Math.round(perim) + " " + t("unit.mm");
+    el.sCanvas.textContent = cw + " × " + ch;
+    el.sNote.textContent = "";
   }
 
   let timer = null;
@@ -1986,14 +1962,14 @@ function initUI() {
   el.btnSvg.addEventListener("click", () => {
     if (!state.rects.length) run();
     const svg = exportSVG(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]);
-    download("mosaic-" + state.shapeName + "-30mm-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.svg", svg, "image/svg+xml");
+    download("contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.svg", svg, "image/svg+xml");
   });
   el.btnJpg.addEventListener("click", () => {
     if (!state.rects.length) run();
     const url = exportJPGDataURL(state.rects, state.scaled, el.guide.checked, state.canvas[0], state.canvas[1]);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "mosaic-" + state.shapeName + "-30mm-" + state.canvas[0] + "x" + state.canvas[1] + "mm-" + state.rects.length + "pieces.jpg";
+    a.download = "contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.jpg";
     document.body.appendChild(a); a.click();
     setTimeout(() => { a.remove(); }, 400);
   });
@@ -2111,7 +2087,7 @@ function initUI() {
   }
   el.lang.addEventListener("change", () => {
     applyLanguage(el.lang.value);
-    if (state.stats) renderStats(state.stats);   // refresh chip / messages / units
+    if (state.scaled && state.canvas.length) renderContourInfo(state.scaled, state.canvas[0], state.canvas[1]);
   });
 
 
