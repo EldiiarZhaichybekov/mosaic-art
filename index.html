@@ -1626,26 +1626,6 @@ function imageToMask(img, threshold, forceInvert) {
     return { mask: morphClose(mask, w, h, 1), w, h, hasAlpha: true };
   }
 
-  // Blue-dominant background (e.g. a warm/dark subject against blue sky): the
-  // subject's own colour distance from the sky is a more robust split than
-  // luminance, and keeps translucent/backlit parts of a complex object (thin
-  // wings, membranes) that a brightness threshold might drop. Object = not
-  // strongly blue (B − R small). Only used when the border is blue-dominant.
-  let borderBlue = 0, bN = 0;
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      if (x !== 0 && x !== w - 1 && y !== 0 && y !== h - 1) continue;
-      const i = (y * w + x) * 4;
-      if (data[i + 2] - data[i] > 20) borderBlue++;
-      bN++;
-    }
-  }
-  if (borderBlue / bN > 0.5) {
-    const m = new Uint8Array(total);
-    for (let p = 0, i = 0; i < data.length; i += 4, p++) m[p] = (data[i + 2] - data[i]) <= 28 ? 1 : 0;
-    return { mask: morphClose(m, w, h, 1), w, h, hasAlpha: false, blueBg: true };
-  }
-
   // grayscale + light box blur (kills pixel noise before thresholding)
   const gray = new Float32Array(total);
   for (let p = 0, i = 0; i < data.length; i += 4, p++) {
