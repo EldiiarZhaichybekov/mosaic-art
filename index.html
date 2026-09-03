@@ -210,8 +210,9 @@
         <div class="mode-seg" id="trace-seg">
           <button type="button" data-trace="auto" class="active" data-i18n="trace.auto">Авто (геометрия)</button>
           <button type="button" data-trace="ai" data-i18n="trace.ai">ИИ (Gemini)</button>
+          <button type="button" data-trace="deepseek" data-i18n="trace.deepseek">ИИ (DeepSeek)</button>
         </div>
-        <div class="hint" data-i18n="trace.hint">Авто: альфа-канал или порог яркости. ИИ: распознаёт главный объект на фото через сервер.</div>
+        <div class="hint" data-i18n="trace.hint">Авто: альфа-канал или порог яркости. ИИ (Gemini / DeepSeek): распознаёт главный объект на фото через сервер.</div>
       </div>
       <div class="ctrl">
         <div class="row"><label for="threshold" data-i18n="threshold.label">Порог</label><output id="val-thr">128</output></div>
@@ -365,7 +366,8 @@ const I18N = {
     "trace.label": "Трассировка контура",
     "trace.auto": "Авто (геометрия)",
     "trace.ai": "ИИ (Gemini)",
-    "trace.hint": "Авто: альфа-канал или порог яркости. ИИ: распознаёт главный объект на фото через сервер.",
+    "trace.deepseek": "ИИ (DeepSeek)",
+    "trace.hint": "Авто: альфа-канал или порог яркости. ИИ (Gemini / DeepSeek): распознаёт главный объект на фото через сервер.",
     "sec.canvas": "Холст (формат листа)",
     "canvas.30x40": "30 × 40 см",
     "canvas.40x40": "40 × 40 см",
@@ -447,7 +449,8 @@ const I18N = {
     "trace.label": "Contour tracing",
     "trace.auto": "Auto (geometry)",
     "trace.ai": "AI (Gemini)",
-    "trace.hint": "Auto: alpha channel or luminance threshold. AI: recognizes the main object in a photo via the server.",
+    "trace.deepseek": "AI (DeepSeek)",
+    "trace.hint": "Auto: alpha channel or luminance threshold. AI (Gemini / DeepSeek): recognizes the main object in a photo via the server.",
     "sec.canvas": "Canvas (sheet format)",
     "canvas.30x40": "30 × 40 cm",
     "canvas.40x40": "40 × 40 cm",
@@ -529,7 +532,8 @@ const I18N = {
     "trace.label": "轮廓追踪",
     "trace.auto": "自动（几何）",
     "trace.ai": "AI（Gemini）",
-    "trace.hint": "自动：Alpha 通道或亮度阈值。AI：通过服务器识别照片中的主体。",
+    "trace.deepseek": "AI（DeepSeek）",
+    "trace.hint": "自动：Alpha 通道或亮度阈值。AI（Gemini / DeepSeek）：通过服务器识别照片中的主体。",
     "sec.canvas": "画布（板材规格）",
     "canvas.30x40": "30 × 40 厘米",
     "canvas.40x40": "40 × 40 厘米",
@@ -1794,7 +1798,7 @@ function traceShapeFromImage(img, threshold, targetSize) {
 // AI tracing: downscale the image, POST it to the /api/trace proxy (Vercel
 // serverless → Gemini), and return the main object's contour as a world-space
 // polygon. Throws on failure so the caller can fall back to geometric tracing.
-async function traceShapeWithAI(img, apiUrl) {
+async function traceShapeWithAI(img, apiUrl, provider) {
   const scale = Math.min(1, 1024 / Math.max(img.naturalWidth, img.naturalHeight));
   const w = Math.max(1, Math.round(img.naturalWidth * scale));
   const h = Math.max(1, Math.round(img.naturalHeight * scale));
@@ -1808,7 +1812,7 @@ async function traceShapeWithAI(img, apiUrl) {
   const resp = await fetch(apiUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image: dataUrl }),
+    body: JSON.stringify({ image: dataUrl, provider: provider || "gemini" }),
   });
   if (!resp.ok) throw new Error("trace API HTTP " + resp.status);
   const data = await resp.json();
@@ -1978,7 +1982,7 @@ function initUI() {
     const b = e.target.closest("button");
     if (!b) return;
     for (const x of el.traceSeg.querySelectorAll("button")) x.classList.toggle("active", x === b);
-    el.threshold.disabled = traceMode() === "ai";   // threshold is geometric-only
+    el.threshold.disabled = traceMode() !== "auto";   // threshold is geometric-only
   });
   // optional deep-link ?traceApi=… lets local development point at the deployed proxy
   let traceApi = "/api/trace";
@@ -2019,7 +2023,7 @@ function initUI() {
     img.onload = () => {
       state.uploadedImg = img;          // keep for live threshold re-tracing
       state.uploaded = true;
-      const useAI = traceMode() === "ai";
+      const useAI = traceMode() !== "auto";
       if (!useAI) {
         let poly = null;
         try {
@@ -2031,7 +2035,7 @@ function initUI() {
         return;
       }
       el.msg.textContent = t("msg.tracing");
-      traceShapeWithAI(img, traceApi)
+      traceShapeWithAI(img, traceApi, traceMode())
         .then(poly => { el.msg.textContent = ""; finish(poly); })
         .catch(() => {
           // graceful fallback to the geometric method (offline / key missing / model hiccup)

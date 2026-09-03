@@ -1,36 +1,36 @@
 /*
- * Serverless proxy: image → Gemini → outer-contour polygon.
+ * Serverless proxy: image → AI → outer-contour polygon.
  *
- * The browser never talks to Google directly (google domains are blocked in
- * mainland China and Google does not serve generative APIs there); instead the
- * client POSTs a downscaled JPEG data URL to this function, which calls
- * Gemini's generateContent with a structured-output schema and returns a clean
- * JSON polygon of the main object's silhouette.
+ * The browser never talks to the AI provider directly (google domains are
+ * blocked in mainland China, and providers may not serve generative APIs from
+ * some regions); instead the client POSTs a downscaled JPEG data URL to this
+ * function, which calls the selected provider's vision model and returns a
+ * clean JSON polygon of the main object's silhouette.
  *
- * API key: process.env.GEMINI_API_KEY (Vercel dashboard → Settings → Environment
- * Variables → GEMINI_API_KEY → redeploy). The FALLBACK_KEY constant below is
- * only a stop-gap for the user's temporary key and MUST be removed once the env
- * var is set — the repository is public, so a key committed here is exposed.
+ * Provider is chosen by `body.provider`: "gemini" (default) or "deepseek".
  *
- * Model: process.env.GEMINI_MODEL (default gemini-3.6-flash).
+ * Gemini:
+ *   key   = process.env.GEMINI_API_KEY  (model: GEMINI_MODEL, default gemini-3.6-flash)
+ *   call  = https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
+ *
+ * DeepSeek (OpenAI-compatible):
+ *   key   = process.env.DEEPSEEK_API_KEY  (model: DEEPSEEK_MODEL, default deepseek-v4-flash-vision-exp)
+ *   call  = https://api.deepseek.com/chat/completions
+ *
+ * Keys live only in Vercel → Settings → Environment Variables; never commit a
+ * key here — the repository is public and GitHub secret scanning blocks pushes
+ * that contain one. Without a key the function returns a clear 500 and the
+ * client falls back to the geometric tracer.
  *
  * CommonJS (module.exports) — the most compatible format for Vercel api/*.js.
- *
- * NOTE: never commit a key here — GitHub secret scanning blocks pushes that
- * contain one. Configure GEMINI_API_KEY in Vercel → Project → Settings →
- * Environment Variables instead.
  */
-
-const FALLBACK_KEY = "";
 
 function json(res, status, obj) {
   res.status(status).json(obj);
 }
 
-/*
- * Accept whatever Gemini returned and reduce it to a clean list of [x, y]
- * pairs in image pixel coordinates. Throws on anything unusable.
- */
+/* Turn whatever the model returned into a clean list of [x, y] pairs in image
+ * pixel coordinates. Throws on anything unusable. */
 function sanitizeContour(raw) {
   let arr = raw;
   if (raw && typeof raw === "object") {
@@ -57,6 +57,103 @@ function sanitizeContour(raw) {
   return pts;
 }
 
+/* Parse a JSON polygon out of the model's text reply; robust to ```json fences
+ * and to surrounding prose. */
+function parseContourText(text) {
+  let parsed = null;
+  try { parsed = JSON.parse(text); } catch (e) { /* fall through to text-slice */ }
+  if (parsed === null && typeof text === "string") {
+    try { parsed = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)); } catch (e) {}
+  }
+  if (parsed === null) throw new Error("model reply is not valid JSON");
+  return sanitizeContour(parsed);
+}
+
+const PROMPT =
+  "Find the MAIN object in this image (the prominent subject). Return its outer " +
+  "silhouette boundary as ONE closed polygon. Ignore the background, shadows, " +
+  "reflections and small internal details. Use 16 to 120 points, in image pixel " +
+  "coordinates (x = column, y = row, origin top-left). Do not include holes or " +
+  "inner contours — only the outer edge. Return JSON: {\"points\": [[x, y], ...]}.";
+
+/* Gemini: structured-output generateContent. */
+async function callGemini(key, model, mimeType, base64) {
+  const gResp = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(key),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          role: "user",
+          parts: [
+            { text: PROMPT },
+            { inline_data: { mime_type: mimeType, data: base64 } },
+          ],
+        }],
+        generationConfig: {
+          temperature: 0,
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              points: {
+                type: "ARRAY",
+                items: { type: "ARRAY", items: { type: "NUMBER" } },
+              },
+            },
+            required: ["points"],
+          },
+        },
+      }),
+    }
+  );
+
+  const gData = await gResp.json();
+  if (!gResp.ok) {
+    const msg = (gData && gData.error && gData.error.message) || ("Gemini HTTP " + gResp.status);
+    throw new Error(msg);
+  }
+  const text = gData && gData.candidates && gData.candidates[0] &&
+               gData.candidates[0].content && gData.candidates[0].content.parts &&
+               gData.candidates[0].content.parts[0] && gData.candidates[0].content.parts[0].text;
+  if (!text) throw new Error("empty Gemini response");
+  return { points: parseContourText(text), provider: "gemini", model };
+}
+
+/* DeepSeek: OpenAI-compatible chat completions with a vision model. */
+async function callDeepSeek(key, model, mimeType, base64) {
+  const dResp = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + key,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "text", text: PROMPT },
+          { type: "image_url", image_url: { url: "data:" + mimeType + ";base64," + base64 } },
+        ],
+      }],
+      response_format: { type: "json_object" },
+      temperature: 0,
+    }),
+  });
+
+  const dData = await dResp.json();
+  if (!dResp.ok) {
+    const msg = (dData && dData.error && dData.error.message) || ("DeepSeek HTTP " + dResp.status);
+    throw new Error(msg);
+  }
+  const text = dData && dData.choices && dData.choices[0] &&
+               dData.choices[0].message && dData.choices[0].message.content;
+  if (!text) throw new Error("empty DeepSeek response");
+  return { points: parseContourText(text), provider: "deepseek", model };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -72,67 +169,25 @@ module.exports = async function handler(req, res) {
   const mimeType = m[1] || "image/jpeg";
   const base64 = m[2];
 
-  const key = process.env.GEMINI_API_KEY || FALLBACK_KEY;
+  const provider = (body.provider === "deepseek") ? "deepseek" : "gemini";
+
+  if (provider === "deepseek") {
+    const key = process.env.DEEPSEEK_API_KEY;
+    if (!key) return json(res, 500, { error: "DEEPSEEK_API_KEY not configured" });
+    const model = process.env.DEEPSEEK_MODEL || "deepseek-v4-flash-vision-exp";
+    try {
+      return json(res, 200, await callDeepSeek(key, model, mimeType, base64));
+    } catch (err) {
+      return json(res, 502, { error: err.message || String(err) });
+    }
+  }
+
+  // --- Gemini (default) ---
+  const key = process.env.GEMINI_API_KEY;
   if (!key) return json(res, 500, { error: "GEMINI_API_KEY not configured" });
-
   const model = process.env.GEMINI_MODEL || "gemini-3.6-flash";
-  const prompt =
-    "Find the MAIN object in this image (the prominent subject). Return its outer " +
-    "silhouette boundary as ONE closed polygon. Ignore the background, shadows, " +
-    "reflections and small internal details. Use 16 to 120 points, in image pixel " +
-    "coordinates (x = column, y = row, origin top-left). Do not include holes or " +
-    "inner contours — only the outer edge. Return JSON: {\"points\": [[x, y], ...]}.";
-
   try {
-    const gResp = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(key),
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            role: "user",
-            parts: [
-              { text: prompt },
-              { inline_data: { mime_type: mimeType, data: base64 } },
-            ],
-          }],
-          generationConfig: {
-            temperature: 0,
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: "OBJECT",
-              properties: {
-                points: {
-                  type: "ARRAY",
-                  items: { type: "ARRAY", items: { type: "NUMBER" } },
-                },
-              },
-              required: ["points"],
-            },
-          },
-        }),
-      }
-    );
-
-    const gData = await gResp.json();
-    if (!gResp.ok) {
-      const msg = (gData && gData.error && gData.error.message) || ("Gemini HTTP " + gResp.status);
-      return json(res, 502, { error: msg });
-    }
-    const text = gData && gData.candidates && gData.candidates[0] &&
-                 gData.candidates[0].content && gData.candidates[0].content.parts &&
-                 gData.candidates[0].content.parts[0] && gData.candidates[0].content.parts[0].text;
-    if (!text) return json(res, 502, { error: "empty Gemini response" });
-
-    let parsed = null;
-    try { parsed = JSON.parse(text); } catch (e) { /* fall through to text-slice */ }
-    if (parsed === null && typeof text === "string") {
-      try { parsed = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)); } catch (e) {}
-    }
-
-    const points = sanitizeContour(parsed);
-    return json(res, 200, { points, model });
+    return json(res, 200, await callGemini(key, model, mimeType, base64));
   } catch (err) {
     return json(res, 502, { error: err.message || String(err) });
   }
