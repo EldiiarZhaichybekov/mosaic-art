@@ -165,6 +165,10 @@
   .keys { margin-top: 8px; font-size: 10px; color: var(--dim); }
   .keys kbd { font-family: var(--mono); background: #f1f5f9; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; font-size: 9.5px; }
   #msg { font-size: 11px; color: var(--bad); min-height: 14px; }
+  #contour-preview-wrap { display: none; margin-top: 2px; }
+  #contour-preview-wrap.ready { display: block; }
+  #contour-preview-label { margin: 0 0 6px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-weight: 700; }
+  #contour-preview { display: block; width: 100%; height: auto; max-height: 260px; object-fit: contain; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; }
 </style>
 </head>
 <body>
@@ -288,6 +292,10 @@
         <div class="stat"><div class="k" data-i18n="stat.canvas">Холст (мм)</div><div class="v" id="s-canvas">—</div></div>
         <div class="stat wide"><div class="v dim" id="s-note">—</div></div>
       </div>
+      <div id="contour-preview-wrap" aria-live="polite">
+        <div id="contour-preview-label" data-i18n="diag.preview">Исходное фото и найденный внешний контур</div>
+        <canvas id="contour-preview" aria-label="Найденный внешний контур поверх исходной фотографии"></canvas>
+      </div>
     </div>
 
     <div class="section notes" id="sec-notes" data-default-collapsed="1">
@@ -405,6 +413,7 @@ const I18N = {
     "stat.canvas": "Холст (мм)",
     "stat.perim": "Периметр (мм)",
     "stat.area": "Площадь силуэта (мм²)",
+    "diag.preview": "Исходное фото и найденный внешний контур",
     "notes.text": "<b>Ограничения</b> — каждая деталь ровно <code>30 × 2.5</code> мм; SAT с запасом 3.01&nbsp;мм отклоняет любую деталь ближе 3&nbsp;мм; минимальное расстояние по всем парам проверяется и лежит строго в (3,&nbsp;8) в плотном режиме. Формат холста: 30×40 или 40×40&nbsp;см. Сначала контур закрывается по касательной: контурные детали могут отступать от линии до 20% своей длины (допуск на крутых изгибах), внутренние детали — строго внутри контура. Внутренность заполняется от центра наружу.",
     "notes.keys": "<kbd>G</kbd> — генерация · <kbd>S</kbd> — экспорт SVG",
     "chip.ok": "ОК 3–8",
@@ -487,6 +496,7 @@ const I18N = {
     "stat.canvas": "Canvas (mm)",
     "stat.perim": "Perimeter (mm)",
     "stat.area": "Silhouette area (mm²)",
+    "diag.preview": "Original photo with detected outer contour",
     "notes.text": "<b>Constraints</b> — every piece is exactly <code>30 × 2.5</code> mm; SAT with a 3.01&nbsp;mm margin rejects any piece closer than 3&nbsp;mm; the minimum distance over all pairs is verified to lie strictly in (3,&nbsp;8) in dense mode. Canvas formats: 30×40 or 40×40&nbsp;cm. The contour is closed first along tangents: contour pieces may deviate from the line by up to 20% of their length (tolerance on sharp curves), interior pieces stay strictly inside. The interior is filled from the centre outward.",
     "notes.keys": "<kbd>G</kbd> — generate · <kbd>S</kbd> — export SVG",
     "chip.ok": "OK 3–8",
@@ -569,6 +579,7 @@ const I18N = {
     "stat.canvas": "画布（毫米）",
     "stat.perim": "周长（毫米）",
     "stat.area": "轮廓面积（平方毫米）",
+    "diag.preview": "原始照片与检测到的外轮廓",
     "stat.area": "轮廓面积（平方毫米）",
     "notes.text": "<b>约束</b> — 每块板件恰好 <code>30 × 2.5</code> 毫米；SAT 以 3.01&nbsp;毫米余量拒绝任何小于 3&nbsp;毫米的板件；密集模式下所有配对的最小距离严格位于 (3,&nbsp;8)。画布规格：30×40 或 40×40&nbsp;厘米。先沿切线闭合轮廓：轮廓板件可偏离线条最多自身长度的 20%（急弯处容差），内部板件严格位于轮廓内。内部从中心向外填充。",
     "notes.keys": "<kbd>G</kbd> — 生成 · <kbd>S</kbd> — 导出 SVG",
@@ -1981,12 +1992,44 @@ function initUI() {
     msg: $("msg"),
     sCount: $("s-count"), sCanvas: $("s-canvas"),
     sPerim: $("s-perim"), sNote: $("s-note"),
+    contourPreview: $("contour-preview"), contourPreviewWrap: $("contour-preview-wrap"),
   };
 
   let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", dashes: [], dashSource: "client", contourMeta: null, seed: (Math.random() * 0x7fffffff) | 0 };
 
-  // Show the server (OpenCV) contour result: precise dashes already in mm space.
-  function showServerContour(data, cw, ch) {
+  // Diagnostic-only overlay: screen-pixel dashes make the sampled external
+  // boundary inspectable without changing the 30 mm SVG/JPG export paths.
+  function drawContourOverlay(img, contourPx) {
+    if (!img || !contourPx || contourPx.length < 3) return;
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    if (!iw || !ih) return;
+    const maxW = 640, maxH = 420;
+    const scale = Math.min(1, maxW / iw, maxH / ih);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const cv = el.contourPreview;
+    cv.width = Math.max(1, Math.round(iw * scale * dpr));
+    cv.height = Math.max(1, Math.round(ih * scale * dpr));
+    const ctx = cv.getContext("2d");
+    ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+    ctx.clearRect(0, 0, iw, ih);
+    ctx.drawImage(img, 0, 0, iw, ih);
+    ctx.beginPath();
+    ctx.moveTo(contourPx[0][0], contourPx[0][1]);
+    for (let i = 1; i < contourPx.length; i++) ctx.lineTo(contourPx[i][0], contourPx[i][1]);
+    ctx.closePath();
+    // Keep the dash pattern constant in display pixels at any image scale.
+    ctx.setLineDash([3 / scale, 2 / scale]);
+    ctx.lineWidth = 1.5 / scale;
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.stroke();
+    ctx.setLineDash([]);
+    el.contourPreviewWrap.classList.add("ready");
+  }
+
+  // Show the server contour; dashes remain the existing export geometry.
+  function showServerContour(data, cw, ch, image) {
     state.dashes = data.dashes;
     state.dashSource = "server";
     state.contourMeta = data.meta || null;
@@ -1998,6 +2041,7 @@ function initUI() {
     el.msg.textContent = "";
     drawDashes(state.dashes, cw, ch);
     renderContourInfo(state.scaled, cw, ch);
+    drawContourOverlay(image, data.contour_px);
   }
 
   function setShape(polys, name) {
@@ -2113,7 +2157,7 @@ function initUI() {
     const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
     if (state.uploaded && state.uploadedImg) {          // re-fetch for the new sheet
       el.msg.textContent = t("msg.contourWait");
-      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => {
+      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch, state.uploadedImg)).catch(() => {
         state.dashSource = "client"; state.seed = (Math.random() * 0x7fffffff) | 0; run();
       });
       return;
@@ -2127,7 +2171,7 @@ function initUI() {
     if (state.uploaded && state.uploadedImg) {
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
       el.msg.textContent = t("msg.contourWait");
-      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch)).catch(() => { el.msg.textContent = ""; });
+      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch, state.uploadedImg)).catch(() => { el.msg.textContent = ""; });
       return;
     }
     state.seed = (Math.random() * 0x7fffffff) | 0;
@@ -2195,7 +2239,7 @@ function initUI() {
         URL.revokeObjectURL(url);
         el.preset.value = "custom";
         el.preset.querySelector('[value="custom"]').disabled = false;
-        showServerContour(data, cw, ch);
+        showServerContour(data, cw, ch, img);
       }).catch(() => {
         // server unavailable → the client-side luminance trace is unreliable for
         // complex subjects, so show a clear message instead of a broken outline.
