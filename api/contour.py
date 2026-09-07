@@ -8,10 +8,10 @@ api/contour.py — серверная функция (Vercel Python + OpenCV).
   - contour : полный внешний контур (мм, 0..400) — для подложки/проверки
   - meta    : canvas, bbox, длина контура, кол-во штрихов, gap
 
-Тот же алгоритм, что в локальном bat_contour.py: сегментация (B-R) от голубого
-неба -> морфология -> внешний контур (RETR_EXTERNAL) -> заливка holes ->
-approxPolyDP (малый eps) -> px->мм (пропорционально, 88% ширины) ->
-arc-length -> разбиение на штрихи ровно 30 мм с равным зазором (без короткого хвоста).
+Алгоритм намеренно разделён на независимые этапы: сегментация объекта,
+внешняя граница и диагностическое выделение внутренних структурных линий.
+Экспорт использует только внешнюю границу; внутренние линии пока существуют
+лишь в диагностике и не меняют действующую геометрию пунктиров.
 """
 import base64
 import io
@@ -151,6 +151,119 @@ def extract_foreground_contour(img):
     return contour, solid, method
 
 
+def _auto_canny(channel, region, blur_sigma):
+    """Canny thresholds derived from this photograph, rather than constants."""
+    blurred = cv2.GaussianBlur(channel, (0, 0), blur_sigma)
+    gx = cv2.Sobel(blurred, cv2.CV_32F, 1, 0, ksize=3)
+    gy = cv2.Sobel(blurred, cv2.CV_32F, 0, 1, ksize=3)
+    magnitude = cv2.magnitude(gx, gy)
+    values = magnitude[region > 0]
+    if values.size < 32:
+        return np.zeros(channel.shape, np.uint8), magnitude
+    high = max(10.0, float(np.percentile(values, 82)))
+    low = max(4.0, high * .38)
+    return cv2.Canny(blurred, low, high, L2gradient=True), magnitude
+
+
+def internal_structural_edges(bgr, solid, contour):
+    """Find persistent object-internal boundaries while rejecting texture.
+
+    A single fine Canny pass mistakes hair, fabric, JPEG blocks and shadows for
+    drawing.  Here an edge has to survive across several blur scales, then a
+    connected-component score favours long, connected, high-contrast strokes.
+    The mask excludes a small band around the silhouette so the outer line is
+    represented exactly once by the contour extraction stage.
+    """
+    lab = cv2.cvtColor(cv2.bilateralFilter(bgr, 5, 35, 35), cv2.COLOR_BGR2LAB)
+    core = cv2.erode(solid, np.ones((3, 3), np.uint8), iterations=1)
+    boundary = cv2.dilate(
+        cv2.drawContours(np.zeros_like(solid), [contour], -1, 255, 1),
+        np.ones((7, 7), np.uint8), iterations=1,
+    )
+    valid = cv2.bitwise_and(core, cv2.bitwise_not(boundary))
+
+    edge_maps, gradients = [], []
+    # Fine / local / medium scales make the result insensitive to image size.
+    for sigma in (.8, 1.8, 3.4):
+        channels = []
+        for channel in cv2.split(lab):
+            edges, grad = _auto_canny(channel, core, sigma)
+            channels.append(edges)
+            gradients.append(grad)
+        edge_maps.append(cv2.bitwise_or(cv2.bitwise_or(channels[0], channels[1]), channels[2]))
+
+    raw = cv2.bitwise_and(edge_maps[0], valid)
+    support = np.zeros(solid.shape, np.uint8)
+    for edges in edge_maps:
+        # One-pixel tolerance accounts for a normal edge moving under blur.
+        support += (cv2.dilate(edges, np.ones((3, 3), np.uint8)) > 0).astype(np.uint8)
+    texture_density = float(np.count_nonzero(raw)) / max(1, int(np.count_nonzero(core)))
+    required_support = 3 if texture_density > .055 else 2
+    candidates = np.where((support >= required_support) & (valid > 0), 255, 0).astype(np.uint8)
+
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(candidates, 8)
+    structural = np.zeros_like(candidates)
+    max_gradient = np.maximum.reduce(gradients)
+    grad_values = max_gradient[core > 0]
+    grad_ref = max(1.0, float(np.percentile(grad_values, 95))) if grad_values.size else 1.0
+    diag = math.hypot(*solid.shape)
+    cutoff = .46 + min(.14, max(0.0, texture_density - .035) * 2.8)
+    for label in range(1, count):
+        pixels = int(stats[label, cv2.CC_STAT_AREA])
+        x, y, w, h = stats[label, :4]
+        span = math.hypot(w, h)
+        component = labels == label
+        persistence = float(np.mean(support[component])) / 3.0
+        strength = min(1.0, float(np.percentile(max_gradient[component], 70)) / grad_ref)
+        length_score = min(1.0, pixels / max(12.0, diag * .07))
+        span_score = min(1.0, span / max(10.0, diag * .18))
+        score = .38 * length_score + .22 * span_score + .25 * persistence + .15 * strength
+        # A short but exceptionally stable, contrasty edge can be a beak, eye
+        # rim or another meaningful feature; random texture rarely satisfies it.
+        stable_detail = pixels >= 3 and persistence >= .82 and strength >= .78
+        if (pixels >= max(10, int(diag * .018)) and score >= cutoff) or stable_detail:
+            structural[component] = 255
+    return raw, structural
+
+
+def png_data_url(image, max_side=640):
+    """Encode compact diagnostics without affecting the original upload/export."""
+    h, w = image.shape[:2]
+    if max(h, w) > max_side:
+        scale = max_side / float(max(h, w))
+        image = cv2.resize(image, (round(w * scale), round(h * scale)), interpolation=cv2.INTER_AREA)
+    ok, encoded = cv2.imencode(".png", image)
+    if not ok:
+        raise RuntimeError("could not encode diagnostic image")
+    return "data:image/png;base64," + base64.b64encode(encoded).decode("ascii")
+
+
+def build_diagnostics(bgr, solid, contour, raw, structural):
+    """Six inspectable stages, all raster-only diagnostics for this iteration."""
+    mask_view = cv2.cvtColor(solid, cv2.COLOR_GRAY2BGR)
+    outer = bgr.copy()
+    cv2.drawContours(outer, [contour], -1, (20, 20, 235), 1, cv2.LINE_AA)
+    raw_view = np.full_like(bgr, 255)
+    raw_view[raw > 0] = (40, 40, 40)
+    structural_view = np.full_like(bgr, 255)
+    structural_view[structural > 0] = (10, 10, 10)
+    combined = np.full_like(bgr, 255)
+    combined[structural > 0] = (20, 20, 20)
+    cv2.drawContours(combined, [contour], -1, (20, 20, 20), 1, cv2.LINE_AA)
+    dashed = bgr.copy()
+    points = contour.reshape(-1, 2)
+    # Tiny screen-pixel dashes are intentionally diagnostic, not physical 30 mm.
+    for start in range(0, len(points), 5):
+        segment = points[start:start + 3]
+        if len(segment) > 1:
+            cv2.polylines(dashed, [segment.reshape(-1, 1, 2)], False, (20, 20, 235), 1, cv2.LINE_AA)
+    return {
+        "mask": png_data_url(mask_view), "outer": png_data_url(outer),
+        "raw_edges": png_data_url(raw_view), "structural": png_data_url(structural_view),
+        "combined": png_data_url(combined), "dashed": png_data_url(dashed),
+    }
+
+
 def compute_contour(img, canvas_w=None, canvas_h=None):
     cw = float(canvas_w or CANVAS)
     ch = float(canvas_h or CANVAS)
@@ -165,7 +278,9 @@ def compute_contour(img, canvas_w=None, canvas_h=None):
 
     # Segmentation establishes the object mask; only its largest external
     # boundary survives. Surface lines and holes never become exported paths.
-    c_out, _solid, method = extract_foreground_contour(img)
+    c_out, solid, method = extract_foreground_contour(img)
+    bgr, _alpha = split_image(img)
+    raw_edges, structural_edges = internal_structural_edges(bgr, solid, c_out)
     points = c_out.reshape(-1, 2).astype(float)
 
     # 5) px -> мм: пропорционально, по большей стороне, центр холста
@@ -234,7 +349,8 @@ def compute_contour(img, canvas_w=None, canvas_h=None):
         "contour_points": len(contour_px),
     }
     return {"dashes": dashes, "contour": contour, "contour_px": contour_px,
-            "solid_cells": None, "meta": meta}
+            "solid_cells": None, "diagnostics": build_diagnostics(
+                bgr, solid, c_out, raw_edges, structural_edges), "meta": meta}
 
 
 @app.route("/", methods=["POST"])

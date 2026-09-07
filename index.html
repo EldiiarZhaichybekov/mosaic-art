@@ -169,6 +169,11 @@
   #contour-preview-wrap.ready { display: block; }
   #contour-preview-label { margin: 0 0 6px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-weight: 700; }
   #contour-preview { display: block; width: 100%; height: auto; max-height: 260px; object-fit: contain; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; }
+  #lineart-diagnostics { display: none; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
+  #lineart-diagnostics.ready { display: grid; }
+  .lineart-stage { margin: 0; min-width: 0; }
+  .lineart-stage img { display: block; width: 100%; aspect-ratio: 1.35; object-fit: contain; background: #f8fafc; border: 1px solid var(--line); border-radius: 7px; }
+  .lineart-stage figcaption { margin-top: 3px; font-size: 9px; color: var(--dim); line-height: 1.25; }
 </style>
 </head>
 <body>
@@ -296,6 +301,14 @@
         <div id="contour-preview-label" data-i18n="diag.preview">Исходное фото и найденный внешний контур</div>
         <canvas id="contour-preview" aria-label="Найденный внешний контур поверх исходной фотографии"></canvas>
       </div>
+      <div id="lineart-diagnostics" aria-label="Диагностика извлечения line-art">
+        <figure class="lineart-stage"><img id="diag-mask" alt=""><figcaption data-i18n="diag.mask">1. Маска объекта</figcaption></figure>
+        <figure class="lineart-stage"><img id="diag-outer" alt=""><figcaption data-i18n="diag.outer">2. Внешний контур</figcaption></figure>
+        <figure class="lineart-stage"><img id="diag-raw" alt=""><figcaption data-i18n="diag.raw">3. Сырые внутренние края</figcaption></figure>
+        <figure class="lineart-stage"><img id="diag-structural" alt=""><figcaption data-i18n="diag.structural">4. Структурные линии</figcaption></figure>
+        <figure class="lineart-stage"><img id="diag-combined" alt=""><figcaption data-i18n="diag.combined">5. Итоговый line-art</figcaption></figure>
+        <figure class="lineart-stage"><img id="diag-dashed" alt=""><figcaption data-i18n="diag.dashed">6. Контур малыми штрихами</figcaption></figure>
+      </div>
     </div>
 
     <div class="section notes" id="sec-notes" data-default-collapsed="1">
@@ -414,6 +427,9 @@ const I18N = {
     "stat.perim": "Периметр (мм)",
     "stat.area": "Площадь силуэта (мм²)",
     "diag.preview": "Исходное фото и найденный внешний контур",
+    "diag.mask": "1. Маска объекта", "diag.outer": "2. Внешний контур",
+    "diag.raw": "3. Сырые внутренние края", "diag.structural": "4. Структурные линии",
+    "diag.combined": "5. Итоговый line-art", "diag.dashed": "6. Контур малыми штрихами",
     "notes.text": "<b>Ограничения</b> — каждая деталь ровно <code>30 × 2.5</code> мм; SAT с запасом 3.01&nbsp;мм отклоняет любую деталь ближе 3&nbsp;мм; минимальное расстояние по всем парам проверяется и лежит строго в (3,&nbsp;8) в плотном режиме. Формат холста: 30×40 или 40×40&nbsp;см. Сначала контур закрывается по касательной: контурные детали могут отступать от линии до 20% своей длины (допуск на крутых изгибах), внутренние детали — строго внутри контура. Внутренность заполняется от центра наружу.",
     "notes.keys": "<kbd>G</kbd> — генерация · <kbd>S</kbd> — экспорт SVG",
     "chip.ok": "ОК 3–8",
@@ -497,6 +513,9 @@ const I18N = {
     "stat.perim": "Perimeter (mm)",
     "stat.area": "Silhouette area (mm²)",
     "diag.preview": "Original photo with detected outer contour",
+    "diag.mask": "1. Object mask", "diag.outer": "2. Outer contour",
+    "diag.raw": "3. Raw internal edges", "diag.structural": "4. Structural lines",
+    "diag.combined": "5. Combined line art", "diag.dashed": "6. Tiny-dash contour",
     "notes.text": "<b>Constraints</b> — every piece is exactly <code>30 × 2.5</code> mm; SAT with a 3.01&nbsp;mm margin rejects any piece closer than 3&nbsp;mm; the minimum distance over all pairs is verified to lie strictly in (3,&nbsp;8) in dense mode. Canvas formats: 30×40 or 40×40&nbsp;cm. The contour is closed first along tangents: contour pieces may deviate from the line by up to 20% of their length (tolerance on sharp curves), interior pieces stay strictly inside. The interior is filled from the centre outward.",
     "notes.keys": "<kbd>G</kbd> — generate · <kbd>S</kbd> — export SVG",
     "chip.ok": "OK 3–8",
@@ -580,6 +599,9 @@ const I18N = {
     "stat.perim": "周长（毫米）",
     "stat.area": "轮廓面积（平方毫米）",
     "diag.preview": "原始照片与检测到的外轮廓",
+    "diag.mask": "1. 对象蒙版", "diag.outer": "2. 外轮廓",
+    "diag.raw": "3. 原始内部边缘", "diag.structural": "4. 结构线条",
+    "diag.combined": "5. 合并线稿", "diag.dashed": "6. 小短划线轮廓",
     "stat.area": "轮廓面积（平方毫米）",
     "notes.text": "<b>约束</b> — 每块板件恰好 <code>30 × 2.5</code> 毫米；SAT 以 3.01&nbsp;毫米余量拒绝任何小于 3&nbsp;毫米的板件；密集模式下所有配对的最小距离严格位于 (3,&nbsp;8)。画布规格：30×40 或 40×40&nbsp;厘米。先沿切线闭合轮廓：轮廓板件可偏离线条最多自身长度的 20%（急弯处容差），内部板件严格位于轮廓内。内部从中心向外填充。",
     "notes.keys": "<kbd>G</kbd> — 生成 · <kbd>S</kbd> — 导出 SVG",
@@ -1993,6 +2015,9 @@ function initUI() {
     sCount: $("s-count"), sCanvas: $("s-canvas"),
     sPerim: $("s-perim"), sNote: $("s-note"),
     contourPreview: $("contour-preview"), contourPreviewWrap: $("contour-preview-wrap"),
+    lineartDiagnostics: $("lineart-diagnostics"),
+    diagMask: $("diag-mask"), diagOuter: $("diag-outer"), diagRaw: $("diag-raw"),
+    diagStructural: $("diag-structural"), diagCombined: $("diag-combined"), diagDashed: $("diag-dashed"),
   };
 
   let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", dashes: [], dashSource: "client", contourMeta: null, seed: (Math.random() * 0x7fffffff) | 0 };
@@ -2028,6 +2053,20 @@ function initUI() {
     el.contourPreviewWrap.classList.add("ready");
   }
 
+  // The server returns these six images solely for checking the algorithm.
+  // They never enter the canvas renderer or the SVG/JPG export pipeline.
+  function showLineartDiagnostics(diagnostics) {
+    if (!diagnostics) return;
+    const fields = [["mask", el.diagMask], ["outer", el.diagOuter], ["raw_edges", el.diagRaw],
+      ["structural", el.diagStructural], ["combined", el.diagCombined], ["dashed", el.diagDashed]];
+    let complete = true;
+    for (const [key, image] of fields) {
+      if (!diagnostics[key]) { complete = false; continue; }
+      image.src = diagnostics[key];
+    }
+    el.lineartDiagnostics.classList.toggle("ready", complete);
+  }
+
   // Show the server contour; dashes remain the existing export geometry.
   function showServerContour(data, cw, ch, image) {
     state.dashes = data.dashes;
@@ -2042,6 +2081,7 @@ function initUI() {
     drawDashes(state.dashes, cw, ch);
     renderContourInfo(state.scaled, cw, ch);
     drawContourOverlay(image, data.contour_px);
+    showLineartDiagnostics(data.diagnostics);
   }
 
   function setShape(polys, name) {
