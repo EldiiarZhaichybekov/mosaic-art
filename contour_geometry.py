@@ -5,11 +5,100 @@ The sparse edge graph is used only for measurements and endpoint tangents.
 """
 import math
 import time
+from collections import defaultdict
 import cv2
 import numpy as np
 
 RECONSTRUCTION_THRESHOLD = .78
 OBSERVED_THRESHOLD = .56
+
+
+def rescue_paths(chains, records, shape, diagonal, evidence, support):
+    """Pair tangent-compatible chain ends at observed vertices, never whole CCs.
+
+    Only existing candidate edges enter a path. Missing pixels remain the
+    responsibility of the independently evidence-gated reconstruction pass.
+    Endpoint indexing and bounded vertex degree avoid all-pairs chain searches.
+    """
+    ends = defaultdict(list)
+    span = max(3, round(diagonal * .006))
+    tangents = {}
+    for i, chain in enumerate(chains):
+        for side, path in enumerate((chain, chain[::-1])):
+            if np.array_equal(chain[0], chain[-1]):
+                continue
+            delta = (path[min(span, len(path)-1)] - path[0]).astype(float)
+            delta /= max(1e-9, np.linalg.norm(delta))
+            tangents[i, side] = delta
+            ends[tuple(path[0])].append((i, side))
+    links = {}
+    for endpoints in ends.values():
+        pairs = []
+        for k, a in enumerate(endpoints):
+            for b in endpoints[k+1:]:
+                if a[0] == b[0]:
+                    continue
+                alignment = float(-tangents[a] @ tangents[b])
+                if alignment >= math.cos(math.radians(35)):
+                    pairs.append((-alignment, a, b))
+        for _, a, b in sorted(pairs):
+            if a not in links and b not in links:
+                links[a], links[b] = b, a
+    visited, paths = set(), []
+    starts = [(i,s) for i in range(len(chains)) for s in (0,1) if (i,s) not in links]
+    starts += [(i,0) for i in range(len(chains))]
+    rescued = np.zeros(shape, np.uint8)
+    for start in starts:
+        if start[0] in visited:
+            continue
+        sequence, pieces, current = [], [], start
+        while current[0] not in visited:
+            i, side = current
+            visited.add(i); sequence.append(i)
+            p = chains[i] if side == 0 else chains[i][::-1]
+            pieces.append(p if not pieces else p[1:])
+            nxt = links.get((i, 1-side))
+            if nxt is None:
+                break
+            current = nxt
+        path = np.vstack(pieces)
+        if len(sequence) < 2 or len(path) < 3:
+            continue
+        x,y = path.T
+        length = float(np.linalg.norm(np.diff(path, axis=0), axis=1).sum())
+        # Measure path curvature above the tangent-estimation scale so raster
+        # stair steps do not masquerade as independent abrupt turns.
+        sampled = path[::max(3, round(diagonal*.012))].astype(float)
+        if not np.array_equal(sampled[-1],path[-1]):
+            sampled = np.vstack((sampled,path[-1]))
+        vectors = np.diff(sampled,axis=0)
+        vectors /= np.maximum(1e-9,np.linalg.norm(vectors,axis=1))[:,None]
+        angles = np.arccos(np.clip(np.sum(vectors[1:]*vectors[:-1],axis=1),-1,1))
+        continuity = math.exp(-float(np.mean(angles))) if len(angles) else 0.
+        mean = float(np.mean(evidence[y,x])); median = float(np.median(evidence[y,x]))
+        persistence = float(np.mean(support[y,x]))
+        score = .30*min(1.,length/max(1.,diagonal*.09))+.25*continuity+.25*mean+.20*persistence
+        reasons = []
+        if length < diagonal*.055: reasons.append("short_path")
+        if continuity < .7: reasons.append("irregular_turns")
+        if mean < .25 or median < .2: reasons.append("weak_path_evidence")
+        # Scale support is a score contribution, not a veto: translucent
+        # structures may have coherent fine-scale evidence only.
+        if score < .68: reasons.append("low_path_score")
+        accepted = not reasons
+        pid = len(paths)
+        paths.append({"id":pid,"segment_ids":sequence,"length":length,"continuity":continuity,
+                      "edge_mean":mean,"edge_median":median,"persistence":persistence,
+                      "score":score,"threshold":.68,"accepted":accepted,"reasons":reasons})
+        for i in sequence:
+            r=records[i]
+            r.update(path_id=pid,path_score=score,path_continuity=continuity)
+            # A long path cannot rescue a locally unsupported branch. Actual
+            # short candidate connectors use the path's measured continuity.
+            if accepted and not r["individually_accepted"] and r["edge_confidence"] >= .15:
+                p=chains[i];rescued[p[:,1],p[:,0]]=255
+                r.update(accepted=True,path_rescued=True,reason="coherent_observed_path")
+    return rescued, paths
 
 
 def thin_edges(edges):
@@ -189,7 +278,7 @@ def bridge_gaps(observed, weak_evidence, valid, geo, threshold=RECONSTRUCTION_TH
     return candidates, accepted, records
 
 
-def analyze_structure(bgr, mask):
+def analyze_structure(bgr, mask, audit=None):
     started = time.perf_counter()
     geo = geometry(mask)
     timings = {"geometry_ms": round((time.perf_counter() - started) * 1000, 2)}
@@ -218,6 +307,7 @@ def analyze_structure(bgr, mask):
         scales.append(edges * valid.astype(np.uint8))
         magnitudes.append(magnitude)
     raw = scales[0]
+    timings["edge_extraction_ms"] = round((time.perf_counter()-stage_start)*1000,2)
     radius = max(1, round(unit))
     kernel = np.ones((radius * 2 + 1,) * 2, np.uint8)
     support = sum((cv2.dilate(e, kernel) > 0).astype(np.float32) for e in scales) / 3.
@@ -228,8 +318,12 @@ def analyze_structure(bgr, mask):
     local = cv2.sqrt(cv2.boxFilter(grad * grad, -1, (window, window)))
     global_ref = max(6., float(np.percentile(grad[valid], 85))) if np.any(valid) else 6.
     evidence = np.clip(grad / np.maximum(global_ref * .2, local * 1.8), 0, 1) * valid
+    candidate_started = time.perf_counter()
     candidates = thin_edges(raw)
+    timings["candidate_construction_ms"] = round((time.perf_counter()-candidate_started)*1000,2)
+    graph_started = time.perf_counter()
     chains, graph = edge_graph(candidates)
+    timings["graph_ms"] = round((time.perf_counter()-graph_started)*1000,2)
     timings["edges_and_graph_ms"] = round((time.perf_counter() - stage_start) * 1000, 2)
     stage_start = time.perf_counter()
     _, labels, stats, _ = cv2.connectedComponentsWithStats(candidates, 8)
@@ -267,18 +361,37 @@ def analyze_structure(bgr, mask):
                         "connected": connected, "junctions": junctions, "symmetry": symmetry,
                         "boundary_distance": float(distance[y, x].mean()), "accepted": accepted,
                         "reason": "observed_geometry" if accepted else "short_spur_or_low_combined_score"})
+        records[-1].update(individually_accepted=accepted,path_rescued=False,path_id=None,
+                           individual_reason=records[-1]["reason"],path_score=None)
     timings["scoring_ms"] = round((time.perf_counter() - stage_start) * 1000, 2)
+    individually_accepted = observed.copy()
+    stage_start = time.perf_counter()
+    rescued, paths = rescue_paths(chains, records, mask.shape, diagonal, evidence, support)
+    observed |= rescued
+    timings["path_analysis_ms"] = round((time.perf_counter() - stage_start) * 1000, 2)
     stage_start = time.perf_counter()
     proposals, repaired, bridges = bridge_gaps(observed, evidence, valid, geo)
     timings["reconstruction_ms"] = round((time.perf_counter() - stage_start) * 1000, 2)
     rejected = cv2.bitwise_and(candidates, cv2.bitwise_not(observed))
     geo["edge_endpoints"] = sum(len(n) == 1 for n in graph.values())
     geo["edge_junctions"] = sum(len(n) > 2 for n in graph.values())
+    # Opt-in local instrumentation only. No scoring, drawing or API-output
+    # changes; retain all pre-truncation segments for the diagnostic harness.
+    if audit is not None:
+        audit.update(raw=raw, candidates=candidates, chains=chains, graph=graph,
+                     labels=labels, stats=stats, records=records, gradient=grad,
+                     evidence=evidence, distance=distance, observed=observed,
+                     reconstructed=repaired, final=observed | repaired, geometry=geo,
+                     sampling_stride=max(2, round(diagonal * .006)))
+        audit.update(paths=paths,individual=individually_accepted,path_rescued=rescued)
     records.sort(key=lambda r: (-r["length"], r["id"]))
-    return {"raw": raw, "candidates": candidates, "observed": observed, "rejected": rejected,
+    return {"raw": raw, "candidates": candidates, "individual": individually_accepted,
+            "path_rescued": rescued, "observed": observed, "rejected": rejected,
             "reconstruction_candidates": proposals, "reconstructed": repaired, "final": observed | repaired,
             "metadata": {"geometry": geo, "timings_ms": timings, "segments": records[:2000], "bridges": bridges[:1000],
+                         "paths": paths[:1500], "path_count":len(paths),
+                         "rescued_segments":sum(r["path_rescued"] for r in records),
                          "segment_count": len(records), "bridge_count": len(bridges),
-                         "metadata_truncated": len(records) > 2000 or len(bridges) > 1000,
+                         "metadata_truncated": len(records) > 2000 or len(bridges) > 1000 or len(paths)>1500,
                          "observed_threshold": OBSERVED_THRESHOLD,
                          "reconstruction_threshold": RECONSTRUCTION_THRESHOLD}}

@@ -51,7 +51,7 @@ class EndpointTests(unittest.TestCase):
         image = np.zeros((128,128,4), np.uint8)
         image[20:110,20:110] = [180,180,180,255]
         raw = cv2.imencode(".png", image)[1].tobytes()
-        self.payload = {"image": "data:image/png;base64," + base64.b64encode(raw).decode()}
+        self.payload = {"image": "data:image/png;base64," + base64.b64encode(raw).decode(), "debug": True}
 
     def test_success_retry_and_errors(self):
         for payload, expected, code in [({},400,"INVALID_IMAGE"), ({"image":42},400,"INVALID_IMAGE"),

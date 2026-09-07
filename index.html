@@ -1566,6 +1566,10 @@ function generateDashes(polys, dashLen, gapTgt, maxDash) {
 }
 
 // Draw contour dashes on the sheet (dashes in [0..cw]x[0..ch] mm space).
+function finalLineArt(data) {
+  return [[...data.contour, data.contour[0]], ...data.internal_lines];
+}
+
 function drawDashes(dashes, cw, ch) {
   const cv = document.getElementById("cv");
   const ctx = cv.getContext("2d");
@@ -1624,6 +1628,7 @@ function exportDashesJPG(dashes, cw, ch) {
 
 const MAX_CONTOUR_UPLOAD_BYTES = 3 * 1024 * 1024;
 const CONTOUR_TIMEOUT_MS = 25000;
+const CONTOUR_DEBUG = typeof location !== "undefined" && new URLSearchParams(location.search).get("debug") === "1";
 
 class ContourRequestError extends Error {
   constructor(code, options = {}) {
@@ -1654,7 +1659,7 @@ async function fetchServerDashes(file, cw, ch) {
     const resp = await fetch("/api/contour", {
       method: "POST", signal: controller.signal,
       headers: { "Content-Type": "application/json", "X-Request-ID": requestId },
-      body: JSON.stringify({ image: dataUrl, canvas: [cw, ch] }),
+      body: JSON.stringify({ image: dataUrl, canvas: [cw, ch], debug: CONTOUR_DEBUG }),
     });
     const responseId = resp.headers.get("X-Request-ID") || requestId;
     const statusCode = resp.status === 413 ? "IMAGE_TOO_LARGE" : [408, 504].includes(resp.status) ? "PROCESSING_TIMEOUT" : "HTTP_ERROR";
@@ -1668,7 +1673,7 @@ async function fetchServerDashes(file, cw, ch) {
       throw new ContourRequestError(code || statusCode, { status: resp.status, requestId: responseId });
     }
     const pathValid = p => Array.isArray(p) && p.length >= 2 && p.every(q => Array.isArray(q) && q.length === 2 && q.every(Number.isFinite));
-    if (!data || !Array.isArray(data.dashes) || !data.dashes.length || !data.dashes.every(pathValid) || !pathValid(data.contour)) throw new ContourRequestError("INVALID_RESPONSE", { status: resp.status, requestId: responseId });
+    if (!data || !Array.isArray(data.dashes) || !data.dashes.length || !data.dashes.every(pathValid) || !pathValid(data.contour) || !Array.isArray(data.internal_lines) || !data.internal_lines.every(pathValid)) throw new ContourRequestError("INVALID_RESPONSE", { status: resp.status, requestId: responseId });
     return data;
   } catch (err) {
     if (err instanceof ContourRequestError) throw err;
@@ -2080,7 +2085,8 @@ function initUI() {
     diagStructural: $("diag-structural"), diagCombined: $("diag-combined"), diagDashed: $("diag-dashed"),
   };
 
-  let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", dashes: [], dashSource: "client", contourMeta: null, seed: (Math.random() * 0x7fffffff) | 0 };
+  let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", dashes: [], internalLines: [], finalPaths: null, dashSource: "client", contourMeta: null, seed: (Math.random() * 0x7fffffff) | 0 };
+  const renderedPaths = () => state.finalPaths || state.dashes;
 
   // One notification service for upload, processing, export and validation.
   // Error notices remain until closed; transient states remove themselves.
@@ -2145,7 +2151,7 @@ function initUI() {
   // The server returns these six images solely for checking the algorithm.
   // They never enter the canvas renderer or the SVG/JPG export pipeline.
   function showLineartDiagnostics(diagnostics) {
-    if (!diagnostics) return;
+    if (!CONTOUR_DEBUG || !diagnostics) return;
     const fields = [["mask", el.diagMask], ["outer", el.diagOuter], ["raw_edges", el.diagRaw],
       ["structural", el.diagStructural], ["combined", el.diagCombined], ["dashed", el.diagDashed]];
     let complete = true;
@@ -2155,12 +2161,12 @@ function initUI() {
     }
     el.lineartDiagnostics.classList.toggle("ready", complete);
     const labels = {
-      ru: ["Исходное изображение", "Кандидаты", "Отклонённые линии", "Наблюдаемые линии", "Предложения восстановления", "Принятые восстановления"],
+      ru: ["Исходное изображение", "Кандидаты", "Отклонённые линии", "Наблюдаемые линии", "Предложения восстановления", "Принятые восстановления", "Приняты индивидуально", "Сохранены целым путём"],
       en: ["Original", "Candidates", "Rejected", "Observed", "Proposed bridges", "Accepted bridges"],
       zh: ["原图", "候选线", "已排除", "观测线", "拟议连接", "接受连接"]
     };
     const titles = labels[document.documentElement.lang] || labels.ru;
-    ["original", "candidates", "rejected", "observed", "reconstruction_candidates", "reconstructed"].forEach((key, i) => {
+    ["original", "candidates", "rejected", "observed", "reconstruction_candidates", "reconstructed", "individual", "path_rescued"].forEach((key, i) => {
       let figure = el.lineartDiagnostics.querySelector('[data-stage="' + key + '"]');
       if (!figure) {
         figure = document.createElement("figure"); figure.className = "lineart-stage"; figure.dataset.stage = key;
@@ -2168,14 +2174,16 @@ function initUI() {
         el.lineartDiagnostics.append(figure);
       }
       figure.hidden = !diagnostics[key];
-      if (diagnostics[key]) { figure.firstChild.src = diagnostics[key]; figure.firstChild.alt = titles[i]; }
-      figure.lastChild.textContent = titles[i];
+      if (diagnostics[key]) { figure.firstChild.src = diagnostics[key]; figure.firstChild.alt = titles[i] || key; }
+      figure.lastChild.textContent = titles[i] || key;
     });
   }
 
-  // Show the server contour; dashes remain the existing export geometry.
+  // Canvas and exports share the server's final external and internal geometry.
   function showServerContour(data, cw, ch, image) {
     state.dashes = data.dashes;
+    state.internalLines = data.internal_lines;
+    state.finalPaths = finalLineArt(data);
     state.dashSource = "server";
     state.contourMeta = data.meta || null;
     state.canvas = [cw, ch];
@@ -2183,9 +2191,9 @@ function initUI() {
     state.polys = [];
     state.scaled = data.contour ? [data.contour] : [];
     state.shapeName = "custom";
-    drawDashes(state.dashes, cw, ch);
+    drawDashes(renderedPaths(), cw, ch);
     renderContourInfo(state.scaled, cw, ch);
-    drawContourOverlay(image, data.contour_px);
+    if (CONTOUR_DEBUG) drawContourOverlay(image, data.contour_px);
     showLineartDiagnostics(data.diagnostics);
     let details = document.getElementById("lineart-metadata");
     if (!details) {
@@ -2194,8 +2202,8 @@ function initUI() {
       const pre = document.createElement("pre"); pre.style.cssText = "max-height:240px;overflow:auto;font-size:10px;white-space:pre-wrap";
       details.append(summary, pre); el.lineartDiagnostics.after(details);
     }
-    details.hidden = !data.debug;
-    details.lastChild.textContent = data.debug ? JSON.stringify(data.debug, null, 2) : "";
+    details.hidden = !CONTOUR_DEBUG || !data.debug;
+    details.lastChild.textContent = CONTOUR_DEBUG && data.debug ? JSON.stringify(data.debug, null, 2) : "";
   }
 
   let contourGeneration = 0;
@@ -2216,6 +2224,7 @@ function initUI() {
   }
 
   function setShape(polys, name) {
+    state.finalPaths = null; state.internalLines = [];
     state.polys = polys;
     state.shapeName = name;
     state.rects = [];
@@ -2242,7 +2251,7 @@ function initUI() {
       state.dashes = generateDashes(scaled.map(p => p.map(([x, y]) => [x + cw / 2, y + ch / 2])), 30, 1.0, 150);
       state.dashSource = "client";
     }
-    drawDashes(state.dashes, cw, ch);
+    drawDashes(renderedPaths(), cw, ch);
     renderContourInfo(scaled, cw, ch);
   }
 
@@ -2256,7 +2265,8 @@ function initUI() {
         perim += Math.hypot(a[0] - b[0], a[1] - b[1]);
       }
     }
-    el.sCount.textContent = state.dashes.length.toLocaleString("en-US");
+    el.sCount.textContent = renderedPaths().length.toLocaleString("en-US");
+    el.sCount.previousElementSibling.textContent = state.finalPaths ? ({ru:"Линий",en:"Lines",zh:"线条"}[document.documentElement.lang] || "Lines") : t("stat.points");
     if (state.contourMeta) {
       el.sPerim.textContent = Math.round(state.contourMeta.contour_len) + " " + t("unit.mm");
     } else {
@@ -2264,7 +2274,7 @@ function initUI() {
     }
     el.sCanvas.textContent = cw + " × " + ch;
     el.sNote.textContent = (state.dashSource === "server")
-      ? state.dashes.length + " × 30 мм (OpenCV)"
+      ? "Line-art · " + state.internalLines.length + " " + ({ru:"внутренних линий",en:"internal paths",zh:"内部线条"}[document.documentElement.lang] || "internal paths")
       : state.dashes.length + " × 30 мм";
   }
 
@@ -2311,7 +2321,7 @@ function initUI() {
     }
   });
 
-  el.guide.addEventListener("change", () => drawDashes(state.dashes, state.canvas[0], state.canvas[1]));
+  el.guide.addEventListener("change", () => drawDashes(renderedPaths(), state.canvas[0], state.canvas[1]));
 
   // long descriptions & hints are hidden by default; the toggle reveals them.
   // Kept compact so the side panel does not grow too tall.
@@ -2346,13 +2356,13 @@ function initUI() {
   });
   el.btnSvg.addEventListener("click", () => {
     if (!state.dashes.length) run();
-    const svg = exportDashesSVG(state.dashes, state.canvas[0], state.canvas[1]);
+    const svg = exportDashesSVG(renderedPaths(), state.canvas[0], state.canvas[1]);
     download("contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.svg", svg, "image/svg+xml");
     notifyKey("msg.svgReady", "success");
   });
   el.btnJpg.addEventListener("click", () => {
     if (!state.dashes.length) run();
-    const url = exportDashesJPG(state.dashes, state.canvas[0], state.canvas[1]);
+    const url = exportDashesJPG(renderedPaths(), state.canvas[0], state.canvas[1]);
     const a = document.createElement("a");
     a.href = url;
     a.download = "contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.jpg";
@@ -2522,7 +2532,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
     I18N, LANGS, t, applyLanguage,
     cleanMask, smoothPath, imageToMask, polygonSelfIntersects,
     finalizeContourLoop, traceShapeFromImage,
-    generateDashes, exportDashesSVG,
+    generateDashes, exportDashesSVG, finalLineArt,
     detectInitialLang,
   };
 }

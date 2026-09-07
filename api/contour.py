@@ -22,9 +22,10 @@ import re
 import time
 import traceback
 import uuid
+import os
 from contextlib import contextmanager
 import json
-from contour_geometry import analyze_structure
+from contour_geometry import analyze_structure, edge_graph
 
 import numpy as np
 import cv2
@@ -259,7 +260,7 @@ def build_diagnostics(bgr, solid, contour, analysis):
         "combined": png_data_url(combined), "dashed": png_data_url(dashed),
     }
     result["original"] = png_data_url(bgr)
-    for key in ("candidates", "rejected", "observed", "reconstruction_candidates", "reconstructed"):
+    for key in ("candidates", "individual", "path_rescued", "rejected", "observed", "reconstruction_candidates", "reconstructed"):
         result[key] = png_data_url(255 - analysis[key])
     return result
 
@@ -358,6 +359,15 @@ def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
 
     contour = [[float(x), float(y)] for x, y in mm]
     contour_px = [[float(x / image_scale), float(y / image_scale)] for x, y in points]
+    # The same final observed/rescued/reconstructed geometry drives canvas and
+    # exports. No second filtering/simplification step is applied here.
+    vector_started = time.perf_counter()
+    internal_px, _ = edge_graph(analysis["final"])
+    internal_lines = []
+    for path in internal_px:
+        transformed = (path.astype(float) - [cx_px, cy_px]) * scale_mm + [cw/2, ch/2]
+        internal_lines.append(transformed.tolist())
+    timings["vectorization_ms"] = round((time.perf_counter()-vector_started)*1000,2)
 
     mx0, my0 = mm.min(axis=0)
     mx1, my1 = mm.max(axis=0)
@@ -378,6 +388,7 @@ def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
     timings["diagnostics_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
     timings["total_ms"] = round((time.perf_counter() - started) * 1000, 1)
     return {"dashes": dashes, "contour": contour, "contour_px": contour_px,
+            "internal_lines": internal_lines,
             "solid_cells": None, "diagnostics": diagnostics, "debug": analysis["metadata"], "meta": meta}
 
 
@@ -422,6 +433,9 @@ def trace(path="/"):
         ch = canvas[1] if len(canvas) > 1 else CANVAS
         res = compute_contour(img, cw, ch, timings)
         timings.update(res["debug"]["timings_ms"])
+        if data.get("debug") is not True:
+            res.pop("debug", None)
+            res.pop("diagnostics", None)
         timings["stage"] = "serialize"
         payload = jsonify(res)
         if payload.calculate_content_length() > 4_250_000:
@@ -469,4 +483,5 @@ def trace(path="/"):
 def ping(path="/"):
     if request.path == "/":
         return send_from_directory(str(Path(__file__).resolve().parent.parent), "index.html")
-    return jsonify({"ok": True, "service": "contour", "opencv": cv2.__version__})
+    return jsonify({"ok": True, "service": "contour", "opencv": cv2.__version__,
+                    "pipeline": "path-aware-v1", "revision": os.environ.get("VERCEL_GIT_COMMIT_SHA")})
