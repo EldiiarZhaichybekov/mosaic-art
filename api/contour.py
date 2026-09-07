@@ -22,19 +22,27 @@ import re
 import time
 import traceback
 import uuid
+from contextlib import contextmanager
+import json
+from contour_geometry import analyze_structure
 
 import numpy as np
 import cv2
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g, has_request_context, send_from_directory
+from pathlib import Path
 from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import RequestEntityTooLarge
+from PIL import Image, UnidentifiedImageError
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 4_250_000
 
 
 @app.after_request
 def add_cors(resp):
     resp.headers["Access-Control-Allow-Origin"] = "*"
-    resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Request-ID"
+    resp.headers["Access-Control-Expose-Headers"] = "X-Request-ID"
     resp.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
     return resp
 
@@ -48,6 +56,14 @@ MAX_UPLOAD_BYTES = 3 * 1024 * 1024  # JSON/base64 stays safely below Vercel's 4.
 MAX_IMAGE_PIXELS = 24_000_000
 
 logger = logging.getLogger("drawacrl.contour")
+class JsonLogFilter(logging.Filter):
+    def filter(self, record):
+        if isinstance(record.msg, dict):
+            record.msg = json.dumps(record.msg, ensure_ascii=False)
+        return True
+
+
+logger.addFilter(JsonLogFilter())
 if not logger.handlers:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
@@ -61,16 +77,31 @@ class ContourError(Exception):
 
 
 def decode_dataurl(dataurl):
+    if not isinstance(dataurl, str):
+        raise ContourError("INVALID_IMAGE", "Image must be a data URL", 400, "decode_data_url")
     m = re.match(r"^data:([^;]+);base64,(.+)$", dataurl or "")
     if not m:
         raise ContourError("INVALID_IMAGE", "Expected a base64 image data URL", 400, "decode_data_url")
     mime = m.group(1).lower()
+    if mime not in ("image/png", "image/jpeg", "image/webp"):
+        raise ContourError("UNSUPPORTED_FORMAT", "Unsupported image format", 415, "validate_upload")
     try:
         raw = base64.b64decode(m.group(2), validate=True)
     except (ValueError, binascii.Error) as exc:
         raise ContourError("INVALID_IMAGE", "Invalid base64 image data", 400, "decode_data_url") from exc
     if len(raw) > MAX_UPLOAD_BYTES:
         raise ContourError("IMAGE_TOO_LARGE", "Image file exceeds the upload limit", 413, "validate_upload")
+    try:
+        with Image.open(io.BytesIO(raw)) as header:
+            w, h = header.size
+            if w * h > MAX_IMAGE_PIXELS or min(w, h) < 2:
+                raise ContourError("IMAGE_TOO_LARGE", "Image dimensions exceed the processing limit", 413, "validate_dimensions")
+            if header.format not in ("PNG", "JPEG", "WEBP"):
+                raise ContourError("UNSUPPORTED_FORMAT", "Unsupported image encoding", 415, "validate_upload")
+    except Image.DecompressionBombError as exc:
+        raise ContourError("IMAGE_TOO_LARGE", "Image dimensions exceed decoder limit", 413, "validate_dimensions") from exc
+    except (UnidentifiedImageError, OSError, ValueError) as exc:
+        raise ContourError("INVALID_IMAGE", "Invalid image header", 400, "decode_image") from exc
     buf = np.frombuffer(raw, np.uint8)
     # Keep alpha when it exists: a supplied transparency mask is stronger
     # evidence than any colour-based foreground guess.
@@ -153,6 +184,7 @@ def border_background_mask(bgr):
     bg_model = np.zeros((1, 65), np.float64)
     fg_model = np.zeros((1, 65), np.float64)
     try:
+        cv2.setRNGSeed(0)
         cv2.grabCut(bgr, gc_mask, None, bg_model, fg_model, 5, cv2.GC_INIT_WITH_MASK)
         mask = np.where(
             (gc_mask == cv2.GC_FGD) | (gc_mask == cv2.GC_PR_FGD), 255, 0
@@ -183,79 +215,8 @@ def extract_foreground_contour(img):
     return contour, solid, method
 
 
-def _auto_canny(channel, region, blur_sigma):
-    """Canny thresholds derived from this photograph, rather than constants."""
-    blurred = cv2.GaussianBlur(channel, (0, 0), blur_sigma)
-    gx = cv2.Sobel(blurred, cv2.CV_32F, 1, 0, ksize=3)
-    gy = cv2.Sobel(blurred, cv2.CV_32F, 0, 1, ksize=3)
-    magnitude = cv2.magnitude(gx, gy)
-    values = magnitude[region > 0]
-    if values.size < 32:
-        return np.zeros(channel.shape, np.uint8), magnitude
-    high = max(10.0, float(np.percentile(values, 82)))
-    low = max(4.0, high * .38)
-    return cv2.Canny(blurred, low, high, L2gradient=True), magnitude
-
-
 def internal_structural_edges(bgr, solid, contour):
-    """Find persistent object-internal boundaries while rejecting texture.
-
-    A single fine Canny pass mistakes hair, fabric, JPEG blocks and shadows for
-    drawing.  Here an edge has to survive across several blur scales, then a
-    connected-component score favours long, connected, high-contrast strokes.
-    The mask excludes a small band around the silhouette so the outer line is
-    represented exactly once by the contour extraction stage.
-    """
-    lab = cv2.cvtColor(cv2.bilateralFilter(bgr, 5, 35, 35), cv2.COLOR_BGR2LAB)
-    core = cv2.erode(solid, np.ones((3, 3), np.uint8), iterations=1)
-    boundary = cv2.dilate(
-        cv2.drawContours(np.zeros_like(solid), [contour], -1, 255, 1),
-        np.ones((7, 7), np.uint8), iterations=1,
-    )
-    valid = cv2.bitwise_and(core, cv2.bitwise_not(boundary))
-
-    edge_maps, gradients = [], []
-    # Fine / local / medium scales make the result insensitive to image size.
-    for sigma in (.8, 1.8, 3.4):
-        channels = []
-        for channel in cv2.split(lab):
-            edges, grad = _auto_canny(channel, core, sigma)
-            channels.append(edges)
-            gradients.append(grad)
-        edge_maps.append(cv2.bitwise_or(cv2.bitwise_or(channels[0], channels[1]), channels[2]))
-
-    raw = cv2.bitwise_and(edge_maps[0], valid)
-    support = np.zeros(solid.shape, np.uint8)
-    for edges in edge_maps:
-        # One-pixel tolerance accounts for a normal edge moving under blur.
-        support += (cv2.dilate(edges, np.ones((3, 3), np.uint8)) > 0).astype(np.uint8)
-    texture_density = float(np.count_nonzero(raw)) / max(1, int(np.count_nonzero(core)))
-    required_support = 3 if texture_density > .055 else 2
-    candidates = np.where((support >= required_support) & (valid > 0), 255, 0).astype(np.uint8)
-
-    count, labels, stats, _ = cv2.connectedComponentsWithStats(candidates, 8)
-    structural = np.zeros_like(candidates)
-    max_gradient = np.maximum.reduce(gradients)
-    grad_values = max_gradient[core > 0]
-    grad_ref = max(1.0, float(np.percentile(grad_values, 95))) if grad_values.size else 1.0
-    diag = math.hypot(*solid.shape)
-    cutoff = .46 + min(.14, max(0.0, texture_density - .035) * 2.8)
-    for label in range(1, count):
-        pixels = int(stats[label, cv2.CC_STAT_AREA])
-        x, y, w, h = stats[label, :4]
-        span = math.hypot(w, h)
-        component = labels == label
-        persistence = float(np.mean(support[component])) / 3.0
-        strength = min(1.0, float(np.percentile(max_gradient[component], 70)) / grad_ref)
-        length_score = min(1.0, pixels / max(12.0, diag * .07))
-        span_score = min(1.0, span / max(10.0, diag * .18))
-        score = .38 * length_score + .22 * span_score + .25 * persistence + .15 * strength
-        # A short but exceptionally stable, contrasty edge can be a beak, eye
-        # rim or another meaningful feature; random texture rarely satisfies it.
-        stable_detail = pixels >= 3 and persistence >= .82 and strength >= .78
-        if (pixels >= max(10, int(diag * .018)) and score >= cutoff) or stable_detail:
-            structural[component] = 255
-    return raw, structural
+    return analyze_structure(bgr, solid)
 
 
 def png_data_url(image, max_side=420):
@@ -272,8 +233,9 @@ def png_data_url(image, max_side=420):
     return "data:image/jpeg;base64," + base64.b64encode(encoded).decode("ascii")
 
 
-def build_diagnostics(bgr, solid, contour, raw, structural):
+def build_diagnostics(bgr, solid, contour, analysis):
     """Six inspectable stages, all raster-only diagnostics for this iteration."""
+    raw, structural = analysis["raw"], analysis["final"]
     mask_view = cv2.cvtColor(solid, cv2.COLOR_GRAY2BGR)
     outer = bgr.copy()
     cv2.drawContours(outer, [contour], -1, (20, 20, 235), 1, cv2.LINE_AA)
@@ -291,11 +253,29 @@ def build_diagnostics(bgr, solid, contour, raw, structural):
         segment = points[start:start + 3]
         if len(segment) > 1:
             cv2.polylines(dashed, [segment.reshape(-1, 1, 2)], False, (20, 20, 235), 1, cv2.LINE_AA)
-    return {
+    result = {
         "mask": png_data_url(mask_view), "outer": png_data_url(outer),
         "raw_edges": png_data_url(raw_view), "structural": png_data_url(structural_view),
         "combined": png_data_url(combined), "dashed": png_data_url(dashed),
     }
+    result["original"] = png_data_url(bgr)
+    for key in ("candidates", "rejected", "observed", "reconstruction_candidates", "reconstructed"):
+        result[key] = png_data_url(255 - analysis[key])
+    return result
+
+
+@contextmanager
+def pipeline_stage(timings, name):
+    timings["stage"] = name
+    started = time.perf_counter()
+    if has_request_context():
+        logger.info({"event": "stage_start", "stage": name, "request_id": getattr(g, "request_id", None)})
+    try:
+        yield
+    finally:
+        timings[name + "_ms"] = round((time.perf_counter() - started) * 1000, 1)
+        if has_request_context():
+            logger.info({"event": "stage_end", "stage": name, "request_id": getattr(g, "request_id", None), "duration_ms": timings[name + "_ms"]})
 
 
 def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
@@ -316,13 +296,16 @@ def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
     # Segmentation establishes the object mask; only its largest external
     # boundary survives. Surface lines and holes never become exported paths.
     stage_started = time.perf_counter()
-    c_out, solid, method = extract_foreground_contour(img)
+    with pipeline_stage(timings, "segmentation"):
+        c_out, solid, method = extract_foreground_contour(img)
     timings["segmentation_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
     bgr, _alpha = split_image(img)
     stage_started = time.perf_counter()
-    raw_edges, structural_edges = internal_structural_edges(bgr, solid, c_out)
+    with pipeline_stage(timings, "structural_edges"):
+        analysis = internal_structural_edges(bgr, solid, c_out)
     timings["structural_edges_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
     points = c_out.reshape(-1, 2).astype(float)
+    timings["stage"] = "export_geometry"
 
     # 5) px -> мм: пропорционально, по большей стороне, центр холста
     x0, y0 = points.min(axis=0)
@@ -390,11 +373,12 @@ def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
         "contour_points": len(contour_px),
     }
     stage_started = time.perf_counter()
-    diagnostics = build_diagnostics(bgr, solid, c_out, raw_edges, structural_edges)
+    with pipeline_stage(timings, "diagnostics"):
+        diagnostics = build_diagnostics(bgr, solid, c_out, analysis)
     timings["diagnostics_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
     timings["total_ms"] = round((time.perf_counter() - started) * 1000, 1)
     return {"dashes": dashes, "contour": contour, "contour_px": contour_px,
-            "solid_cells": None, "diagnostics": diagnostics, "meta": meta}
+            "solid_cells": None, "diagnostics": diagnostics, "debug": analysis["metadata"], "meta": meta}
 
 
 @app.route("/", methods=["POST"])
@@ -402,9 +386,12 @@ def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
 @app.route("/api/contour/", methods=["POST"])
 @app.route("/<path:path>", methods=["POST"])
 def trace(path="/"):
-    request_id = request.headers.get("X-Request-ID") or uuid.uuid4().hex
+    supplied_id = request.headers.get("X-Request-ID", "")
+    request_id = supplied_id if re.fullmatch(r"[A-Za-z0-9_-]{1,80}", supplied_id) else uuid.uuid4().hex
+    g.request_id = request_id
+    logger.info({"event": "request_start", "request_id": request_id, "body_bytes": request.content_length})
     began = time.perf_counter()
-    timings = {}
+    timings = {"stage": "parse_json"}
     mime = None
     file_bytes = None
     dimensions = None
@@ -418,19 +405,27 @@ def trace(path="/"):
         # Log only metadata, never the encoded image itself. This also leaves
         # useful context when base64 validation fails before decoding.
         encoded_image = data.get("image") or ""
-        match = re.match(r"^data:([^;]+);base64,(.*)$", encoded_image)
+        match = re.match(r"^data:([^;]+);base64,(.*)$", encoded_image) if isinstance(encoded_image, str) else None
         if match:
             mime = match.group(1).lower()
             file_bytes = (len(match.group(2).rstrip("=")) * 3) // 4
         decode_started = time.perf_counter()
+        timings["stage"] = "decode_image"
         img, mime, file_bytes = decode_dataurl(data.get("image"))
         dimensions = [int(img.shape[1]), int(img.shape[0])]
         timings["decode_ms"] = round((time.perf_counter() - decode_started) * 1000, 1)
         canvas = data.get("canvas") or []
+        if not isinstance(canvas, list) or len(canvas) > 2 or any(
+                isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or not 1 <= v <= 2000 for v in canvas):
+            raise ContourError("INVALID_REQUEST", "Invalid canvas dimensions", 400, "validate_canvas")
         cw = canvas[0] if len(canvas) > 0 else CANVAS
         ch = canvas[1] if len(canvas) > 1 else CANVAS
         res = compute_contour(img, cw, ch, timings)
+        timings.update(res["debug"]["timings_ms"])
+        timings["stage"] = "serialize"
         payload = jsonify(res)
+        if payload.calculate_content_length() > 4_250_000:
+            raise ContourError("RESPONSE_TOO_LARGE", "Result exceeds response budget", 422, "serialize")
         timings["total_ms"] = round((time.perf_counter() - began) * 1000, 1)
         logger.info({"event": "contour_success", "request_id": request_id,
                      "mime": mime, "file_bytes": file_bytes, "image_size": dimensions,
@@ -448,10 +443,16 @@ def trace(path="/"):
         response.status_code = exc.status
         response.headers["X-Request-ID"] = request_id
         return response
+    except RequestEntityTooLarge:
+        logger.warning(json.dumps({"event": "contour_rejected", "request_id": request_id, "stage": "parse_json", "code": "IMAGE_TOO_LARGE", "body_bytes": request.content_length}))
+        response = jsonify({"error": {"code": "IMAGE_TOO_LARGE"}, "request_id": request_id})
+        response.status_code = 413
+        response.headers["X-Request-ID"] = request_id
+        return response
     except Exception as exc:  # noqa: BLE001
         timings["total_ms"] = round((time.perf_counter() - began) * 1000, 1)
         logger.error({"event": "contour_failure", "request_id": request_id,
-                      "stage": "pipeline", "mime": mime, "file_bytes": file_bytes,
+                      "stage": timings.get("stage"), "mime": mime, "file_bytes": file_bytes,
                       "image_size": dimensions, "timings_ms": timings,
                       "error_type": type(exc).__name__, "error": str(exc),
                       "traceback": traceback.format_exc()})
@@ -466,4 +467,6 @@ def trace(path="/"):
 @app.route("/api/contour", methods=["GET"])
 @app.route("/api/contour/", methods=["GET"])
 def ping(path="/"):
+    if request.path == "/":
+        return send_from_directory(str(Path(__file__).resolve().parent.parent), "index.html")
     return jsonify({"ok": True, "service": "contour", "opencv": cv2.__version__})

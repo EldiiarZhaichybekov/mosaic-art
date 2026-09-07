@@ -1657,15 +1657,18 @@ async function fetchServerDashes(file, cw, ch) {
       body: JSON.stringify({ image: dataUrl, canvas: [cw, ch] }),
     });
     const responseId = resp.headers.get("X-Request-ID") || requestId;
+    const statusCode = resp.status === 413 ? "IMAGE_TOO_LARGE" : [408, 504].includes(resp.status) ? "PROCESSING_TIMEOUT" : "HTTP_ERROR";
     let data = null;
-    try { data = await resp.json(); } catch (_) {
-      throw new ContourRequestError(resp.status === 413 ? "IMAGE_TOO_LARGE" : "INVALID_RESPONSE", { status: resp.status, requestId: responseId });
+    try { data = await resp.json(); } catch (parseError) {
+      if (parseError.name === "AbortError") throw parseError;
+      throw new ContourRequestError(resp.ok ? "INVALID_RESPONSE" : statusCode, { status: resp.status, requestId: responseId });
     }
-    if (!resp.ok || data.error) {
+    if (!resp.ok || (data && data.error)) {
       const code = data && data.error && data.error.code;
-      throw new ContourRequestError(code || (resp.status === 413 ? "IMAGE_TOO_LARGE" : "HTTP_ERROR"), { status: resp.status, requestId: responseId });
+      throw new ContourRequestError(code || statusCode, { status: resp.status, requestId: responseId });
     }
-    if (!data.dashes || !data.dashes.length) throw new ContourRequestError("INVALID_RESPONSE", { status: resp.status, requestId: responseId });
+    const pathValid = p => Array.isArray(p) && p.length >= 2 && p.every(q => Array.isArray(q) && q.length === 2 && q.every(Number.isFinite));
+    if (!data || !Array.isArray(data.dashes) || !data.dashes.length || !data.dashes.every(pathValid) || !pathValid(data.contour)) throw new ContourRequestError("INVALID_RESPONSE", { status: resp.status, requestId: responseId });
     return data;
   } catch (err) {
     if (err instanceof ContourRequestError) throw err;
@@ -2088,6 +2091,7 @@ function initUI() {
     const icons = { success: "✓", error: "!", warning: "!", info: "i" };
     const node = document.createElement("div");
     node.className = "notice " + type;
+    node.setAttribute("role", type === "error" ? "alert" : "status");
     const icon = document.createElement("span"); icon.className = "notice-icon"; icon.textContent = icons[type] || icons.info;
     const text = document.createElement("span"); text.textContent = message;
     const close = document.createElement("button"); close.type = "button"; close.setAttribute("aria-label", "Close"); close.textContent = "×";
@@ -2101,7 +2105,7 @@ function initUI() {
     // Technical data stays in browser/server logs; users receive an actionable message.
     console.warn("Contour request failed", { code: err && err.code, status: err && err.status, requestId: err && err.requestId });
     if (err && err.code === "IMAGE_TOO_LARGE") return notifyKey("msg.imageTooLarge", "error");
-    if (err && err.code === "INVALID_IMAGE") return notifyKey("msg.invalidImage", "error");
+    if (err && ["INVALID_IMAGE", "UNSUPPORTED_FORMAT"].includes(err.code)) return notifyKey("msg.invalidImage", "error");
     if (err && err.code === "PROCESSING_TIMEOUT") return notifyKey("msg.timeout", "error");
     if (err && err.code === "NETWORK_ERROR") return notifyKey("msg.network", "error");
     return notifyKey("msg.processing", "error");
@@ -2150,6 +2154,23 @@ function initUI() {
       image.src = diagnostics[key];
     }
     el.lineartDiagnostics.classList.toggle("ready", complete);
+    const labels = {
+      ru: ["Исходное изображение", "Кандидаты", "Отклонённые линии", "Наблюдаемые линии", "Предложения восстановления", "Принятые восстановления"],
+      en: ["Original", "Candidates", "Rejected", "Observed", "Proposed bridges", "Accepted bridges"],
+      zh: ["原图", "候选线", "已排除", "观测线", "拟议连接", "接受连接"]
+    };
+    const titles = labels[document.documentElement.lang] || labels.ru;
+    ["original", "candidates", "rejected", "observed", "reconstruction_candidates", "reconstructed"].forEach((key, i) => {
+      let figure = el.lineartDiagnostics.querySelector('[data-stage="' + key + '"]');
+      if (!figure) {
+        figure = document.createElement("figure"); figure.className = "lineart-stage"; figure.dataset.stage = key;
+        figure.append(document.createElement("img"), document.createElement("figcaption"));
+        el.lineartDiagnostics.append(figure);
+      }
+      figure.hidden = !diagnostics[key];
+      if (diagnostics[key]) { figure.firstChild.src = diagnostics[key]; figure.firstChild.alt = titles[i]; }
+      figure.lastChild.textContent = titles[i];
+    });
   }
 
   // Show the server contour; dashes remain the existing export geometry.
@@ -2166,16 +2187,29 @@ function initUI() {
     renderContourInfo(state.scaled, cw, ch);
     drawContourOverlay(image, data.contour_px);
     showLineartDiagnostics(data.diagnostics);
+    let details = document.getElementById("lineart-metadata");
+    if (!details) {
+      details = document.createElement("details"); details.id = "lineart-metadata";
+      const summary = document.createElement("summary"); summary.textContent = "Debug: geometry / scores / reasons";
+      const pre = document.createElement("pre"); pre.style.cssText = "max-height:240px;overflow:auto;font-size:10px;white-space:pre-wrap";
+      details.append(summary, pre); el.lineartDiagnostics.after(details);
+    }
+    details.hidden = !data.debug;
+    details.lastChild.textContent = data.debug ? JSON.stringify(data.debug, null, 2) : "";
   }
 
+  let contourGeneration = 0;
   async function requestServerContour(cw, ch, image) {
+    const generation = ++contourGeneration;
     notifyKey("msg.contourWait", "info", 1800);
     try {
       const data = await fetchServerDashes(state.uploadedFile, cw, ch);
+      if (generation !== contourGeneration) return false;
       showServerContour(data, cw, ch, image);
       notifyKey("msg.contourReady", "success");
       return true;
     } catch (err) {
+      if (generation !== contourGeneration) return false;
       reportContourError(err);
       return false;
     }
@@ -2269,6 +2303,7 @@ function initUI() {
   el.preset.addEventListener("change", () => {
     const key = el.preset.value;
     if (PRESETS[key]) {
+      ++contourGeneration;
       state.uploaded = false;
       state.uploadedImg = null;
       setShape(PRESETS[key].polys.map(p => p.map(([x, y]) => [x, y])), key);
@@ -2348,6 +2383,7 @@ function initUI() {
   };
 
   const handleFile = file => {
+    const uploadGeneration = ++contourGeneration;
     if (!file || !/^image\/(png|jpeg|webp)$/i.test(file.type)) { notifyKey("msg.noImage", "error"); return; }
     if (file.size > MAX_CONTOUR_UPLOAD_BYTES) { notifyKey("msg.imageTooLarge", "error"); return; }
     const url = URL.createObjectURL(file);
@@ -2365,6 +2401,7 @@ function initUI() {
       run();
     };
     img.onload = () => {
+      if (uploadGeneration !== contourGeneration) { URL.revokeObjectURL(url); return; }
       state.uploadedImg = img; state.uploadedFile = file;   // keep for live threshold re-tracing
       state.uploaded = true;
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
@@ -2380,7 +2417,7 @@ function initUI() {
     img.src = url;
   };
   el.drop.addEventListener("click", () => el.file.click());
-  el.file.addEventListener("change", () => handleFile(el.file.files[0]));
+  el.file.addEventListener("change", () => { const file = el.file.files[0]; el.file.value = ""; if (file) handleFile(file); });
   ["dragenter", "dragover"].forEach(ev => el.drop.addEventListener(ev, e => { e.preventDefault(); el.drop.classList.add("over"); }));
   ["dragleave", "drop"].forEach(ev => el.drop.addEventListener(ev, e => { e.preventDefault(); el.drop.classList.remove("over"); }));
   el.drop.addEventListener("drop", e => { if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });

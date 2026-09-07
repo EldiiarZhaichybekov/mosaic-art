@@ -1,0 +1,28 @@
+const fs = require('node:fs');
+const vm = require('node:vm');
+const assert = require('node:assert/strict');
+const html = fs.readFileSync('index.html', 'utf8');
+new Function(html.match(/<script>([\s\S]*)<\/script>/)[1]);
+const source = html.slice(html.indexOf('const MAX_CONTOUR_UPLOAD_BYTES'), html.indexOf('\nfunction draw(rects'));
+let response;
+const context = vm.createContext({crypto: require('node:crypto').webcrypto, AbortController,
+  setTimeout, clearTimeout, FileReader: class { readAsDataURL() { this.result = 'data:image/png;base64,AA=='; this.onload(); } },
+  fetch: async () => { if (response instanceof Error) throw response; return response; }});
+vm.runInContext(source + '\nglobalThis.requestContour = fetchServerDashes;', context);
+const call = () => context.requestContour({size:10, type:'image/png'}, 400,400);
+(async () => {
+  for (const [status, code] of [[413,'IMAGE_TOO_LARGE'],[504,'PROCESSING_TIMEOUT'],[500,'HTTP_ERROR']]) {
+    response = {status,ok:false,headers:new Map(),json:async()=>{throw new SyntaxError('HTML')}};
+    await assert.rejects(call, e => e.code === code);
+  }
+  response = {status:200,ok:true,headers:new Map(),json:async()=>null};
+  await assert.rejects(call, e=>e.code==='INVALID_RESPONSE');
+  response.json = async()=>{const e=new Error();e.name='AbortError';throw e};
+  await assert.rejects(call,e=>e.code==='PROCESSING_TIMEOUT');
+  response = new TypeError('Failed to fetch');
+  await assert.rejects(call,e=>e.code==='NETWORK_ERROR');
+  await assert.rejects(()=>context.requestContour({size:4e6},400,400),e=>e.code==='IMAGE_TOO_LARGE');
+  response = {status:200,ok:true,headers:new Map(),json:async()=>({dashes:[[[0,0],[1,1]]],contour:[[0,0],[1,1],[0,1]]})};
+  assert.equal((await call()).dashes.length,1);
+  console.log('Client: HTTP, JSON, body abort, network, size and recovery passed');
+})().catch(e=>{console.error(e);process.exitCode=1});
