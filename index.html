@@ -164,7 +164,14 @@
   .notes code { font-family: var(--mono); background: #f1f5f9; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; color: var(--accent); font-size: 10px; }
   .keys { margin-top: 8px; font-size: 10px; color: var(--dim); }
   .keys kbd { font-family: var(--mono); background: #f1f5f9; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; font-size: 9.5px; }
-  #msg { font-size: 11px; color: var(--bad); min-height: 14px; }
+  #msg { display: none; }
+  #notifications { position: fixed; z-index: 50; top: 18px; right: 18px; width: min(420px, calc(100vw - 28px)); display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+  .notice { pointer-events: auto; display: grid; grid-template-columns: 22px 1fr auto; gap: 9px; align-items: start; padding: 12px 12px 12px 14px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 11px; background: rgba(255,255,255,.98); box-shadow: 0 16px 34px rgba(30,41,59,.22); color: var(--txt); font-size: 12px; line-height: 1.4; animation: notice-in .18s ease-out; }
+  .notice.info { border-left-color: var(--accent); } .notice.success { border-left-color: var(--ok); } .notice.warning { border-left-color: var(--warn); } .notice.error { border-left-color: var(--bad); }
+  .notice .notice-icon { font-weight: 900; text-align: center; } .notice.info .notice-icon { color: var(--accent); } .notice.success .notice-icon { color: var(--ok); } .notice.warning .notice-icon { color: var(--warn); } .notice.error .notice-icon { color: var(--bad); }
+  .notice button { border: 0; background: transparent; color: var(--dim); cursor: pointer; padding: 0 1px; font-size: 18px; line-height: 14px; }
+  @keyframes notice-in { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 920px) { #notifications { top: 10px; right: 10px; width: calc(100vw - 20px); } }
   #contour-preview-wrap { display: none; margin-top: 2px; }
   #contour-preview-wrap.ready { display: block; }
   #contour-preview-label { margin: 0 0 6px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-weight: 700; }
@@ -319,6 +326,7 @@
   </aside>
 
 </div>
+<div id="notifications" aria-live="polite" aria-atomic="false"></div>
 
 <script>
 "use strict";
@@ -440,7 +448,13 @@ const I18N = {
     "msg.noImage": "Выберите изображение PNG или JPG.",
     "msg.noSilhouette": "Силуэт не найден — попробуйте более контрастное изображение или измените порог.",
     "msg.contourWait": "Распознаю контур…",
-    "msg.contourFail": "Контур недоступен: сервер /api/contour не отвечает.",
+    "msg.contourReady": "Контур построен.",
+    "msg.network": "Не удалось связаться с сервисом контура. Проверьте соединение и попробуйте ещё раз.",
+    "msg.timeout": "Обработка заняла слишком много времени. Попробуйте фото меньшего размера.",
+    "msg.imageTooLarge": "Файл слишком большой. Выберите изображение до 3 МБ.",
+    "msg.invalidImage": "Не удалось прочитать изображение. Выберите корректный PNG, JPG или WebP.",
+    "msg.processing": "Не удалось построить контур. Попробуйте ещё раз или выберите более контрастное фото.",
+    "msg.svgReady": "SVG подготовлен к скачиванию.", "msg.jpgReady": "JPG подготовлен к скачиванию.",
     "msg.thresholdNoSilhouette": "При этом пороге силуэт не найден — оставлен предыдущий контур.",
     "msg.readError": "Не удалось прочитать файл изображения.",
     "msg.pixelError": "Не удалось прочитать пиксели изображения (canvas был заблокирован браузером).",
@@ -526,7 +540,13 @@ const I18N = {
     "msg.noImage": "Please choose a PNG or JPG image.",
     "msg.noSilhouette": "No silhouette detected — try a higher-contrast image or adjust the threshold.",
     "msg.contourWait": "Tracing the contour…",
-    "msg.contourFail": "Contour unavailable: the /api/contour server did not respond.",
+    "msg.contourReady": "Contour created.",
+    "msg.network": "Could not reach the contour service. Check your connection and try again.",
+    "msg.timeout": "Processing took too long. Try a smaller image.",
+    "msg.imageTooLarge": "The file is too large. Choose an image up to 3 MB.",
+    "msg.invalidImage": "The image could not be read. Choose a valid PNG, JPG, or WebP.",
+    "msg.processing": "Could not create the contour. Try again or choose a higher-contrast photo.",
+    "msg.svgReady": "SVG is ready to download.", "msg.jpgReady": "JPG is ready to download.",
     "msg.thresholdNoSilhouette": "No silhouette at this threshold — keeping the previous outline.",
     "msg.readError": "Could not read that image file.",
     "msg.pixelError": "Could not read image pixels (the canvas was blocked by the browser).",
@@ -613,7 +633,13 @@ const I18N = {
     "msg.noImage": "请选择 PNG 或 JPG 图片。",
     "msg.noSilhouette": "未检测到轮廓——请尝试对比度更高的图片或调整阈值。",
     "msg.contourWait": "正在识别轮廓…",
-    "msg.contourFail": "轮廓不可用：/api/contour 服务器未响应。",
+    "msg.contourReady": "轮廓已生成。",
+    "msg.network": "无法连接到轮廓服务。请检查网络后重试。",
+    "msg.timeout": "处理时间过长。请尝试更小的图片。",
+    "msg.imageTooLarge": "文件过大。请选择不超过 3 MB 的图片。",
+    "msg.invalidImage": "无法读取图片。请选择有效的 PNG、JPG 或 WebP。",
+    "msg.processing": "无法生成轮廓。请重试或选择对比度更高的照片。",
+    "msg.svgReady": "SVG 已准备下载。", "msg.jpgReady": "JPG 已准备下载。",
     "msg.thresholdNoSilhouette": "此阈值下未找到轮廓——保留之前的轮廓。",
     "msg.readError": "无法读取图片文件。",
     "msg.pixelError": "无法读取图片像素（浏览器阻止了画布访问）。",
@@ -1596,27 +1622,58 @@ function exportDashesJPG(dashes, cw, ch) {
   return oc.toDataURL("image/jpeg", 0.95);
 }
 
-// POST the uploaded photo to the Python/OpenCV contour function as the raw file
-// bytes (the server decodes it with OpenCV, so webp/alpha is handled directly and
-// no canvas compositing is involved). Returns {dashes, contour, meta}; rejects on
-// failure so the caller can react.
+const MAX_CONTOUR_UPLOAD_BYTES = 3 * 1024 * 1024;
+const CONTOUR_TIMEOUT_MS = 25000;
+
+class ContourRequestError extends Error {
+  constructor(code, options = {}) {
+    super(code); this.name = "ContourRequestError";
+    this.code = code; this.status = options.status || 0;
+    this.requestId = options.requestId || ""; this.cause = options.cause;
+  }
+}
+
+function newRequestId() {
+  return (globalThis.crypto && globalThis.crypto.randomUUID) ? globalThis.crypto.randomUUID() : "c-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+}
+
+// Sends original bytes so alpha/WebP are preserved. The explicit client limit
+// leaves room for base64 + JSON under Vercel's 4.5 MB function-body limit.
 async function fetchServerDashes(file, cw, ch) {
+  if (!file || file.size > MAX_CONTOUR_UPLOAD_BYTES) throw new ContourRequestError("IMAGE_TOO_LARGE");
+  const requestId = newRequestId();
   const dataUrl = await new Promise((res, rej) => {
     const r = new FileReader();
     r.onload = () => res(r.result);
-    r.onerror = rej;
+    r.onerror = () => rej(new ContourRequestError("INVALID_IMAGE", { cause: r.error }));
     r.readAsDataURL(file);          // data URL of the ORIGINAL file bytes
   });
-  const resp = await fetch("/api/contour", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image: dataUrl, canvas: [cw, ch] }),
-  });
-  if (!resp.ok) throw new Error("contour API HTTP " + resp.status);
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error);
-  if (!data.dashes || !data.dashes.length) throw new Error("no dashes");
-  return data;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), CONTOUR_TIMEOUT_MS);
+  try {
+    const resp = await fetch("/api/contour", {
+      method: "POST", signal: controller.signal,
+      headers: { "Content-Type": "application/json", "X-Request-ID": requestId },
+      body: JSON.stringify({ image: dataUrl, canvas: [cw, ch] }),
+    });
+    const responseId = resp.headers.get("X-Request-ID") || requestId;
+    let data = null;
+    try { data = await resp.json(); } catch (_) {
+      throw new ContourRequestError(resp.status === 413 ? "IMAGE_TOO_LARGE" : "INVALID_RESPONSE", { status: resp.status, requestId: responseId });
+    }
+    if (!resp.ok || data.error) {
+      const code = data && data.error && data.error.code;
+      throw new ContourRequestError(code || (resp.status === 413 ? "IMAGE_TOO_LARGE" : "HTTP_ERROR"), { status: resp.status, requestId: responseId });
+    }
+    if (!data.dashes || !data.dashes.length) throw new ContourRequestError("INVALID_RESPONSE", { status: resp.status, requestId: responseId });
+    return data;
+  } catch (err) {
+    if (err instanceof ContourRequestError) throw err;
+    if (err && err.name === "AbortError") throw new ContourRequestError("PROCESSING_TIMEOUT", { requestId, cause: err });
+    throw new ContourRequestError("NETWORK_ERROR", { requestId, cause: err });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function draw(rects, guidePolys, showGuide, cw, ch) {
@@ -2022,6 +2079,34 @@ function initUI() {
 
   let state = { rects: [], polys: [], scaled: [], canvas: [400, 400], stats: null, shapeName: "butterfly", dashes: [], dashSource: "client", contourMeta: null, seed: (Math.random() * 0x7fffffff) | 0 };
 
+  // One notification service for upload, processing, export and validation.
+  // Error notices remain until closed; transient states remove themselves.
+  function notify(message, type = "info", duration) {
+    const host = document.getElementById("notifications");
+    if (!host || !message) return;
+    while (host.children.length >= 4) host.firstElementChild.remove();
+    const icons = { success: "✓", error: "!", warning: "!", info: "i" };
+    const node = document.createElement("div");
+    node.className = "notice " + type;
+    const icon = document.createElement("span"); icon.className = "notice-icon"; icon.textContent = icons[type] || icons.info;
+    const text = document.createElement("span"); text.textContent = message;
+    const close = document.createElement("button"); close.type = "button"; close.setAttribute("aria-label", "Close"); close.textContent = "×";
+    const dismiss = () => node.remove(); close.addEventListener("click", dismiss);
+    node.append(icon, text, close); host.appendChild(node);
+    const timeout = duration === undefined ? (type === "error" ? 0 : type === "warning" ? 6500 : 3500) : duration;
+    if (timeout > 0) setTimeout(dismiss, timeout);
+  }
+  const notifyKey = (key, type, duration) => notify(t(key), type, duration);
+  function reportContourError(err) {
+    // Technical data stays in browser/server logs; users receive an actionable message.
+    console.warn("Contour request failed", { code: err && err.code, status: err && err.status, requestId: err && err.requestId });
+    if (err && err.code === "IMAGE_TOO_LARGE") return notifyKey("msg.imageTooLarge", "error");
+    if (err && err.code === "INVALID_IMAGE") return notifyKey("msg.invalidImage", "error");
+    if (err && err.code === "PROCESSING_TIMEOUT") return notifyKey("msg.timeout", "error");
+    if (err && err.code === "NETWORK_ERROR") return notifyKey("msg.network", "error");
+    return notifyKey("msg.processing", "error");
+  }
+
   // Diagnostic-only overlay: screen-pixel dashes make the sampled external
   // boundary inspectable without changing the 30 mm SVG/JPG export paths.
   function drawContourOverlay(img, contourPx) {
@@ -2077,11 +2162,23 @@ function initUI() {
     state.polys = [];
     state.scaled = data.contour ? [data.contour] : [];
     state.shapeName = "custom";
-    el.msg.textContent = "";
     drawDashes(state.dashes, cw, ch);
     renderContourInfo(state.scaled, cw, ch);
     drawContourOverlay(image, data.contour_px);
     showLineartDiagnostics(data.diagnostics);
+  }
+
+  async function requestServerContour(cw, ch, image) {
+    notifyKey("msg.contourWait", "info", 1800);
+    try {
+      const data = await fetchServerDashes(state.uploadedFile, cw, ch);
+      showServerContour(data, cw, ch, image);
+      notifyKey("msg.contourReady", "success");
+      return true;
+    } catch (err) {
+      reportContourError(err);
+      return false;
+    }
   }
 
   function setShape(polys, name) {
@@ -2098,8 +2195,7 @@ function initUI() {
   }
 
   function run() {
-    if (!state.polys.length) { el.msg.textContent = t("msg.noShape"); return; }
-    el.msg.textContent = "";
+    if (!state.polys.length) { notifyKey("msg.noShape", "warning"); return; }
     // scale the source silhouette to the selected sheet format
     const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
     const scaled = fitPolysToCanvas(state.polys, cw, ch, 0.95);
@@ -2196,10 +2292,7 @@ function initUI() {
   el.canvasFmt.addEventListener("change", () => {
     const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
     if (state.uploaded && state.uploadedImg) {          // re-fetch for the new sheet
-      el.msg.textContent = t("msg.contourWait");
-      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch, state.uploadedImg)).catch(() => {
-        state.dashSource = "client"; state.seed = (Math.random() * 0x7fffffff) | 0; run();
-      });
+      requestServerContour(cw, ch, state.uploadedImg);
       return;
     }
     state.seed = (Math.random() * 0x7fffffff) | 0;
@@ -2210,8 +2303,7 @@ function initUI() {
     // for an uploaded photo the precise contour comes from /api/contour
     if (state.uploaded && state.uploadedImg) {
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
-      el.msg.textContent = t("msg.contourWait");
-      fetchServerDashes(state.uploadedFile, cw, ch).then(d => showServerContour(d, cw, ch, state.uploadedImg)).catch(() => { el.msg.textContent = ""; });
+      requestServerContour(cw, ch, state.uploadedImg);
       return;
     }
     state.seed = (Math.random() * 0x7fffffff) | 0;
@@ -2221,6 +2313,7 @@ function initUI() {
     if (!state.dashes.length) run();
     const svg = exportDashesSVG(state.dashes, state.canvas[0], state.canvas[1]);
     download("contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.svg", svg, "image/svg+xml");
+    notifyKey("msg.svgReady", "success");
   });
   el.btnJpg.addEventListener("click", () => {
     if (!state.dashes.length) run();
@@ -2230,6 +2323,7 @@ function initUI() {
     a.download = "contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.jpg";
     document.body.appendChild(a); a.click();
     setTimeout(() => { a.remove(); }, 400);
+    notifyKey("msg.jpgReady", "success");
   });
 
   // ---- image upload: drag & drop + click ----
@@ -2245,23 +2339,24 @@ function initUI() {
     try {
       poly = traceShapeFromImage(img, Number(el.threshold.value), 400);
     } catch (err) {
-      el.msg.textContent = err.message;
+      notify(err.message || t("msg.processing"), "error");
       return;
     }
-    if (!poly) { el.msg.textContent = t("msg.thresholdNoSilhouette"); return; }
+    if (!poly) { notifyKey("msg.thresholdNoSilhouette", "warning"); return; }
     setShape([poly], "custom");
     run();
   };
 
   const handleFile = file => {
-    if (!file || !file.type.startsWith("image/")) { el.msg.textContent = t("msg.noImage"); return; }
+    if (!file || !/^image\/(png|jpeg|webp)$/i.test(file.type)) { notifyKey("msg.noImage", "error"); return; }
+    if (file.size > MAX_CONTOUR_UPLOAD_BYTES) { notifyKey("msg.imageTooLarge", "error"); return; }
     const url = URL.createObjectURL(file);
     const img = new Image();
     // Client-side geometric trace, used only as an offline fallback.
     const finish = poly => {
       URL.revokeObjectURL(url);
       if (!poly) {
-        if (!el.msg.textContent) el.msg.textContent = t("msg.noSilhouette");
+        notifyKey("msg.noSilhouette", "warning");
         return;
       }
       setShape([poly], "custom");
@@ -2273,20 +2368,15 @@ function initUI() {
       state.uploadedImg = img; state.uploadedFile = file;   // keep for live threshold re-tracing
       state.uploaded = true;
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
-      el.msg.textContent = t("msg.contourWait");
-      // precise Python/OpenCV contour dashes from /api/contour
-      fetchServerDashes(file, cw, ch).then(data => {
+      requestServerContour(cw, ch, img).then(ok => {
+        // Image remains decoded after its object URL is released.
         URL.revokeObjectURL(url);
+        if (!ok) return;
         el.preset.value = "custom";
         el.preset.querySelector('[value="custom"]').disabled = false;
-        showServerContour(data, cw, ch, img);
-      }).catch(() => {
-        // server unavailable → the client-side luminance trace is unreliable for
-        // complex subjects, so show a clear message instead of a broken outline.
-        el.msg.textContent = t("msg.contourFail");
       });
     };
-    img.onerror = () => { URL.revokeObjectURL(url); el.msg.textContent = t("msg.readError"); };
+    img.onerror = () => { URL.revokeObjectURL(url); notifyKey("msg.readError", "error"); };
     img.src = url;
   };
   el.drop.addEventListener("click", () => el.file.click());

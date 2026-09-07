@@ -14,13 +14,19 @@ api/contour.py — серверная функция (Vercel Python + OpenCV).
 лишь в диагностике и не меняют действующую геометрию пунктиров.
 """
 import base64
+import binascii
 import io
+import logging
 import math
 import re
+import time
+import traceback
+import uuid
 
 import numpy as np
 import cv2
 from flask import Flask, request, jsonify
+from werkzeug.exceptions import BadRequest
 
 app = Flask(__name__)
 
@@ -38,17 +44,43 @@ DASH_MM = 30.0
 GAP_TGT = 1.0        # малый зазор: штрихи вплотную, но остаются штрихами
 MAX_DASH = 150
 MAX_SIDE = 1024       # ограничение размера загружаемого изображения
+MAX_UPLOAD_BYTES = 3 * 1024 * 1024  # JSON/base64 stays safely below Vercel's 4.5 MB body limit
+MAX_IMAGE_PIXELS = 24_000_000
+
+logger = logging.getLogger("drawacrl.contour")
+if not logger.handlers:
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+
+class ContourError(Exception):
+    def __init__(self, code, message, status=400, stage="request"):
+        super().__init__(message)
+        self.code = code
+        self.status = status
+        self.stage = stage
 
 
 def decode_dataurl(dataurl):
     m = re.match(r"^data:([^;]+);base64,(.+)$", dataurl or "")
     if not m:
-        return None
-    raw = base64.b64decode(m.group(2))
+        raise ContourError("INVALID_IMAGE", "Expected a base64 image data URL", 400, "decode_data_url")
+    mime = m.group(1).lower()
+    try:
+        raw = base64.b64decode(m.group(2), validate=True)
+    except (ValueError, binascii.Error) as exc:
+        raise ContourError("INVALID_IMAGE", "Invalid base64 image data", 400, "decode_data_url") from exc
+    if len(raw) > MAX_UPLOAD_BYTES:
+        raise ContourError("IMAGE_TOO_LARGE", "Image file exceeds the upload limit", 413, "validate_upload")
     buf = np.frombuffer(raw, np.uint8)
     # Keep alpha when it exists: a supplied transparency mask is stronger
     # evidence than any colour-based foreground guess.
-    return cv2.imdecode(buf, cv2.IMREAD_UNCHANGED)
+    image = cv2.imdecode(buf, cv2.IMREAD_UNCHANGED)
+    if image is None or image.size == 0:
+        raise ContourError("INVALID_IMAGE", "OpenCV could not decode the image", 400, "decode_image")
+    h, w = image.shape[:2]
+    if h * w > MAX_IMAGE_PIXELS:
+        raise ContourError("IMAGE_TOO_LARGE", "Image dimensions exceed the processing limit", 413, "validate_dimensions")
+    return image, mime, len(raw)
 
 
 def split_image(img):
@@ -226,16 +258,18 @@ def internal_structural_edges(bgr, solid, contour):
     return raw, structural
 
 
-def png_data_url(image, max_side=640):
+def png_data_url(image, max_side=420):
     """Encode compact diagnostics without affecting the original upload/export."""
     h, w = image.shape[:2]
     if max(h, w) > max_side:
         scale = max_side / float(max(h, w))
         image = cv2.resize(image, (round(w * scale), round(h * scale)), interpolation=cv2.INTER_AREA)
-    ok, encoded = cv2.imencode(".png", image)
+    # JPEG keeps the optional diagnostic grid well under Vercel's response-body
+    # limit. It never participates in contour extraction or export.
+    ok, encoded = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, 80])
     if not ok:
         raise RuntimeError("could not encode diagnostic image")
-    return "data:image/png;base64," + base64.b64encode(encoded).decode("ascii")
+    return "data:image/jpeg;base64," + base64.b64encode(encoded).decode("ascii")
 
 
 def build_diagnostics(bgr, solid, contour, raw, structural):
@@ -264,7 +298,9 @@ def build_diagnostics(bgr, solid, contour, raw, structural):
     }
 
 
-def compute_contour(img, canvas_w=None, canvas_h=None):
+def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
+    timings = timings if timings is not None else {}
+    started = time.perf_counter()
     cw = float(canvas_w or CANVAS)
     ch = float(canvas_h or CANVAS)
     H0, W0 = img.shape[:2]
@@ -275,12 +311,17 @@ def compute_contour(img, canvas_w=None, canvas_h=None):
         img = cv2.resize(img, (int(W0 * sc), int(H0 * sc)), interpolation=cv2.INTER_AREA)
         image_scale = sc
     H, W = img.shape[:2]
+    timings["resize_ms"] = round((time.perf_counter() - started) * 1000, 1)
 
     # Segmentation establishes the object mask; only its largest external
     # boundary survives. Surface lines and holes never become exported paths.
+    stage_started = time.perf_counter()
     c_out, solid, method = extract_foreground_contour(img)
+    timings["segmentation_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
     bgr, _alpha = split_image(img)
+    stage_started = time.perf_counter()
     raw_edges, structural_edges = internal_structural_edges(bgr, solid, c_out)
+    timings["structural_edges_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
     points = c_out.reshape(-1, 2).astype(float)
 
     # 5) px -> мм: пропорционально, по большей стороне, центр холста
@@ -348,9 +389,12 @@ def compute_contour(img, canvas_w=None, canvas_h=None):
         "image_size": [W0, H0],
         "contour_points": len(contour_px),
     }
+    stage_started = time.perf_counter()
+    diagnostics = build_diagnostics(bgr, solid, c_out, raw_edges, structural_edges)
+    timings["diagnostics_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
+    timings["total_ms"] = round((time.perf_counter() - started) * 1000, 1)
     return {"dashes": dashes, "contour": contour, "contour_px": contour_px,
-            "solid_cells": None, "diagnostics": build_diagnostics(
-                bgr, solid, c_out, raw_edges, structural_edges), "meta": meta}
+            "solid_cells": None, "diagnostics": diagnostics, "meta": meta}
 
 
 @app.route("/", methods=["POST"])
@@ -358,18 +402,64 @@ def compute_contour(img, canvas_w=None, canvas_h=None):
 @app.route("/api/contour/", methods=["POST"])
 @app.route("/<path:path>", methods=["POST"])
 def trace(path="/"):
-    data = request.get_json(force=True, silent=True) or {}
-    img = decode_dataurl(data.get("image"))
-    if img is None:
-        return jsonify({"error": "image (data URL) required"}), 400
-    canvas = data.get("canvas") or []
-    cw = canvas[0] if len(canvas) > 0 else CANVAS
-    ch = canvas[1] if len(canvas) > 1 else CANVAS
+    request_id = request.headers.get("X-Request-ID") or uuid.uuid4().hex
+    began = time.perf_counter()
+    timings = {}
+    mime = None
+    file_bytes = None
+    dimensions = None
     try:
-        res = compute_contour(img, cw, ch)
+        try:
+            data = request.get_json(force=True, silent=False) or {}
+        except BadRequest as exc:
+            raise ContourError("INVALID_REQUEST", "Request JSON could not be parsed", 400, "parse_json") from exc
+        if not isinstance(data, dict):
+            raise ContourError("INVALID_REQUEST", "Request JSON must be an object", 400, "parse_json")
+        # Log only metadata, never the encoded image itself. This also leaves
+        # useful context when base64 validation fails before decoding.
+        encoded_image = data.get("image") or ""
+        match = re.match(r"^data:([^;]+);base64,(.*)$", encoded_image)
+        if match:
+            mime = match.group(1).lower()
+            file_bytes = (len(match.group(2).rstrip("=")) * 3) // 4
+        decode_started = time.perf_counter()
+        img, mime, file_bytes = decode_dataurl(data.get("image"))
+        dimensions = [int(img.shape[1]), int(img.shape[0])]
+        timings["decode_ms"] = round((time.perf_counter() - decode_started) * 1000, 1)
+        canvas = data.get("canvas") or []
+        cw = canvas[0] if len(canvas) > 0 else CANVAS
+        ch = canvas[1] if len(canvas) > 1 else CANVAS
+        res = compute_contour(img, cw, ch, timings)
+        payload = jsonify(res)
+        timings["total_ms"] = round((time.perf_counter() - began) * 1000, 1)
+        logger.info({"event": "contour_success", "request_id": request_id,
+                     "mime": mime, "file_bytes": file_bytes, "image_size": dimensions,
+                     "timings_ms": timings, "response_bytes": payload.calculate_content_length()})
+        payload.headers["X-Request-ID"] = request_id
+        return payload
+    except ContourError as exc:
+        timings["total_ms"] = round((time.perf_counter() - began) * 1000, 1)
+        logger.warning({"event": "contour_rejected", "request_id": request_id,
+                        "code": exc.code, "stage": exc.stage, "mime": mime,
+                        "file_bytes": file_bytes, "image_size": dimensions,
+                        "timings_ms": timings, "error": str(exc)})
+        response = jsonify({"error": {"code": exc.code, "message": "Image could not be processed"},
+                            "request_id": request_id})
+        response.status_code = exc.status
+        response.headers["X-Request-ID"] = request_id
+        return response
     except Exception as exc:  # noqa: BLE001
-        return jsonify({"error": str(exc)}), 500
-    return jsonify(res)
+        timings["total_ms"] = round((time.perf_counter() - began) * 1000, 1)
+        logger.error({"event": "contour_failure", "request_id": request_id,
+                      "stage": "pipeline", "mime": mime, "file_bytes": file_bytes,
+                      "image_size": dimensions, "timings_ms": timings,
+                      "error_type": type(exc).__name__, "error": str(exc),
+                      "traceback": traceback.format_exc()})
+        response = jsonify({"error": {"code": "INTERNAL_ERROR", "message": "Contour processing failed"},
+                            "request_id": request_id})
+        response.status_code = 500
+        response.headers["X-Request-ID"] = request_id
+        return response
 
 
 @app.route("/", methods=["GET"])
