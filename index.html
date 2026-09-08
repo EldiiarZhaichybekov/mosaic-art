@@ -289,6 +289,14 @@
       <div class="actions">
         <button id="btn-gen" data-i18n="btn.generate">Трассировать контур</button>
       </div>
+      <div id="result-controls" hidden>
+        <label for="result-variant" data-i18n="result.label">Результат для просмотра и экспорта</label>
+        <select id="result-variant">
+          <option value="detailed" data-i18n="result.detailed">Результат 1 — Детальный</option>
+          <option value="refined" data-i18n="result.refined">Результат 2 — Очищенный</option>
+        </select>
+        <p id="result-description" aria-live="polite" style="font-size:12px;line-height:1.5"></p>
+      </div>
       <div class="actions">
         <button id="btn-svg" data-i18n="btn.export" data-i18n-attr="title:btn.exportTitle">Экспорт в SVG</button>
         <button id="btn-jpg" data-i18n="btn.exportJpg" data-i18n-attr="title:btn.exportJpgTitle">Экспорт в JPG</button>
@@ -446,14 +454,14 @@ const I18N = {
     "chip.sparse": "РАЗРЕЖЕНО",
     "msg.noShape": "Сначала выберите силуэт (пресет или изображение).",
     "msg.noImage": "Выберите изображение PNG или JPG.",
-    "msg.noSilhouette": "Силуэт не найден — попробуйте более контрастное изображение или измените порог.",
+    "msg.noSilhouette": "Не удалось выделить силуэт на изображении.",
     "msg.contourWait": "Распознаю контур…",
     "msg.contourReady": "Контур построен.",
     "msg.network": "Не удалось связаться с сервисом контура. Проверьте соединение и попробуйте ещё раз.",
     "msg.timeout": "Обработка заняла слишком много времени. Попробуйте фото меньшего размера.",
     "msg.imageTooLarge": "Файл слишком большой. Выберите изображение до 3 МБ.",
     "msg.invalidImage": "Не удалось прочитать изображение. Выберите корректный PNG, JPG или WebP.",
-    "msg.processing": "Не удалось построить контур. Попробуйте ещё раз или выберите более контрастное фото.",
+    "msg.processing": "Не удалось завершить обработку изображения. Попробуйте ещё раз.",
     "msg.svgReady": "SVG подготовлен к скачиванию.", "msg.jpgReady": "JPG подготовлен к скачиванию.",
     "msg.thresholdNoSilhouette": "При этом пороге силуэт не найден — оставлен предыдущий контур.",
     "msg.readError": "Не удалось прочитать файл изображения.",
@@ -538,14 +546,14 @@ const I18N = {
     "chip.sparse": "SPARSE",
     "msg.noShape": "Load a shape first (preset or image).",
     "msg.noImage": "Please choose a PNG or JPG image.",
-    "msg.noSilhouette": "No silhouette detected — try a higher-contrast image or adjust the threshold.",
+    "msg.noSilhouette": "Could not detect the image silhouette.",
     "msg.contourWait": "Tracing the contour…",
     "msg.contourReady": "Contour created.",
     "msg.network": "Could not reach the contour service. Check your connection and try again.",
     "msg.timeout": "Processing took too long. Try a smaller image.",
     "msg.imageTooLarge": "The file is too large. Choose an image up to 3 MB.",
     "msg.invalidImage": "The image could not be read. Choose a valid PNG, JPG, or WebP.",
-    "msg.processing": "Could not create the contour. Try again or choose a higher-contrast photo.",
+    "msg.processing": "Image processing could not be completed. Please try again.",
     "msg.svgReady": "SVG is ready to download.", "msg.jpgReady": "JPG is ready to download.",
     "msg.thresholdNoSilhouette": "No silhouette at this threshold — keeping the previous outline.",
     "msg.readError": "Could not read that image file.",
@@ -631,14 +639,14 @@ const I18N = {
     "chip.sparse": "稀疏",
     "msg.noShape": "请先选择轮廓（预设或图片）。",
     "msg.noImage": "请选择 PNG 或 JPG 图片。",
-    "msg.noSilhouette": "未检测到轮廓——请尝试对比度更高的图片或调整阈值。",
+    "msg.noSilhouette": "无法检测图像轮廓。",
     "msg.contourWait": "正在识别轮廓…",
     "msg.contourReady": "轮廓已生成。",
     "msg.network": "无法连接到轮廓服务。请检查网络后重试。",
     "msg.timeout": "处理时间过长。请尝试更小的图片。",
     "msg.imageTooLarge": "文件过大。请选择不超过 3 MB 的图片。",
     "msg.invalidImage": "无法读取图片。请选择有效的 PNG、JPG 或 WebP。",
-    "msg.processing": "无法生成轮廓。请重试或选择对比度更高的照片。",
+    "msg.processing": "无法完成图像处理，请重试。",
     "msg.svgReady": "SVG 已准备下载。", "msg.jpgReady": "JPG 已准备下载。",
     "msg.thresholdNoSilhouette": "此阈值下未找到轮廓——保留之前的轮廓。",
     "msg.readError": "无法读取图片文件。",
@@ -651,6 +659,12 @@ const I18N = {
 };
 
 let currentLang = "ru";
+for (const [lang, values] of Object.entries({
+  ru: ["Результат для просмотра и экспорта", "Результат 1 — Детальный", "Результат 2 — Очищенный", "Все принятые структурные линии. Экспортируется выбранный результат.", "Меньше мелких и повторяющихся линий. Экспортируется выбранный результат.", "Не удалось выделить объект на изображении.", "Объект найден, но устойчивый контур построить не удалось.", "Очищенный результат недоступен. Детальный результат можно просмотреть и скачать."],
+  en: ["Preview and export result", "Result 1 — Detailed", "Result 2 — Refined", "All accepted structural lines. Export uses the selected result.", "Fewer tiny and duplicate lines. Export uses the selected result.", "Could not separate the object from the background.", "Object detected, but no usable contour was found.", "Refined result unavailable. The detailed result is still available to view and download."],
+  zh: ["预览及导出结果", "结果 1 — 详细", "结果 2 — 精简", "保留已接受的结构线。导出当前选中的结果。", "减少细碎和重复线条。导出当前选中的结果。", "无法从图像中分离对象。", "检测到对象，但无法生成有效轮廓。", "精简结果不可用。仍可查看和下载详细结果。"]
+})) ["result.label","result.detailed","result.refined","result.detailedHelp","result.refinedHelp","msg.noForeground","msg.noContour","msg.refinementFailed"].forEach((key,i)=>I18N[lang][key]=values[i]);
+
 function t(key, params) {
   let s = (I18N[currentLang] && I18N[currentLang][key]) || I18N.ru[key] || key;
   if (params !== undefined) s = String(s).replace(/\{n\}/g, params);
@@ -1566,8 +1580,10 @@ function generateDashes(polys, dashLen, gapTgt, maxDash) {
 }
 
 // Draw contour dashes on the sheet (dashes in [0..cw]x[0..ch] mm space).
-function finalLineArt(data) {
-  return [[...data.contour, data.contour[0]], ...data.internal_lines];
+function finalLineArt(data, variant = "detailed") {
+  const lines = variant === "refined" && data.refined?.status === "ok"
+    ? data.refined.indices.map(i => data.internal_lines[i]) : data.internal_lines;
+  return [[...data.contour, data.contour[0]], ...lines];
 }
 
 function drawDashes(dashes, cw, ch) {
@@ -1674,6 +1690,8 @@ async function fetchServerDashes(file, cw, ch) {
     }
     const pathValid = p => Array.isArray(p) && p.length >= 2 && p.every(q => Array.isArray(q) && q.length === 2 && q.every(Number.isFinite));
     if (!data || !Array.isArray(data.dashes) || !data.dashes.length || !data.dashes.every(pathValid) || !pathValid(data.contour) || !Array.isArray(data.internal_lines) || !data.internal_lines.every(pathValid)) throw new ContourRequestError("INVALID_RESPONSE", { status: resp.status, requestId: responseId });
+    // An optional malformed refinement must never invalidate the detailed result.
+    if (data.refined?.status === "ok" && (!Array.isArray(data.refined.indices) || !data.refined.indices.every(i => Number.isInteger(i) && i >= 0 && i < data.internal_lines.length))) data.refined = {status:"unavailable"};
     return data;
   } catch (err) {
     if (err instanceof ContourRequestError) throw err;
@@ -2114,6 +2132,8 @@ function initUI() {
     if (err && ["INVALID_IMAGE", "UNSUPPORTED_FORMAT"].includes(err.code)) return notifyKey("msg.invalidImage", "error");
     if (err && err.code === "PROCESSING_TIMEOUT") return notifyKey("msg.timeout", "error");
     if (err && err.code === "NETWORK_ERROR") return notifyKey("msg.network", "error");
+    if (err && err.code === "NO_FOREGROUND") return notifyKey("msg.noForeground", "error");
+    if (err && ["NO_VALID_CONTOUR", "MASK_INVALID"].includes(err.code)) return notifyKey("msg.noContour", "error");
     return notifyKey("msg.processing", "error");
   }
 
@@ -2181,6 +2201,12 @@ function initUI() {
 
   // Canvas and exports share the server's final external and internal geometry.
   function showServerContour(data, cw, ch, image) {
+    state.resultData = data;
+    state.variant = "detailed";
+    $("result-controls").hidden = false;
+    $("result-variant").value = "detailed";
+    $("result-variant").options[1].disabled = data.refined?.status !== "ok";
+    $("result-description").textContent = t("result.detailedHelp");
     state.dashes = data.dashes;
     state.internalLines = data.internal_lines;
     state.finalPaths = finalLineArt(data);
@@ -2215,6 +2241,7 @@ function initUI() {
       if (generation !== contourGeneration) return false;
       showServerContour(data, cw, ch, image);
       notifyKey("msg.contourReady", "success");
+      if (data.refined?.status !== "ok") notifyKey("msg.refinementFailed", "warning", 0);
       return true;
     } catch (err) {
       if (generation !== contourGeneration) return false;
@@ -2224,6 +2251,8 @@ function initUI() {
   }
 
   function setShape(polys, name) {
+    state.resultData = null; state.variant = "detailed";
+    $("result-controls").hidden = true;
     state.finalPaths = null; state.internalLines = [];
     state.polys = polys;
     state.shapeName = name;
@@ -2321,6 +2350,15 @@ function initUI() {
     }
   });
 
+  $("result-variant").addEventListener("change", () => {
+    if (!state.resultData) return;
+    state.variant = $("result-variant").value;
+    state.finalPaths = finalLineArt(state.resultData, state.variant);
+    state.internalLines = state.finalPaths.slice(1);
+    $("result-description").textContent = t("result." + state.variant + "Help");
+    drawDashes(renderedPaths(), state.canvas[0], state.canvas[1]);
+    renderContourInfo(state.scaled, ...state.canvas);
+  });
   el.guide.addEventListener("change", () => drawDashes(renderedPaths(), state.canvas[0], state.canvas[1]));
 
   // long descriptions & hints are hidden by default; the toggle reveals them.
@@ -2357,7 +2395,7 @@ function initUI() {
   el.btnSvg.addEventListener("click", () => {
     if (!state.dashes.length) run();
     const svg = exportDashesSVG(renderedPaths(), state.canvas[0], state.canvas[1]);
-    download("contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.svg", svg, "image/svg+xml");
+    download("contour-" + state.shapeName + "-" + (state.variant || "detailed") + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.svg", svg, "image/svg+xml");
     notifyKey("msg.svgReady", "success");
   });
   el.btnJpg.addEventListener("click", () => {
@@ -2365,7 +2403,7 @@ function initUI() {
     const url = exportDashesJPG(renderedPaths(), state.canvas[0], state.canvas[1]);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "contour-" + state.shapeName + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.jpg";
+    a.download = "contour-" + state.shapeName + "-" + (state.variant || "detailed") + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.jpg";
     document.body.appendChild(a); a.click();
     setTimeout(() => { a.remove(); }, 400);
     notifyKey("msg.jpgReady", "success");
@@ -2492,6 +2530,7 @@ function initUI() {
   }
   el.lang.addEventListener("change", () => {
     applyLanguage(el.lang.value);
+    if (state.resultData) $("result-description").textContent = t("result." + state.variant + "Help");
     if (state.scaled && state.canvas.length) renderContourInfo(state.scaled, state.canvas[0], state.canvas[1]);
   });
 

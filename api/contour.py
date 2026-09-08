@@ -10,8 +10,8 @@ api/contour.py — серверная функция (Vercel Python + OpenCV).
 
 Алгоритм намеренно разделён на независимые этапы: сегментация объекта,
 внешняя граница и диагностическое выделение внутренних структурных линий.
-Экспорт использует только внешнюю границу; внутренние линии пока существуют
-лишь в диагностике и не меняют действующую геометрию пунктиров.
+Детальный результат содержит внешнюю границу и принятые внутренние линии.
+Очищенный результат ссылается на подмножество этих же внутренних линий.
 """
 import base64
 import binascii
@@ -26,6 +26,7 @@ import os
 from contextlib import contextmanager
 import json
 from contour_geometry import analyze_structure, edge_graph
+from contour_refinement import refine_lines
 
 import numpy as np
 import cv2
@@ -106,7 +107,10 @@ def decode_dataurl(dataurl):
     buf = np.frombuffer(raw, np.uint8)
     # Keep alpha when it exists: a supplied transparency mask is stronger
     # evidence than any colour-based foreground guess.
-    image = cv2.imdecode(buf, cv2.IMREAD_UNCHANGED)
+    try:
+        image = cv2.imdecode(buf, cv2.IMREAD_UNCHANGED)
+    except cv2.error as exc:
+        raise ContourError("INVALID_IMAGE", "OpenCV image decoding failed", 400, "decode_image") from exc
     if image is None or image.size == 0:
         raise ContourError("INVALID_IMAGE", "OpenCV could not decode the image", 400, "decode_image")
     h, w = image.shape[:2]
@@ -117,6 +121,10 @@ def decode_dataurl(dataurl):
 
 def split_image(img):
     """Return BGR pixels and an optional alpha matte."""
+    # OpenCV preserves 16-bit PNG depth. LAB/GrabCut require 8-bit pixels;
+    # normalize both colour and alpha using the encoding range, not image contrast.
+    if img.dtype == np.uint16:
+        img = ((img.astype(np.uint32) + 128) // 257).astype(np.uint8)
     if img.ndim == 2:
         return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR), None
     if img.shape[2] == 4:
@@ -128,10 +136,10 @@ def largest_outer_contour(mask):
     """Keep one outer silhouette and intentionally discard interior detail."""
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if not contours:
-        raise RuntimeError("no foreground contour")
+        raise ContourError("NO_FOREGROUND", "Mask contains no foreground", 422, "segmentation")
     contour = max(contours, key=cv2.contourArea)
     if cv2.contourArea(contour) < 16:
-        raise RuntimeError("foreground contour is too small")
+        raise ContourError("NO_VALID_CONTOUR", "Foreground has no usable area", 422, "contour_validation")
     solid = np.zeros(mask.shape, np.uint8)
     cv2.drawContours(solid, [contour], -1, 255, -1)
     # CHAIN_APPROX_NONE preserves the sampled boundary. Do not simplify it:
@@ -190,10 +198,11 @@ def border_background_mask(bgr):
         mask = np.where(
             (gc_mask == cv2.GC_FGD) | (gc_mask == cv2.GC_PR_FGD), 255, 0
         ).astype(np.uint8)
-    except cv2.error:
+    except cv2.error as exc:
         # Retain a deterministic colour-distance fallback for unusually flat
         # images where GrabCut cannot initialise a foreground GMM.
         mask = (candidate * 255).astype(np.uint8)
+        logger.warning({"event":"segmentation_fallback","request_id":getattr(g,"request_id",None) if has_request_context() else None,"stage":"grabcut","error":str(exc)})
     return mask
 
 
@@ -204,7 +213,9 @@ def extract_foreground_contour(img):
     # opaque photographs. Treat alpha as a mask only when it covers a material
     # part of the image, not when it is merely encoder residue.
     alpha_coverage = float(np.mean(alpha < 250)) if alpha is not None else 0.0
-    if alpha is not None and alpha_coverage > 0.01:
+    if alpha is not None and np.max(alpha) <= 8:
+        raise ContourError("NO_FOREGROUND", "Image is fully transparent", 422, "alpha_mask")
+    if alpha is not None and alpha_coverage > 0.01 and np.mean(alpha <= 8) > .01:
         # Preserve semi-transparent silhouettes while excluding a fully
         # transparent background. There is no colour segmentation in this path.
         mask = np.where(alpha > 8, 255, 0).astype(np.uint8)
@@ -212,7 +223,33 @@ def extract_foreground_contour(img):
     else:
         mask = border_background_mask(bgr)
         method = "lab-grabcut"
-    contour, solid = largest_outer_contour(mask)
+    try:
+        contour, solid = largest_outer_contour(mask)
+    except ContourError as initial:
+        # Only failed baseline masks enter this fallback. Otsu polarity must
+        # explain a mostly background border, and cannot simply select the frame.
+        gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
+        if int(gray.max())-int(gray.min()) < 2:
+            raise initial
+        _, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        for alternate in (threshold,255-threshold):
+            border = np.concatenate((alternate[0],alternate[-1],alternate[:,0],alternate[:,-1]))
+            if np.mean(border>0) > .25 or not .0001 < np.mean(alternate>0) < .95:
+                continue
+            try:
+                contour, solid = largest_outer_contour(alternate)
+                mask = alternate
+                method = "luminance-fallback"
+                break
+            except ContourError:
+                continue
+        else:
+            raise initial
+    logger.info({"event":"mask_validated","method":method,"area_ratio":float(np.mean(solid>0)),
+                 "components":int(cv2.connectedComponents(mask)[0]-1), "alpha_coverage":alpha_coverage,
+                 "border_touch_ratio":float(np.mean(np.concatenate((solid[0],solid[-1],solid[:,0],solid[:,-1]))>0)),
+                 "bbox":list(cv2.boundingRect(contour)),"perimeter":float(cv2.arcLength(contour,True)),
+                 "request_id":getattr(g,"request_id",None) if has_request_context() else None})
     return contour, solid, method
 
 
@@ -368,6 +405,19 @@ def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
         transformed = (path.astype(float) - [cx_px, cy_px]) * scale_mm + [cw/2, ch/2]
         internal_lines.append(transformed.tolist())
     timings["vectorization_ms"] = round((time.perf_counter()-vector_started)*1000,2)
+    refined = {"status":"unavailable","indices":[],"error":{"code":"REFINEMENT_ERROR"}}
+    refine_started = time.perf_counter()
+    try:
+        indices, refinement = refine_lines(internal_px, solid, analysis["evidence"])
+        refined = {"status":"ok","indices":indices,
+                   "summary":{k:v for k,v in refinement.items() if k != "paths"}}
+        analysis["metadata"]["refinement"] = {**refinement,"paths":refinement["paths"][:1000],
+                                               "paths_truncated":len(refinement["paths"])>1000}
+    except Exception:
+        # Refinement is optional: detailed geometry remains a successful result.
+        logger.error({"event":"refinement_failure","request_id":getattr(g,"request_id",None) if has_request_context() else None,
+                      "stage":"refinement","traceback":traceback.format_exc()})
+    timings["refinement_ms"] = round((time.perf_counter()-refine_started)*1000,2)
 
     mx0, my0 = mm.min(axis=0)
     mx1, my1 = mm.max(axis=0)
@@ -388,7 +438,7 @@ def compute_contour(img, canvas_w=None, canvas_h=None, timings=None):
     timings["diagnostics_ms"] = round((time.perf_counter() - stage_started) * 1000, 1)
     timings["total_ms"] = round((time.perf_counter() - started) * 1000, 1)
     return {"dashes": dashes, "contour": contour, "contour_px": contour_px,
-            "internal_lines": internal_lines,
+            "internal_lines": internal_lines, "refined": refined,
             "solid_cells": None, "diagnostics": diagnostics, "debug": analysis["metadata"], "meta": meta}
 
 
@@ -484,4 +534,4 @@ def ping(path="/"):
     if request.path == "/":
         return send_from_directory(str(Path(__file__).resolve().parent.parent), "index.html")
     return jsonify({"ok": True, "service": "contour", "opencv": cv2.__version__,
-                    "pipeline": "path-aware-v1", "revision": os.environ.get("VERCEL_GIT_COMMIT_SHA")})
+                    "pipeline": "dual-output-v2", "revision": os.environ.get("VERCEL_GIT_COMMIT_SHA")})

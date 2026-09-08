@@ -385,7 +385,7 @@ def analyze_structure(bgr, mask, audit=None):
                      sampling_stride=max(2, round(diagonal * .006)))
         audit.update(paths=paths,individual=individually_accepted,path_rescued=rescued)
     records.sort(key=lambda r: (-r["length"], r["id"]))
-    return {"raw": raw, "candidates": candidates, "individual": individually_accepted,
+    return {"evidence": evidence, "raw": raw, "candidates": candidates, "individual": individually_accepted,
             "path_rescued": rescued, "observed": observed, "rejected": rejected,
             "reconstruction_candidates": proposals, "reconstructed": repaired, "final": observed | repaired,
             "metadata": {"geometry": geo, "timings_ms": timings, "segments": records[:2000], "bridges": bridges[:1000],
