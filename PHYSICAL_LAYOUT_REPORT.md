@@ -1,5 +1,8 @@
 # Result 2: physical tile layout
 
+Historical v1 report. The corrective v2 implementation and current limitations
+are documented in `STRUCTURAL_LAYOUT_REPORT.md`.
+
 ## Result 1 freeze
 
 The contour server implementation is unchanged from e2cd489 (only explicit local

@@ -1,0 +1,9 @@
+{
+  "baselineCommit": "321925a1e7f8845c1535e200055045d235b0b99f",
+  "source": "test_butterfly.webp through unchanged Result 1",
+  "reference": "human-400x400mm.svg",
+  "comparison": "Reference bounding-box alignment; internal manual lines >7 mm from original outer; sample coverage within 6 mm of skeleton tile centerlines",
+  "before": {"tiles":68,"outer":42,"skeleton":26,"majorReferenceCoverage6mm":0.4398,"referenceTilesCovered80Percent":17},
+  "after": {"tiles":96,"outer":42,"skeleton":54,"majorReferenceCoverage6mm":0.6833,"referenceTilesCovered80Percent":29},
+  "limitations": "This is not an exact-match test or certification of the human reference. Reference contains 3 overlapping normalized 30x3 tile pairs. External antenna loss remains. Full-path grouping makes old/new within-group contact ratios non-equivalent."
+}

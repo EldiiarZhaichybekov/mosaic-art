@@ -76,6 +76,14 @@ class EndpointTests(unittest.TestCase):
             self.assertIn("structural_edges", str(logs.output))
             self.assertNotIn("test failure", response.get_data(as_text=True))
             self.assertEqual(response.status_code, 500)
+        for error, code in [(MemoryError('resource test'), 'RESOURCE_LIMIT'),
+                            (cv2.error('opencv test'), 'OPENCV_ERROR')]:
+            with patch.object(contour, 'internal_structural_edges', side_effect=error):
+                with self.assertLogs(contour.logger, level='ERROR') as logs:
+                    response = self.client.post('/api/contour', json=self.payload)
+                self.assertEqual(response.json['error']['code'], code)
+                self.assertIn('structural_edges', str(logs.output))
+                self.assertNotIn(str(error), response.get_data(as_text=True))
 
     def test_dimensions_checked_before_full_decode(self):
         with patch.object(contour.Image, "open") as header, patch.object(cv2, "imdecode") as decoder:

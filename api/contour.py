@@ -474,6 +474,10 @@ def trace(path="/"):
         timings["stage"] = "decode_image"
         img, mime, file_bytes = decode_dataurl(data.get("image"))
         dimensions = [int(img.shape[1]), int(img.shape[0])]
+        alpha_present = img.ndim == 3 and img.shape[2] == 4
+        logger.info({"event": "image_decoded", "request_id": request_id,
+                     "mime": mime, "file_bytes": file_bytes, "image_size": dimensions,
+                     "alpha_present": alpha_present, "dtype": str(img.dtype)})
         timings["decode_ms"] = round((time.perf_counter() - decode_started) * 1000, 1)
         canvas = data.get("canvas") or []
         if not isinstance(canvas, list) or len(canvas) > 2 or any(
@@ -482,6 +486,7 @@ def trace(path="/"):
         cw = canvas[0] if len(canvas) > 0 else CANVAS
         ch = canvas[1] if len(canvas) > 1 else CANVAS
         res = compute_contour(img, cw, ch, timings)
+        res["request_id"] = request_id
         timings.update(res["debug"]["timings_ms"])
         if data.get("debug") is not True:
             res.pop("debug", None)
@@ -520,7 +525,8 @@ def trace(path="/"):
                       "image_size": dimensions, "timings_ms": timings,
                       "error_type": type(exc).__name__, "error": str(exc),
                       "traceback": traceback.format_exc()})
-        response = jsonify({"error": {"code": "INTERNAL_ERROR", "message": "Contour processing failed"},
+        code = "RESOURCE_LIMIT" if isinstance(exc, MemoryError) else "OPENCV_ERROR" if isinstance(exc, cv2.error) else "INTERNAL_ERROR"
+        response = jsonify({"error": {"code": code, "message": "Contour processing failed"},
                             "request_id": request_id})
         response.status_code = 500
         response.headers["X-Request-ID"] = request_id
@@ -540,6 +546,7 @@ def ping(path="/"):
 @app.route('/tile-layout.js', methods=['GET'])
 @app.route('/tile-ui.js', methods=['GET'])
 @app.route('/tile-worker.js', methods=['GET'])
+@app.route('/tile-i18n.js', methods=['GET'])
 def physical_asset():
     # Explicit local-dev allowlist. Vercel serves these same static files.
     return send_from_directory(str(Path(__file__).resolve().parent.parent), request.path[1:])

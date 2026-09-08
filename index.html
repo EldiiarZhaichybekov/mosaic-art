@@ -197,6 +197,7 @@
   #tile-plan-table { max-height:220px; overflow:auto; }
   #tile-plan-table table { width:100%; font-size:11px; text-align:right; }
   .tile-active #sec-diag, .tile-active #sec-canvas, .tile-active .brand p, .tile-active #sec-notes, .tile-active #threshold-control, .tile-active #trace-control, .tile-active #btn-gen { display:none !important; }
+  .server-contour #threshold-control, .server-contour #trace-control { display:none !important; }
   .tile-active #tile-panel button:disabled { opacity:.45; cursor:not-allowed; }
   @media(max-width:920px) { #tile-canvas { max-height:none; } }
 </style>
@@ -206,9 +207,9 @@
 
   <main id="stage">
     <div id="result-controls" hidden>
-      <div class="tile-tabs" role="group" aria-label="Результат">
-        <button id="result-detailed" aria-pressed="true">РЕЗУЛЬТАТ 1<small>Детальный</small></button>
-        <button id="result-tiles" aria-pressed="false">РЕЗУЛЬТАТ 2<small>Раскладка пластин</small></button>
+      <div class="tile-tabs" role="group" data-i18n-attr="aria-label:result.label" aria-label="Результат">
+        <button id="result-detailed" aria-pressed="true"><span data-i18n="tile.result1">РЕЗУЛЬТАТ 1</span><small data-i18n="tile.detailed">Детальный</small></button>
+        <button id="result-tiles" aria-pressed="false"><span data-i18n="tile.result2">РЕЗУЛЬТАТ 2</span><small data-i18n="tile.physical">Раскладка пластин</small></button>
       </div>
       <p id="result-description" class="tile-help" aria-live="polite"></p>
     </div>
@@ -354,6 +355,7 @@
 <div id="notifications" aria-live="polite" aria-atomic="false"></div>
 
 <script src="tile-layout.js"></script>
+<script src="tile-i18n.js"></script>
 <script src="tile-ui.js"></script>
 <script>
 "use strict";
@@ -678,6 +680,7 @@ const I18N = {
 };
 
 let currentLang = "ru";
+for(const lang of LANGS) Object.assign(I18N[lang],globalThis.TileMessages?.[lang]||{});
 for (const [lang, values] of Object.entries({
   ru: ["Результат для просмотра и экспорта", "Результат 1 — Детальный", "Результат 2 — Очищенный", "Все принятые структурные линии. Экспортируется выбранный результат.", "Меньше мелких и повторяющихся линий. Экспортируется выбранный результат.", "Не удалось выделить объект на изображении.", "Объект найден, но устойчивый контур построить не удалось.", "Очищенный результат недоступен. Детальный результат можно просмотреть и скачать."],
   en: ["Preview and export result", "Result 1 — Detailed", "Result 2 — Refined", "All accepted structural lines. Export uses the selected result.", "Fewer tiny and duplicate lines. Export uses the selected result.", "Could not separate the object from the background.", "Object detected, but no usable contour was found.", "Refined result unavailable. The detailed result is still available to view and download."],
@@ -719,6 +722,7 @@ function applyLanguage(lang) {
     const [attr, key] = el.dataset.i18nAttr.split(":");
     el.setAttribute(attr, t(key));
   }
+  globalThis.TileUI?.refreshLanguage?.();
 }
 
 /* ------------------------- geometry primitives --------------------------- */
@@ -1681,7 +1685,7 @@ function newRequestId() {
 // leaves room for base64 + JSON under Vercel's 4.5 MB function-body limit.
 async function fetchServerDashes(file, cw, ch) {
   if (!file || file.size > MAX_CONTOUR_UPLOAD_BYTES) throw new ContourRequestError("IMAGE_TOO_LARGE");
-  const requestId = newRequestId();
+  const requestId = newRequestId(),started=Date.now();let stage='read_file';
   const dataUrl = await new Promise((res, rej) => {
     const r = new FileReader();
     r.onload = () => res(r.result);
@@ -1691,12 +1695,14 @@ async function fetchServerDashes(file, cw, ch) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), CONTOUR_TIMEOUT_MS);
   try {
+    stage='request';
     const resp = await fetch("/api/contour", {
       method: "POST", signal: controller.signal,
       headers: { "Content-Type": "application/json", "X-Request-ID": requestId },
       body: JSON.stringify({ image: dataUrl, canvas: [cw, ch], debug: CONTOUR_DEBUG }),
     });
     const responseId = resp.headers.get("X-Request-ID") || requestId;
+    stage='parse_response';
     const statusCode = resp.status === 413 ? "IMAGE_TOO_LARGE" : [408, 504].includes(resp.status) ? "PROCESSING_TIMEOUT" : "HTTP_ERROR";
     let data = null;
     try { data = await resp.json(); } catch (parseError) {
@@ -1711,11 +1717,13 @@ async function fetchServerDashes(file, cw, ch) {
     if (!data || !Array.isArray(data.dashes) || !data.dashes.length || !data.dashes.every(pathValid) || !pathValid(data.contour) || !Array.isArray(data.internal_lines) || !data.internal_lines.every(pathValid)) throw new ContourRequestError("INVALID_RESPONSE", { status: resp.status, requestId: responseId });
     // An optional malformed refinement must never invalidate the detailed result.
     if (data.refined?.status === "ok" && (!Array.isArray(data.refined.indices) || !data.refined.indices.every(i => Number.isInteger(i) && i >= 0 && i < data.internal_lines.length))) data.refined = {status:"unavailable"};
+    data.clientDiagnostics={requestId:responseId,mime:file.type,fileBytes:file.size,durationMs:Date.now()-started,httpStatus:resp.status};
     return data;
   } catch (err) {
+    console.warn('contour_request_failure',{requestId,stage,mime:file.type,fileBytes:file.size,durationMs:Date.now()-started,code:err.code||err.name,status:err.status||0});
     if (err instanceof ContourRequestError) throw err;
     if (err && err.name === "AbortError") throw new ContourRequestError("PROCESSING_TIMEOUT", { requestId, cause: err });
-    throw new ContourRequestError("NETWORK_ERROR", { requestId, cause: err });
+    throw new ContourRequestError(stage==='request'&&err?.name==='TypeError'?"NETWORK_ERROR":"CLIENT_ERROR", { requestId, cause: err });
   } finally {
     clearTimeout(timer);
   }
@@ -2137,7 +2145,7 @@ function initUI() {
     node.setAttribute("role", type === "error" ? "alert" : "status");
     const icon = document.createElement("span"); icon.className = "notice-icon"; icon.textContent = icons[type] || icons.info;
     const text = document.createElement("span"); text.textContent = message;
-    const close = document.createElement("button"); close.type = "button"; close.setAttribute("aria-label", "Close"); close.textContent = "×";
+    const close = document.createElement("button"); close.type = "button"; close.setAttribute("aria-label", t('tile.close')); close.setAttribute('data-i18n-attr','aria-label:tile.close'); close.textContent = "×";
     const dismiss = () => node.remove(); close.addEventListener("click", dismiss);
     node.append(icon, text, close); host.appendChild(node);
     const timeout = duration === undefined ? (type === "error" ? 0 : type === "warning" ? 6500 : 3500) : duration;
@@ -2151,13 +2159,16 @@ function initUI() {
     if (err && ["INVALID_IMAGE", "UNSUPPORTED_FORMAT"].includes(err.code)) return notifyKey("msg.invalidImage", "error");
     if (err && err.code === "PROCESSING_TIMEOUT") return notifyKey("msg.timeout", "error");
     if (err && err.code === "NETWORK_ERROR") return notifyKey("msg.network", "error");
+    if (err && err.code === "INVALID_RESPONSE") return notifyKey("tile.invalidResponse", "error");
+    if (err && err.code === "CLIENT_ERROR") return notifyKey("tile.clientError", "error");
+    if (err && err.code === "RESOURCE_LIMIT") return notifyKey("tile.resourceLimit", "error");
     if (err && err.code === "NO_FOREGROUND") return notifyKey("msg.noForeground", "error");
     if (err && ["NO_VALID_CONTOUR", "MASK_INVALID"].includes(err.code)) return notifyKey("msg.noContour", "error");
     return notifyKey("msg.processing", "error");
   }
   el.threshold.closest('.ctrl').id = 'threshold-control';
   el.traceSeg.closest('.ctrl').id = 'trace-control';
-  const physicalHooks = {notify,getFormat:()=>el.canvasFmt.value,
+  const physicalHooks = {notify,t,getFormat:()=>el.canvasFmt.value,
     onPhysical:()=>{state.variant='tiles';},
     onDetailed:()=>{state.variant='detailed';document.title=t('app.title');if(!state.resultData)return;
       state.finalPaths=finalLineArt(state.resultData);state.internalLines=state.resultData.internal_lines;
@@ -2170,7 +2181,7 @@ function initUI() {
     console.error('Physical UI unavailable',error);
     tileUI={isActive:()=>false,export:()=>{},reset:()=>{$('result-controls').hidden=true;},sourceChanged:()=>{
       $('result-controls').hidden=false;$('result-tiles').disabled=true;
-      notify('Режим пластин временно недоступен. Детальный результат можно использовать.','warning');
+      notify(t('tile.optionalUnavailable'),'warning');
     }};
   }
 
@@ -2244,6 +2255,7 @@ function initUI() {
     state.internalLines = data.internal_lines;
     state.finalPaths = finalLineArt(data);
     state.dashSource = "server";
+    document.body.classList.add('server-contour');
     state.contourMeta = data.meta || null;
     state.canvas = [cw, ch];
     state.rects = [];
@@ -2263,7 +2275,8 @@ function initUI() {
     }
     details.hidden = !CONTOUR_DEBUG || !data.debug;
     details.lastChild.textContent = CONTOUR_DEBUG && data.debug ? JSON.stringify(data.debug, null, 2) : "";
-    tileUI.sourceChanged(data);
+    try { tileUI.sourceChanged(data); }
+    catch(error) {console.error('optional_physical_ui_failure',{requestId:data.clientDiagnostics?.requestId,error});notify(t('tile.optionalUnavailable'),'warning');}
   }
 
   let contourGeneration = 0;
@@ -2284,6 +2297,7 @@ function initUI() {
   }
 
   function setShape(polys, name) {
+    document.body.classList.remove('server-contour');
     state.resultData = null; state.variant = "detailed";
     tileUI.reset();
     $("result-controls").hidden = true;
@@ -2557,7 +2571,7 @@ function initUI() {
   }
   el.lang.addEventListener("change", () => {
     applyLanguage(el.lang.value);
-    if(tileUI.isActive()) document.title='DrawACRL — раскладка 30 × 3 мм';
+    if(tileUI.isActive()) document.title=t('tile.title');
     if (state.resultData && !tileUI.isActive()) $("result-description").textContent = t("result.detailedHelp");
     if (state.scaled && state.canvas.length) renderContourInfo(state.scaled, state.canvas[0], state.canvas[1]);
   });

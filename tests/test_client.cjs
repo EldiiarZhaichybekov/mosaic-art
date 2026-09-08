@@ -36,13 +36,15 @@ const call = () => context.requestContour({size:10, type:'image/png'}, 400,400);
   await assert.rejects(call,e=>e.code==='PROCESSING_TIMEOUT');
   response = new TypeError('Failed to fetch');
   await assert.rejects(call,e=>e.code==='NETWORK_ERROR');
+  response = new Error('Unexpected client failure');
+  await assert.rejects(call,e=>e.code==='CLIENT_ERROR');
   await assert.rejects(()=>context.requestContour({size:4e6},400,400),e=>e.code==='IMAGE_TOO_LARGE');
   response = {status:200,ok:true,headers:new Map(),json:async()=>({dashes:[[[0,0],[1,1]]],contour:[[0,0],[1,1],[0,1]],internal_lines:[[[.2,.2],[.8,.8]]]})};
   assert.equal((await call()).dashes.length,1);
   const oldJson=response.json;
   response.json=async()=>({...await oldJson(),refined:{status:'ok',indices:[999]}});
   assert.equal((await call()).refined.status,'unavailable');
-  for (const code of ['NO_FOREGROUND','NO_VALID_CONTOUR','INVALID_IMAGE']) {
+  for (const code of ['NO_FOREGROUND','NO_VALID_CONTOUR','INVALID_IMAGE','RESOURCE_LIMIT','OPENCV_ERROR']) {
     response={status:422,ok:false,headers:new Map(),json:async()=>({error:{code}})};
     await assert.rejects(call,e=>e.code===code);
   }

@@ -56,10 +56,10 @@
     const a=simplifyOpen(p.slice(0,far+1),tol),b=simplifyOpen([...p.slice(far),p[0]],tol);
     return [...a.slice(0,-1),...b];
   }
-  function fit(source,canvas) {
+  function fit(source,canvas,factor=1) {
     const xs=source.contour.map(p=>p[0]),ys=source.contour.map(p=>p[1]),lo=[Math.min(...xs),Math.min(...ys)],hi=[Math.max(...xs),Math.max(...ys)];
     // 15 mm safe area plus half-width and emergency 3 mm centerline offset.
-    const s=Math.min((canvas[0]-39)/(hi[0]-lo[0]),(canvas[1]-39)/(hi[1]-lo[1]));
+    const s=factor*Math.min((canvas[0]-39)/(hi[0]-lo[0]),(canvas[1]-39)/(hi[1]-lo[1]));
     const map=p=>[(p[0]-(lo[0]+hi[0])/2)*s+canvas[0]/2,(p[1]-(lo[1]+hi[1])/2)*s+canvas[1]/2];
     return {contour:source.contour.map(map),internal:(source.internal_lines||[]).map(p=>p.map(map)),scale:s};
   }
@@ -109,7 +109,7 @@
   function solveOuter(target,canvas,options={}) {
     const model=pathModel(target,true),grid=new SegmentGrid([model.points]),nominal=Math.round(model.length/31);
     let startOffset=0,travel=0,longest=0;for(let i=1;i<model.points.length;i++){const d=dist(model.points[i-1],model.points[i]);if(d>longest){longest=d;startOffset=travel+d/2;}travel+=d;}
-    const stats=options.stats||{};stats.nominal=nominal;stats.emptyLayers=0;stats.closed=0;stats.bestDepth=0;
+    const stats=options.stats||{};stats.nominal=nominal;stats.emptyLayers=0;stats.closed=0;stats.bestDepth=0;stats.collisionMs=0;stats.collisionChecks=0;
     if(nominal>153||nominal<3)return null;
     // Layered beam search: station/normal/orientation alternatives, multiple
     // counts and phases, global collision rejection, final closed-cycle check.
@@ -130,9 +130,9 @@
               if(candidate.station-state.last<20||candidate.station-state.last>40)continue;
               const t=candidate.tile,prev=state.tiles[state.tiles.length-1];
               if(Math.hypot(t.xMm-prev.xMm,t.yMm-prev.yMm)>33)continue;
-              const g=gap(prev,t);if(g<0||g>2+EPS)continue;
-              if(state.tiles.slice(0,-1).some(old=>overlap(t,old)))continue;
-              if(i===n-1){const close=gap(t,first.tile);if(close<0||close>2+EPS)continue;}
+              let collisionStart=Date.now();const g=gap(prev,t);stats.collisionMs+=Date.now()-collisionStart;stats.collisionChecks++;if(g<0||g>2+EPS)continue;
+              collisionStart=Date.now();const blocked=state.tiles.slice(0,-1).some(old=>{stats.collisionChecks++;return overlap(t,old);});stats.collisionMs+=Date.now()-collisionStart;if(blocked)continue;
+              if(i===n-1){collisionStart=Date.now();const close=gap(t,first.tile);stats.collisionMs+=Date.now()-collisionStart;stats.collisionChecks++;if(close<0||close>2+EPS)continue;}
               next.push({tiles:[...state.tiles,t],last:candidate.station,score:state.score+candidate.score+.4*(g-1)**2});
             }
             next.sort((a,b)=>a.score-b.score);
@@ -162,42 +162,118 @@
     }
     return {valid:errors.length===0,errors:[...new Set(errors)]};
   }
-  function skeletonPaths(internal) {
-    // Rejoin only exact endpoints with compatible directions. Tiny loops are
-    // never converted into symbols or arbitrary single tiles.
-    let paths=internal.filter(p=>p.length>=2).map(p=>p.map(q=>[...q]));
-    const key=p=>p.map(v=>v.toFixed(4)).join(',');let changed=true;
-    while(changed){changed=false;const endsMap=new Map();paths.forEach((p,i)=>[p[0],p[p.length-1]].forEach((q,side)=>{const k=key(q);if(!endsMap.has(k))endsMap.set(k,[]);endsMap.get(k).push([i,side]);}));
-      for(const entries of endsMap.values()){if(entries.length!==2)continue;const [[i,si],[j,sj]]=entries;if(i===j)continue;const a=si?paths[i]:paths[i].slice().reverse(),b=sj?paths[j].slice().reverse():paths[j];const u=sub(a[a.length-1],a[Math.max(0,a.length-5)]),v=sub(b[Math.min(4,b.length-1)],b[0]);if(dot(u,v)/Math.max(EPS,Math.hypot(...u)*Math.hypot(...v))<.85)continue;paths[i]=[...a,...b.slice(1)];paths.splice(j,1);changed=true;break;}
-    }
-    return paths.filter(p=>{const model=pathModel(p),closed=dist(p[0],p[p.length-1])<1;const xs=p.map(q=>q[0]),ys=p.map(q=>q[1]);return model.length>=60 && (!closed||Math.min(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys))>=35);}).map(p=>simplifyOpen(p,1));
+  function inPolygon(p,poly) {
+    let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++) {const a=poly[i],b=poly[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;
   }
-  function generateForCanvas(source,canvas) {
-    const start=Date.now(),fitted=fit(source,canvas),timings={};let outer=null,target=null,tolerance=0;
-    const skeletonStart=Date.now(),skeleton=skeletonPaths(fitted.internal);timings.skeletonMs=Date.now()-skeletonStart;
+  function symmetryAxis(contour) {
+    if(!contour?.length)return {confidence:0};
+    const model=pathModel(contour,true),samples=Array.from({length:160},(_,i)=>model.at(model.length*i/160));
+    const center=[0,1].map(k=>samples.reduce((s,p)=>s+p[k],0)/samples.length);
+    let xx=0,yy=0,xy=0;for(const p of samples){const x=p[0]-center[0],y=p[1]-center[1];xx+=x*x;yy+=y*y;xy+=x*y;}
+    const principal=.5*Math.atan2(2*xy,xx-yy),grid=new SegmentGrid([model.points]);
+    let best={confidence:0};
+    for(const angle of [0,Math.PI/2,principal,principal+Math.PI/2]) {
+      const u=[Math.cos(angle),Math.sin(angle)],reflect=p=>{const d=sub(p,center),along=dot(d,u);return [center[0]+2*along*u[0]-d[0],center[1]+2*along*u[1]-d[1]];};
+      const boundary=samples.filter(p=>grid.distance(reflect(p))<4).length/samples.length;
+      let union=0,intersection=0;const xs=samples.map(p=>p[0]),ys=samples.map(p=>p[1]);
+      for(let x=Math.min(...xs);x<=Math.max(...xs);x+=8)for(let y=Math.min(...ys);y<=Math.max(...ys);y+=8){const a=inPolygon([x,y],contour),b=inPolygon(reflect([x,y]),contour);union+=+(a||b);intersection+=+(a&&b);}
+      const confidence=Math.min(boundary,intersection/Math.max(1,union));
+      if(confidence>best.confidence)best={confidence,center,angle,reflect};
+    }
+    return best;
+  }
+  function buildStructures(internal,contour=[]) {
+    const start=Date.now(),observed=internal.filter(p=>p.length>=2&&p.every(q=>q.length===2&&q.every(Number.isFinite))).map(p=>p.map(q=>[...q]));
+    const symmetryStart=Date.now(),symmetry=symmetryAxis(contour),symmetryMs=Date.now()-symmetryStart;
+    const evidence=new SegmentGrid(observed),boundary=contour.length?new SegmentGrid([pathModel(contour,true).points]):null;
+    const insideMask=p=>!boundary||inPolygon(p,contour)||boundary.distance(p)<.75;
+    const support=points=>points.filter(p=>evidence.distance(p)<2).length/points.length;
+    let paths=observed.map((points,id)=>({points,ids:[id],bridges:[],origin:'OBSERVED'}));
+    const rejected=[],reconstructionStart=Date.now();
+    // Pair the best tangent continuation at graph junctions BEFORE rejecting
+    // fragments. An endpoint can be consumed once; no branching is invented.
+    for(let pass=0;pass<observed.length;pass++) {
+      const entries=[];paths.forEach((p,i)=>{const m=pathModel(p.points);if(m.length<EPS||dist(p.points[0],p.points.at(-1))<.5)return;for(const side of [0,1]){const q=side?m.at(m.length):m.at(0),inner=side?m.at(Math.max(0,m.length-5)):m.at(Math.min(5,m.length)),v=sub(q,inner),length=Math.hypot(...v);if(length>EPS)entries.push({i,side,q,u:v.map(x=>x/length),length:m.length});}});
+      const cells=new Map(),key=p=>Math.floor(p[0]/8)+','+Math.floor(p[1]/8);
+      for(const e of entries){const k=key(e.q);if(!cells.has(k))cells.set(k,[]);cells.get(k).push(e);}
+      let best=null;
+      for(const a of entries)for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)for(const b of cells.get((Math.floor(a.q[0]/8)+dx)+','+(Math.floor(a.q[1]/8)+dy))||[]) {
+        if(a.i>=b.i)continue;const gapMm=dist(a.q,b.q),alignment=-dot(a.u,b.u);if(gapMm>7||alignment<.86)continue;
+        const between=Array.from({length:9},(_,i)=>[a.q[0]+(b.q[0]-a.q[0])*i/8,a.q[1]+(b.q[1]-a.q[1])*i/8]);
+        if(!between.every(insideMask))continue;
+        if(gapMm>.75){const v=sub(b.q,a.q).map(x=>x/gapMm);if(dot(v,a.u)<.85||-dot(v,b.u)<.85||Math.min(a.length,b.length)<4||a.length+b.length<gapMm*5)continue;}
+        const mirrorSupport=symmetry.confidence>=.85?support(between.map(symmetry.reflect)):0;
+        const edgeSupport=support(between),assisted=gapMm>4&&mirrorSupport>=.75;
+        if(gapMm>4&&!assisted&&edgeSupport<.75)continue;
+        const score=gapMm+12*(1-alignment)-.5*mirrorSupport;
+        if(!best||score<best.score)best={a,b,gapMm,between,assisted,edgeSupport,mirrorSupport,score};
+      }
+      if(!best)break;
+      const {a,b,gapMm,between,assisted,edgeSupport,mirrorSupport}=best,A=paths[a.i],B=paths[b.i];
+      const left=a.side?A.points:A.points.slice().reverse(),right=b.side?B.points.slice().reverse():B.points;
+      const bridge=gapMm>.75?[{points:between,origin:assisted?'SYMMETRY_ASSISTED':'RECONSTRUCTED',reason:assisted?'SUPPORTED_REFLECTED_CONTINUATION':'ALIGNED_ENDPOINTS',gapMm,edgeSupport,mirrorSupport}]:[];
+      paths[a.i]={points:[...left,...(gapMm>EPS?right:right.slice(1))],ids:[...A.ids,...B.ids],bridges:[...A.bridges,...B.bridges,...bridge],origin:assisted||A.origin==='SYMMETRY_ASSISTED'||B.origin==='SYMMETRY_ASSISTED'?'SYMMETRY_ASSISTED':bridge.length||A.bridges.length||B.bridges.length?'RECONSTRUCTED':'OBSERVED'};
+      paths.splice(b.i,1);
+    }
+    const reconstructionMs=Date.now()-reconstructionStart,selectionStart=Date.now(),selected=[];
+    for(const item of paths) {
+      const p=item.points,m=pathModel(p),xs=p.map(q=>q[0]),ys=p.map(q=>q[1]),width=Math.max(...xs)-Math.min(...xs),height=Math.max(...ys)-Math.min(...ys),extent=Math.hypot(width,height),closed=dist(p[0],p.at(-1))<1;
+      const samples=Array.from({length:32},(_,i)=>m.at(m.length*i/31)),mirrorSupport=symmetry.confidence>=.85?support(samples.map(symmetry.reflect)):0;
+      const tileCost=Math.max(1,Math.ceil(m.length/31)),structuralValue=extent*(1+.25*mirrorSupport),score=structuralValue/tileCost;
+      const reason=closed&&Math.min(width,height)<35?'SMALL_LOOP':m.length<45||extent<30?'MINOR_FRAGMENT':extent/m.length<.3?'LOW_SPATIAL_EXTENT':null;
+      const out={...item,points:simplifyOpen(p,.6),lengthMm:m.length,extentMm:extent,tileCost,structuralValue,score,mirrorSupport,symmetryConfidence:symmetry.confidence,reason:reason||'COHERENT_MAJOR_PATH'};
+      if(reason)rejected.push(out);else selected.push(out);
+    }
+    selected.sort((a,b)=>b.score-a.score||b.lengthMm-a.lengthMm||a.ids[0]-b.ids[0]);
+    const {reflect,...axis}=symmetry;
+    return {paths:selected,observed,rejected,symmetry:axis,timings:{symmetryMs,reconstructionMs,selectionMs:Date.now()-selectionStart,structuralMs:Date.now()-start}};
+  }
+  function skeletonPaths(internal) {return buildStructures(internal).paths.map(p=>p.points);}
+  function generateForCanvas(source,canvas,factor=1) {
+    const start=Date.now(),fitted=fit(source,canvas,factor),timings={};let outer=null,target=null,tolerance=0;
+    let structures;try{structures=buildStructures(fitted.internal,fitted.contour);}catch(error){console.error('optional_structure_failure',error);structures={paths:[],observed:[],rejected:[],symmetry:{confidence:0},timings:{},failure:{stage:'structural_paths',name:error.name}};}Object.assign(timings,structures.timings);
     const optimizationStart=Date.now();let simplificationMs=0;const searches=[];
     for(const tol of [1,3,6,10]) {const s=Date.now();target=simplifyClosed(fitted.contour,tol);simplificationMs+=Date.now()-s;const stats={tolerance:tol};searches.push(stats);outer=solveOuter(target,canvas,{wide:tol>=6,stats});if(outer){tolerance=tol;break;}}
-    if(!outer)for(const [radius,tol] of [[4,3],[7,3],[10,3],[10,8]]){const s=Date.now(),clean=regularize(fitted.contour,radius);target=clean?simplifyClosed(clean,tol):null;simplificationMs+=Date.now()-s;if(!target)continue;const stats={radius,tolerance:tol};searches.push(stats);outer=solveOuter(target,canvas,{wide:true,stats});if(outer){tolerance=radius+tol;break;}}
+    if(!outer)for(const [radius,tol] of [[4,3],[7,3],[10,3],[10,8],[14,8],[14,12],[20,12],[20,18],[26,18]]){const s=Date.now(),clean=regularize(fitted.contour,radius);target=clean?simplifyClosed(clean,tol):null;simplificationMs+=Date.now()-s;if(!target)continue;const stats={radius,tolerance:tol};searches.push(stats);outer=solveOuter(target,canvas,{wide:true,stats});if(outer){tolerance=radius+tol;break;}}
     timings.simplificationMs=simplificationMs;
-    if(!outer)return {status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],searches,timings:{...timings,optimizationMs:Date.now()-optimizationStart-simplificationMs,totalMs:Date.now()-start}};
+    if(!outer){
+      // A new physical scale changes corner phase and closure feasibility.
+      // Bounded, centered re-fitting never rotates or stretches the object.
+      if(factor===1)for(const smaller of [.94,.86]){const retry=generateForCanvas(source,canvas,smaller);if(retry.status==='ok'){retry.searches=[...searches,...retry.searches];retry.timings.totalMs=Date.now()-start;retry.fallbackScale=smaller;return retry;}}
+      return {status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],searches,timings:{...timings,optimizationMs:Date.now()-optimizationStart-simplificationMs,totalMs:Date.now()-start}};
+    }
     const tiles=outer.tiles,targetPaths=[{id:0,role:'outer',points:outer.target}];
     // Add only long reproducible portions. Local bends with no valid full tile
     // simply have no candidate. Sorted by value/cost (stable length per tile).
-    const ranked=skeleton.map((p,i)=>{const length=pathModel(p).length,x=p.map(q=>q[0]),y=p.map(q=>q[1]),extent=Math.hypot(Math.max(...x)-Math.min(...x),Math.max(...y)-Math.min(...y));return {p,id:i+1,length,valuePerTile:extent/Math.max(1,Math.ceil(length/31))};}).sort((a,b)=>b.valuePerTile-a.valuePerTile||b.length-a.length||a.id-b.id);
-    for(const item of ranked){if(tiles.length>=150)break;const model=pathModel(item.p),grid=new SegmentGrid([item.p]);
-      for(let s=15;s<=model.length-15&&tiles.length<150;s+=31){const pool=candidates(model,grid,s,canvas,'skeleton',item.id).filter(c=>c.score<2);const choice=pool.find(c=>!tiles.some(t=>overlap(c.tile,t)||gap(c.tile,t)<0));if(!choice)continue;
-        // Sparse value gate: close parallel existing structure is redundant.
-        if(tiles.some(t=>Math.abs(Math.cos((t.angleDeg-choice.tile.angleDeg)*rad))>.94&&pointSegment([choice.tile.xMm,choice.tile.yMm],...ends(t))<7))continue;
-        // Keep only the observed target span supported by this complete tile.
-        // Unrepresentable middle portions do not linger as decorative skeleton.
-        const span=Array.from({length:73},(_,i)=>model.at(choice.station-18+i*.5)).filter((p,i,a)=>!i||dist(p,a[i-1])>EPS);
-        if(span.length<2||deviation(choice.tile,new SegmentGrid([span])).max>3)continue;
-        choice.tile.sourceGroupId=item.id;choice.tile.sourcePathId=targetPaths.length;
-        targetPaths.push({id:targetPaths.length,role:'skeleton',points:span});tiles.push(choice.tile);
+    const collisionRejections=[];let collisionMs=0;
+    for(const item of structures.paths){if(tiles.length>=150)break;const id=targetPaths.length,model=pathModel(item.points),grid=new SegmentGrid([item.points]);
+      // Bounded path-level search: reward coverage and consecutive physical
+      // contacts. Retain full target paths, never clip them to individual tiles.
+      let best=[];let bestScore=-Infinity;
+      for(const phase of [0,8,16]){
+        let beam=[{tiles:[],score:0,last:null}];
+        for(let s=15+phase;s<=model.length-12;s+=31){
+          const pool=candidates(model,grid,s,canvas,'skeleton',id,true).slice(0,70),safe=[];
+          for(const c of pool){const time=Date.now(),collision=tiles.some(t=>overlap(c.tile,t)),redundant=tiles.some(t=>Math.abs(Math.cos((t.angleDeg-c.tile.angleDeg)*rad))>.97&&pointSegment([c.tile.xMm,c.tile.yMm],...ends(t))<5);collisionMs+=Date.now()-time;
+            if(!collision&&!redundant)safe.push(c);else if(collisionRejections.length<160)collisionRejections.push({tile:c.tile,reason:collision?'OVERLAP':'PARALLEL_REDUNDANCY'});
+          }
+          const next=beam.map(b=>({...b,score:b.score-5}));
+          for(const b of beam)for(const c of safe){if(b.tiles.length+tiles.length>=150||b.tiles.some(t=>overlap(t,c.tile)))continue;const prev=b.tiles.at(-1),g=prev?gap(prev,c.tile):0,connected=prev&&g>=0&&g<=2;
+            next.push({tiles:[...b.tiles,c.tile],last:c.station,score:b.score+30-Math.min(12,c.score)+(connected?12:prev?-5:0)});
+          }
+          next.sort((a,b)=>b.score-a.score);const seen=new Set();beam=[];
+          for(const b of next){const end=b.tiles.at(-1),key=end?[end.xMm.toFixed(1),end.yMm.toFixed(1),end.angleDeg.toFixed(1),b.tiles.length].join(','):'empty';if(seen.has(key))continue;seen.add(key);beam.push(b);if(beam.length===8)break;}
+        }
+        if(beam[0]?.score>bestScore){bestScore=beam[0].score;best=beam[0].tiles;}
       }
+      item.placedTiles=best.length;item.placementReason=best.length?'PLACED_MAJOR_PATH':'NO_NONCOLLIDING_FULL_TILE';
+      if(!best.length)continue;
+      best.forEach(t=>{t.sourceGroupId=item.ids[0];});tiles.push(...best);
+      targetPaths.push({id,role:'skeleton',points:item.points,origin:item.origin,bridges:item.bridges,score:item.score,sourceIds:item.ids});
     }
+    timings.collisionMs=collisionMs+searches.reduce((s,p)=>s+(p.collisionMs||0),0);
     tiles.forEach((t,i)=>{t.id=i+1;t.sequenceIndex=i;});timings.optimizationMs=Date.now()-optimizationStart-simplificationMs;
-    const layout={status:'ok',canvas,tiles,target:targetPaths,orientation:canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait',simplificationMm:tolerance,fitScale:fitted.scale,score:outer.score,timings};
+    const layout={status:'ok',canvas,tiles,target:targetPaths,structures,collisionRejections,searches,orientation:canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait',simplificationMm:tolerance,fitScale:fitted.scale,score:outer.score,timings};
     const checkStart=Date.now(),checked=validate(layout);timings.validationMs=Date.now()-checkStart;timings.totalMs=Date.now()-start;
     return checked.valid?layout:{status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],diagnostics:checked,timings};
   }
@@ -208,12 +284,13 @@
     const valid=results.filter(r=>r.status==='ok');valid.sort((a,b)=>b.fitScale-a.fitScale||a.simplificationMm-b.simplificationMm||a.score-b.score||a.tiles.length-b.tiles.length);
     const result=valid[0]||results[0];result.evaluated=results.map(r=>({canvas:r.canvas,status:r.status,tiles:r.tiles.length,scale:r.fitScale,simplificationMm:r.simplificationMm,timings:r.timings}));result.auto=orientation==='auto'&&format==='30x40';return result;
   }
-  function exportSVG(layout,{mounting=false}={}) {
+  function exportSVG(layout,{mounting=false,labels={}}={}) {
     const checked=validate(layout);if(!checked.valid)throw new Error(checked.errors.join(', '));
     const [w,h]=layout.canvas,lines=[`<svg xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${w} ${h}">`,`<rect width="${w}" height="${h}" fill="white"/>`,`<rect x="15" y="15" width="${w-30}" height="${h-30}" fill="none" stroke="#94a3b8" stroke-width="0.25" stroke-dasharray="2 2"/>`];
     for(const p of layout.target)lines.push(`<path d="M ${p.points.map(q=>q.join(',')).join(' L ')}" fill="none" stroke="#475569" stroke-width="0.35" stroke-dasharray="2 1.5"/>`);
     for(const t of layout.tiles){lines.push(`<rect data-tile-id="${t.id}" x="-15" y="-1.5" width="30" height="3" transform="translate(${t.xMm} ${t.yMm}) rotate(${t.angleDeg})" fill="#dc2626"/>`);if(mounting)lines.push(`<text x="${t.xMm}" y="${t.yMm}" font-family="sans-serif" font-size="2.6" text-anchor="middle" dominant-baseline="middle" fill="white">${t.id}</text>`);}
-    if(mounting)lines.push(`<text x="15" y="7" font-family="sans-serif" font-size="3">${w} × ${h} mm · ${layout.orientation} · ${layout.tiles.length} / 150 tiles · 30 × 3 mm · margin 15 mm</text>`,`<text x="15" y="${h-5}" font-family="sans-serif" font-size="2.5">Origin: upper left. Tile coordinates refer to centers. Red rectangles are full tiles. Print at 100%.</text>`);
+    const xml=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if(mounting)lines.push(`<text x="15" y="7" font-family="sans-serif" font-size="3">${xml(labels.header||`${w} × ${h} mm · ${layout.orientation} · ${layout.tiles.length} / 150 tiles · 30 × 3 mm · margin 15 mm`)}</text>`,`<text x="15" y="${h-5}" font-family="sans-serif" font-size="2.5">${xml(labels.footer||'Origin: upper left. Tile coordinates refer to centers. Red rectangles are full tiles. Print at 100%.')}</text>`);
     lines.push('</svg>');return lines.join('\n');
   }
   function snap(tile,layout,bypass=false) {
@@ -246,6 +323,6 @@
     undo(){if(!this.undoStack.length)return;this.redoStack.push(this.layout);this.layout=this.undoStack.pop();}
     redo(){if(!this.redoStack.length)return;this.undoStack.push(this.layout);this.layout=this.redoStack.pop();}
   }
-  const api={version:'physical-tiles-v1',RULES,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,solveOuter,skeletonPaths,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
+  const api={version:'physical-tiles-v2',RULES,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,solveOuter,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
   if(typeof module!=='undefined')module.exports=api;root.TileLayout=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -1,0 +1,18 @@
+/* Geometry-only benchmark. Illustrator is a human direction, NOT a physically
+ * certified template. No production code reads this fixture or its coordinates. */
+'use strict';
+const fs=require('node:fs'),T=require('../tile-layout');
+function parsePath(d){const tokens=d.match(/[A-Za-z]|[-+]?(?:\d*\.\d+|\d+)(?:e[-+]?\d+)?/gi);let i=0,cmd='',p=[0,0],points=[];while(i<tokens.length){if(/[A-Za-z]/.test(tokens[i]))cmd=tokens[i++];const rel=cmd===cmd.toLowerCase(),c=cmd.toUpperCase();if(c==='M'||c==='L'){const q=[+tokens[i++],+tokens[i++]];p=rel?q.map((v,k)=>p[k]+v):q;if(c==='M')cmd=rel?'l':'L';}else if(c==='H')p=[(rel?p[0]:0)+ +tokens[i++],p[1]];else if(c==='V')p=[p[0],(rel?p[1]:0)+ +tokens[i++]];else throw Error('Unsupported reference path command '+cmd);points.push(p.slice());}return points;}
+function reference(){const svg=fs.readFileSync(__dirname+'/fixtures/human-400x400mm.svg','utf8'),unit=400/1133.9;
+ const paths=[...svg.matchAll(/<path[^>]* d="([^"]+)"/g)].map(m=>parsePath(m[1]).map(p=>p.map(v=>v*unit)));
+ const lines=[...svg.matchAll(/<line\s[^>]+/g)].map(m=>{const attrs=Object.fromEntries([...m[0].matchAll(/(x1|x2|y1|y2)="([^"]+)"/g)].map(x=>[x[1],+x[2]*unit]));return [[attrs.x1,attrs.y1],[attrs.x2,attrs.y2]];});return {paths,lines};}
+function metrics(layout,source){const ref=reference(),contour=ref.paths.reduce((a,b)=>T.pathModel(a).length>T.pathModel(b).length?a:b),fitted=T.fit(source,layout.canvas),xs=contour.map(p=>p[0]),ys=contour.map(p=>p[1]),tx=fitted.contour.map(p=>p[0]),ty=fitted.contour.map(p=>p[1]);
+ const oldMin=[Math.min(...xs),Math.min(...ys)],oldSize=[Math.max(...xs)-oldMin[0],Math.max(...ys)-oldMin[1]],newMin=[Math.min(...tx),Math.min(...ty)],newSize=[Math.max(...tx)-newMin[0],Math.max(...ty)-newMin[1]],map=p=>p.map((v,k)=>(v-oldMin[k])*newSize[k]/oldSize[k]+newMin[k]);
+ const aligned=ref.lines.map(p=>p.map(map)),outerGrid=new T.SegmentGrid([fitted.contour]),skeleton=aligned.filter(p=>outerGrid.distance(p[0].map((v,k)=>(v+p[1][k])/2),12)>7),grid=new T.SegmentGrid(layout.tiles.filter(t=>t.role==='skeleton').map(T.ends));
+ let covered=0,total=0,complete=0;for(const line of skeleton){let hit=0;for(let i=0;i<=30;i++){const p=line[0].map((v,k)=>v+(line[1][k]-v)*i/30);const ok=grid.distance(p,8)<=6;covered+=+ok;hit+=+ok;total++;}complete+=+(hit/31>=.8);}
+ const groups=new Map();for(const tile of layout.tiles.filter(t=>t.role==='skeleton')){const id=tile.sourceGroupId??tile.sourcePathId;if(!groups.has(id))groups.set(id,[]);groups.get(id).push(tile);}
+ let contacts=0,pairs=0;for(const tiles of groups.values())for(let i=1;i<tiles.length;i++){pairs++;contacts+=+(T.gap(tiles[i-1],tiles[i])<=2);}
+ const sourceSamples=T.pathModel(fitted.contour,true),target=layout.target[0].points,errors=Array.from({length:200},(_,i)=>T.nearestOnPath(sourceSamples.at(sourceSamples.length*i/200),target).distance).sort((a,b)=>a-b);
+ return {tiles:layout.tiles.length,outer:layout.tiles.filter(t=>t.role==='outer').length,skeleton:layout.tiles.filter(t=>t.role==='skeleton').length,manualTiles:ref.lines.length,referenceInternalTiles:skeleton.length,majorReferenceCoverage6mm:+(covered/total).toFixed(4),referenceTilesCovered80Percent:complete,samePathContactRatio:+(contacts/Math.max(1,pairs)).toFixed(4),sourceOuterDeviationP95Mm:+errors[190].toFixed(2),physicalValid:T.validate(layout).valid};}
+if(require.main===module){const source=JSON.parse(fs.readFileSync(process.argv[2]||'/private/tmp/tiles-test_butterfly.json'));for(const file of process.argv.slice(3))console.log(file,JSON.stringify(metrics(JSON.parse(fs.readFileSync(file)),source),null,2));}
+module.exports={reference,metrics};
