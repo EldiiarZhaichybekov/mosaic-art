@@ -181,12 +181,37 @@
   .lineart-stage { margin: 0; min-width: 0; }
   .lineart-stage img { display: block; width: 100%; aspect-ratio: 1.35; object-fit: contain; background: #f8fafc; border: 1px solid var(--line); border-radius: 7px; }
   .lineart-stage figcaption { margin-top: 3px; font-size: 9px; color: var(--dim); line-height: 1.25; }
+  #result-controls { padding:14px; border-bottom:1px solid var(--line); }
+  .tile-tabs { display:flex; gap:8px; margin:6px 0; }
+  .tile-tabs button { flex:1; min-width:0; min-height:44px; padding:10px 6px; border:1px solid #cbd5e1; border-radius:9px; background:white; color:#334155; font-weight:700; cursor:pointer; }
+  .tile-tabs button[aria-pressed="true"] { background:#4338ca; color:white; border-color:#4338ca; }
+  #result-controls .tile-tabs button { min-height:62px; font-size:15px; }
+  #result-controls small { display:block; margin-top:4px; }
+  #tile-panel { display:flex; flex-direction:column; gap:8px; }
+  #tile-canvas { display:block; width:100%; height:auto; max-height:calc(100vh - 220px); object-fit:contain; }
+  #cv[hidden], #tile-canvas[hidden], #tile-panel[hidden], #result-controls[hidden], #tile-editor[hidden], #tile-orientation[hidden], #tile-plan-info[hidden] { display:none !important; }
+  .tile-options { display:flex; flex-wrap:wrap; gap:8px; }
+  .tile-options label { flex:1; min-width:65px; font-size:12px; }
+  .tile-help, #tile-status { font-size:12px; line-height:1.5; margin:4px 0; }
+  #tile-count { font-size:15px; color:#b91c1c; }
+  #tile-plan-table { max-height:220px; overflow:auto; }
+  #tile-plan-table table { width:100%; font-size:11px; text-align:right; }
+  .tile-active #sec-diag, .tile-active #sec-canvas, .tile-active .brand p, .tile-active #sec-notes, .tile-active #threshold-control, .tile-active #trace-control, .tile-active #btn-gen { display:none !important; }
+  .tile-active #tile-panel button:disabled { opacity:.45; cursor:not-allowed; }
+  @media(max-width:920px) { #tile-canvas { max-height:none; } }
 </style>
 </head>
 <body>
 <div id="app">
 
   <main id="stage">
+    <div id="result-controls" hidden>
+      <div class="tile-tabs" role="group" aria-label="Результат">
+        <button id="result-detailed" aria-pressed="true">РЕЗУЛЬТАТ 1<small>Детальный</small></button>
+        <button id="result-tiles" aria-pressed="false">РЕЗУЛЬТАТ 2<small>Раскладка пластин</small></button>
+      </div>
+      <p id="result-description" class="tile-help" aria-live="polite"></p>
+    </div>
     <canvas id="cv" width="800" height="800"></canvas>
   </main>
 
@@ -289,14 +314,6 @@
       <div class="actions">
         <button id="btn-gen" data-i18n="btn.generate">Трассировать контур</button>
       </div>
-      <div id="result-controls" hidden>
-        <label for="result-variant" data-i18n="result.label">Результат для просмотра и экспорта</label>
-        <select id="result-variant">
-          <option value="detailed" data-i18n="result.detailed">Результат 1 — Детальный</option>
-          <option value="refined" data-i18n="result.refined">Результат 2 — Очищенный</option>
-        </select>
-        <p id="result-description" aria-live="polite" style="font-size:12px;line-height:1.5"></p>
-      </div>
       <div class="actions">
         <button id="btn-svg" data-i18n="btn.export" data-i18n-attr="title:btn.exportTitle">Экспорт в SVG</button>
         <button id="btn-jpg" data-i18n="btn.exportJpg" data-i18n-attr="title:btn.exportJpgTitle">Экспорт в JPG</button>
@@ -336,6 +353,8 @@
 </div>
 <div id="notifications" aria-live="polite" aria-atomic="false"></div>
 
+<script src="tile-layout.js"></script>
+<script src="tile-ui.js"></script>
 <script>
 "use strict";
 /* ============================================================================
@@ -2136,6 +2155,24 @@ function initUI() {
     if (err && ["NO_VALID_CONTOUR", "MASK_INVALID"].includes(err.code)) return notifyKey("msg.noContour", "error");
     return notifyKey("msg.processing", "error");
   }
+  el.threshold.closest('.ctrl').id = 'threshold-control';
+  el.traceSeg.closest('.ctrl').id = 'trace-control';
+  const physicalHooks = {notify,getFormat:()=>el.canvasFmt.value,
+    onPhysical:()=>{state.variant='tiles';},
+    onDetailed:()=>{state.variant='detailed';document.title=t('app.title');if(!state.resultData)return;
+      state.finalPaths=finalLineArt(state.resultData);state.internalLines=state.resultData.internal_lines;
+      drawDashes(renderedPaths(),...state.canvas);renderContourInfo(state.scaled,...state.canvas);
+    }};
+  let tileUI;
+  try { tileUI = TileUI.create(physicalHooks); }
+  catch(error) {
+    // Optional Result 2 assets must not prevent Result 1 from initializing.
+    console.error('Physical UI unavailable',error);
+    tileUI={isActive:()=>false,export:()=>{},reset:()=>{$('result-controls').hidden=true;},sourceChanged:()=>{
+      $('result-controls').hidden=false;$('result-tiles').disabled=true;
+      notify('Режим пластин временно недоступен. Детальный результат можно использовать.','warning');
+    }};
+  }
 
   // Diagnostic-only overlay: screen-pixel dashes make the sampled external
   // boundary inspectable without changing the 30 mm SVG/JPG export paths.
@@ -2203,10 +2240,6 @@ function initUI() {
   function showServerContour(data, cw, ch, image) {
     state.resultData = data;
     state.variant = "detailed";
-    $("result-controls").hidden = false;
-    $("result-variant").value = "detailed";
-    $("result-variant").options[1].disabled = data.refined?.status !== "ok";
-    $("result-description").textContent = t("result.detailedHelp");
     state.dashes = data.dashes;
     state.internalLines = data.internal_lines;
     state.finalPaths = finalLineArt(data);
@@ -2230,6 +2263,7 @@ function initUI() {
     }
     details.hidden = !CONTOUR_DEBUG || !data.debug;
     details.lastChild.textContent = CONTOUR_DEBUG && data.debug ? JSON.stringify(data.debug, null, 2) : "";
+    tileUI.sourceChanged(data);
   }
 
   let contourGeneration = 0;
@@ -2241,7 +2275,6 @@ function initUI() {
       if (generation !== contourGeneration) return false;
       showServerContour(data, cw, ch, image);
       notifyKey("msg.contourReady", "success");
-      if (data.refined?.status !== "ok") notifyKey("msg.refinementFailed", "warning", 0);
       return true;
     } catch (err) {
       if (generation !== contourGeneration) return false;
@@ -2252,6 +2285,7 @@ function initUI() {
 
   function setShape(polys, name) {
     state.resultData = null; state.variant = "detailed";
+    tileUI.reset();
     $("result-controls").hidden = true;
     state.finalPaths = null; state.internalLines = [];
     state.polys = polys;
@@ -2350,15 +2384,6 @@ function initUI() {
     }
   });
 
-  $("result-variant").addEventListener("change", () => {
-    if (!state.resultData) return;
-    state.variant = $("result-variant").value;
-    state.finalPaths = finalLineArt(state.resultData, state.variant);
-    state.internalLines = state.finalPaths.slice(1);
-    $("result-description").textContent = t("result." + state.variant + "Help");
-    drawDashes(renderedPaths(), state.canvas[0], state.canvas[1]);
-    renderContourInfo(state.scaled, ...state.canvas);
-  });
   el.guide.addEventListener("change", () => drawDashes(renderedPaths(), state.canvas[0], state.canvas[1]));
 
   // long descriptions & hints are hidden by default; the toggle reveals them.
@@ -2393,12 +2418,14 @@ function initUI() {
     run();
   });
   el.btnSvg.addEventListener("click", () => {
+    if(tileUI.isActive()){tileUI.export('svg');return;}
     if (!state.dashes.length) run();
     const svg = exportDashesSVG(renderedPaths(), state.canvas[0], state.canvas[1]);
     download("contour-" + state.shapeName + "-" + (state.variant || "detailed") + "-" + state.canvas[0] + "x" + state.canvas[1] + "mm.svg", svg, "image/svg+xml");
     notifyKey("msg.svgReady", "success");
   });
   el.btnJpg.addEventListener("click", () => {
+    if(tileUI.isActive()){tileUI.export('jpg');return;}
     if (!state.dashes.length) run();
     const url = exportDashesJPG(renderedPaths(), state.canvas[0], state.canvas[1]);
     const a = document.createElement("a");
@@ -2530,7 +2557,8 @@ function initUI() {
   }
   el.lang.addEventListener("change", () => {
     applyLanguage(el.lang.value);
-    if (state.resultData) $("result-description").textContent = t("result." + state.variant + "Help");
+    if(tileUI.isActive()) document.title='DrawACRL — раскладка 30 × 3 мм';
+    if (state.resultData && !tileUI.isActive()) $("result-description").textContent = t("result.detailedHelp");
     if (state.scaled && state.canvas.length) renderContourInfo(state.scaled, state.canvas[0], state.canvas[1]);
   });
 

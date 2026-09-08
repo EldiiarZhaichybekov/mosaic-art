@@ -535,3 +535,11 @@ def ping(path="/"):
         return send_from_directory(str(Path(__file__).resolve().parent.parent), "index.html")
     return jsonify({"ok": True, "service": "contour", "opencv": cv2.__version__,
                     "pipeline": "dual-output-v2", "revision": os.environ.get("VERCEL_GIT_COMMIT_SHA")})
+
+
+@app.route('/tile-layout.js', methods=['GET'])
+@app.route('/tile-ui.js', methods=['GET'])
+@app.route('/tile-worker.js', methods=['GET'])
+def physical_asset():
+    # Explicit local-dev allowlist. Vercel serves these same static files.
+    return send_from_directory(str(Path(__file__).resolve().parent.parent), request.path[1:])
