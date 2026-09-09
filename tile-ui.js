@@ -2,7 +2,7 @@
 (function(root){
   'use strict';
   const T=root.TileLayout;
-  function create({notify,onDetailed,onPhysical,getFormat,t}) {
+  function create({notify,onDetailed,onPhysical,getFormat,getImage,getCanvas,t}) {
     const tr=(key,params={})=>t('tile.'+key).replace(/\{(\w+)\}/g,(m,k)=>params[k]??m);
     const $=id=>document.getElementById(id),stage=$('stage');
     const panel=document.createElement('section');panel.id='tile-panel';panel.hidden=true;
@@ -20,14 +20,23 @@
       <details id="tile-plan-info" hidden><summary><span data-i18n="tile.coordinates">${tr('coordinates')}</span></summary><p class="tile-help"><span data-i18n="tile.coordinateHelp">${tr('coordinateHelp')}</span></p><button id="tile-csv" data-i18n="tile.csv">${tr('csv')}</button><div id="tile-plan-table"></div></details>`;
     $('sec-actions').before(panel);
     const debugEnabled=new URLSearchParams(location.search).get('debug')==='1';
+    const hybridEnabled=new URLSearchParams(location.search).get('hybrid')==='1';
     const debug=document.createElement('details');debug.hidden=!debugEnabled;debug.id='tile-debug';
     debug.innerHTML=`<summary data-i18n="tile.debug">${tr('debug')}</summary><select id="tile-debug-layer" aria-label="${tr('debug')}" data-i18n-attr="aria-label:tile.debug">${['final','observed','reconstructed','symmetry','rejected','skeleton','outer','tiles','collisions'].map(k=>`<option value="${k}" data-i18n="tile.${k}">${tr(k)}</option>`).join('')}</select><button id="tile-debug-download" data-i18n="tile.debugDownload">${tr('debugDownload')}</button>`;
     panel.append(debug);
+    const hybridDetails=document.createElement('pre');hybridDetails.style.cssText='max-height:300px;overflow:auto;white-space:pre-wrap;font-size:10px';
+    if(debugEnabled&&hybridEnabled){for(const [value,label]of Object.entries({'hybrid-input':'Hybrid: numbered input','hybrid-target':'Hybrid: target','hybrid-restored':'Hybrid: restored routes','hybrid-removed':'Hybrid: omitted paths','hybrid-initial':'Hybrid: initial tiles','hybrid-final':'Hybrid: final tiles'})){const option=document.createElement('option');option.value=value;option.textContent=label;$('tile-debug-layer').append(option);}debug.append(hybridDetails);}
     const canvas=document.createElement('canvas');canvas.id='tile-canvas';canvas.hidden=true;canvas.setAttribute('data-i18n-attr','aria-label:tile.canvasAria');canvas.setAttribute('aria-label',tr('canvasAria'));stage.append(canvas);
     let source=null,doc=null,active=false,orientation='auto',mounting=false,editing=false,selected=null,adding=false,worker=null,job=0,pending=false,drag=null,notice='unavailable';
     function message(check){return check.errors.map(e=>{const key='tile.'+e;return t(key)!==key?t(key):tr('invalid');}).join(' ');}
     function draw(ctx,layout,mount,selection=null,layer='final') {
       const [w,h]=layout.canvas;ctx.fillStyle='white';ctx.fillRect(0,0,w,h);
+      if(layer.startsWith('hybrid-')){
+        const diag=layout.hybridDiagnostics||{};
+        if(layer==='hybrid-initial'){layout=diag.initial||layout;layer='final';}
+        else if(layer==='hybrid-final')layer='final';
+        else {const input=(diag.context?.paths||[]).map(p=>({...p,points:p.points.map(([x,y])=>[31+x*(w-62),31+y*(h-62)])}));const paths=layer==='hybrid-input'?input:layer==='hybrid-removed'?input.filter(p=>diag.plan?.omissions.includes(p.id)):layer==='hybrid-restored'?layout.target.filter(p=>p.source==='result1-restored'):layout.target;ctx.strokeStyle='#475569';ctx.lineWidth=.6;ctx.setLineDash([]);for(const p of paths){ctx.beginPath();p.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();if(layer==='hybrid-input'){ctx.fillStyle='#4338ca';ctx.font='4px sans-serif';ctx.fillText(p.id,...p.points[0]);}}return;}
+      }
       if(layer!=='final'){
         const structure=layout.structures||{},paths=layer==='observed'?structure.observed||[]:layer==='reconstructed'?(structure.paths||[]).flatMap(p=>p.bridges.filter(b=>b.origin==='RECONSTRUCTED').map(b=>b.points)):layer==='symmetry'?(structure.paths||[]).filter(p=>p.mirrorSupport>=.75).map(p=>p.points):layer==='rejected'?(structure.rejected||[]).map(p=>p.points):layout.target.filter(p=>p.role===(layer==='skeleton'?'skeleton':'outer')).map(p=>p.points);
         if(!['tiles','collisions'].includes(layer)){ctx.strokeStyle=layer==='reconstructed'?'#0891b2':layer==='symmetry'?'#7c3aed':layer==='rejected'?'#d97706':'#475569';ctx.lineWidth=.5;ctx.setLineDash([]);for(const points of paths){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();}return;}
@@ -45,6 +54,7 @@
       canvas.width=w*scale;canvas.height=h*scale;canvas.style.aspectRatio=`${w}/${h}`;const ctx=canvas.getContext('2d');ctx.setTransform(scale,0,0,scale,0,0);draw(ctx,layout,mounting,editing?selected:null,debugEnabled?$('tile-debug-layer').value:'final');
     }
     function refresh() {
+      if(debugEnabled&&hybridEnabled){const d=doc?.layout.hybridDiagnostics;hybridDetails.textContent=d?JSON.stringify({mode:doc.layout.mode,visualStatus:doc.layout.visualStatus,plan:d.plan,qa:d.qa,repairs:d.repairs,errorCode:d.errorCode,timings:d.timings},null,2):'';}
       $('tile-orientation').hidden=$('tile-format').value!=='30x40';$('tile-plan-info').hidden=!mounting||!doc;
       $('tile-add').disabled=!doc||doc.layout.tiles.length>=150||pending;
       $('tile-undo').disabled=!doc?.undoStack.length;$('tile-redo').disabled=!doc?.redoStack.length;
@@ -53,6 +63,7 @@
       if(doc){const layout=doc.layout,outer=layout.tiles.filter(t=>t.role==='outer').length,check=T.validate(layout),orient=tr(layout.orientation);
         $('tile-count').textContent=tr('count',{count:layout.tiles.length,outer,inner:layout.tiles.length-outer});
         $('tile-status').textContent=`${layout.auto?tr('auto')+' → ':''}${orient} · ${layout.canvas.join(' × ')} ${t('unit.mm')}. `+(check.valid?tr('checked'):tr('draft')+message(check));
+        if(hybridEnabled)$('tile-status').textContent+=' '+tr(layout.mode==='DETERMINISTIC_FALLBACK'?'hybridFallback':layout.visualStatus==='AI_ACCEPTED'?'hybridAccepted':'hybridReview');
         if(mounting)$('tile-plan-table').innerHTML=`<table><thead><tr><th>№</th><th>${tr('x')}</th><th>${tr('y')}</th><th>°</th></tr></thead><tbody>`+layout.tiles.map(t=>`<tr><td>${t.id}</td><td>${t.xMm.toFixed(2)}</td><td>${t.yMm.toFixed(2)}</td><td>${t.angleDeg.toFixed(2)}</td></tr>`).join('')+'</tbody></table>';
         if(active)for(const id of ['btn-svg','btn-jpg'])$(id).disabled=!check.valid||pending;
       }else { $('tile-count').textContent=tr('emptyCount');$('tile-status').textContent=tr(pending?'checking':notice);if(active)for(const id of ['btn-svg','btn-jpg'])$(id).disabled=true; }
@@ -63,10 +74,13 @@
       if(doc?.undoStack.length)notify(tr('resetEdits'),'info');
       if(worker)worker.terminate();worker=null;const id=++job;doc=null;selected=null;adding=false;drag=null;$('tile-add').textContent=tr('add');pending=true;
       $('tile-count').textContent=tr('emptyCount');$('tile-status').textContent=tr('checking');refresh();
-      try{worker=new Worker('tile-worker.js');worker.onmessage=event=>{if(event.data.id!==job)return;pending=false;worker.terminate();worker=null;const layout=event.data.result;
-        if(layout.status==='ok'&&T.validate(layout).valid){doc=new T.TileDocument(layout);console.info('Physical layout complete',{requestId:source.clientDiagnostics?.requestId,canvas:layout.canvas,count:layout.tiles.length,timings:layout.timings,evaluated:layout.evaluated});}
+      try{worker=new Worker(hybridEnabled?'result3-worker.js':'tile-worker.js');worker.onmessage=event=>{if(event.data.id!==job)return;if(event.data.progress){$('tile-status').textContent=tr(event.data.progress==='plan'?'hybridPlanning':'hybridQA');return;}pending=false;worker.terminate();worker=null;const layout=event.data.result;
+        if(layout.status==='ok'&&T.validate(layout).valid){doc=new T.TileDocument(layout);console.info('Physical layout complete',{requestId:source.clientDiagnostics?.requestId,canvas:layout.canvas,count:layout.tiles.length,timings:layout.timings,evaluated:layout.evaluated});if(layout.hybridDiagnostics?.errorCode){const key='tile.'+layout.hybridDiagnostics.errorCode;notify(t(key)===key?tr('hybridFallback'):t(key),'warning',0);}else if(hybridEnabled&&layout.visualStatus!=='AI_ACCEPTED')notify(tr('hybridReview'),'warning',0);}
         else {notice='failure';notify(tr('failure'),'warning',0);console.warn('LAYOUT_NOT_FEASIBLE',layout);}
-        refresh();};worker.onerror=event=>{if(id!==job)return;pending=false;worker.terminate();worker=null;console.error('Physical worker failed',{requestId:source.clientDiagnostics?.requestId,error:event.message});notice='failure';notify(tr('failure'),'error');refresh();};worker.postMessage({id,requestId:source.clientDiagnostics?.requestId,source:{contour:source.contour,internal_lines:source.internal_lines},options:{format:$('tile-format').value,orientation}});
+        refresh();};worker.onerror=event=>{if(id!==job)return;pending=false;worker.terminate();worker=null;console.error('Physical worker failed',{requestId:source.clientDiagnostics?.requestId,error:event.message});notice='failure';notify(tr('failure'),'error');refresh();};
+        let sourceImage;
+        if(hybridEnabled){const img=getImage?.();if(!img)throw Error('SOURCE_IMAGE_MISSING');const imageCanvas=document.createElement('canvas'),scale=Math.min(1,768/Math.max(img.naturalWidth,img.naturalHeight));imageCanvas.width=Math.round(img.naturalWidth*scale);imageCanvas.height=Math.round(img.naturalHeight*scale);const ctx=imageCanvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,imageCanvas.width,imageCanvas.height);ctx.drawImage(img,0,0,imageCanvas.width,imageCanvas.height);sourceImage=imageCanvas.toDataURL('image/jpeg',.85);}
+        worker.postMessage({id,requestId:source.clientDiagnostics?.requestId,source:{contour:source.contour,internal_lines:source.internal_lines},options:{format:$('tile-format').value,orientation},...(hybridEnabled?{sourceImage,sourceCanvas:getCanvas?.()||[400,400]}:{})});
       }catch(error){pending=false;console.error('Physical worker unavailable',error);notice=location.protocol==='file:'?'https':'optionalUnavailable';notify(tr(notice),'error');refresh();}
     }
     function choose(physical) {

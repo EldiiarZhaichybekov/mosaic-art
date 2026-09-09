@@ -155,7 +155,13 @@
     for(const t of tiles){if(![t.xMm,t.yMm,t.angleDeg].every(Number.isFinite)||t.lengthMm!==30||t.widthMm!==3)errors.push('TILE_DIMENSIONS');if(!Number.isInteger(t.id)||t.id<1||!['outer','skeleton'].includes(t.role))errors.push('TILE_MODEL');if(ids.has(t.id))errors.push('DUPLICATE_ID');ids.add(t.id);if(canvas&&!inside(t,canvas))errors.push('SAFE_AREA');}
     for(let i=0;i<tiles.length;i++)for(let j=i+1;j<tiles.length;j++)if(overlap(tiles[i],tiles[j]))errors.push('OVERLAP');
     if(continuity&&(!Array.isArray(layout.target)||!layout.target.every(p=>Array.isArray(p.points)&&p.points.length>=2&&p.points.every(q=>Array.isArray(q)&&q.length===2&&q.every(Number.isFinite)))))return {valid:false,errors:[...errors,'TARGET_INVALID']};
-    if(continuity){const outer=tiles.filter(t=>t.role==='outer').sort((a,b)=>a.sequenceIndex-b.sequenceIndex),target=layout.target?.find(p=>p.role==='outer');
+    // AI compositions use independent manufacturable routes, not the old
+    // single closed observed boundary. All rectangle constraints above remain.
+    if(continuity&&layout.mode==='AI_HYBRID'){
+      if(!tiles.length||!layout.target.some(p=>p.role==='outer'))errors.push('NO_OUTER');
+      for(const t of tiles)if(!layout.target.some(p=>p.id===t.sourcePathId))errors.push('TARGET_INVALID');
+    }
+    if(continuity&&layout.mode!=='AI_HYBRID'){const outer=tiles.filter(t=>t.role==='outer').sort((a,b)=>a.sequenceIndex-b.sequenceIndex),target=layout.target?.find(p=>p.role==='outer');
       if(outer.length<3||!target)errors.push('NO_OUTER');
       else {const grid=new SegmentGrid([target.points]);for(let i=0;i<outer.length;i++){const g=gap(outer[i],outer[(i+1)%outer.length]);if(g<0||g>2+EPS)errors.push('OUTER_GAP');if(deviation(outer[i],grid).max>3+EPS)errors.push('DEVIATION');}if(contourCovered(target.points,outer)>3+EPS)errors.push('TARGET_COVERAGE');}
       for(const t of tiles.filter(t=>t.role==='skeleton')){const p=layout.target?.find(p=>p.id===t.sourcePathId);if(!p||deviation(t,new SegmentGrid([p.points])).max>3+EPS)errors.push('DEVIATION');}
@@ -316,7 +322,7 @@
   }
   class TileDocument {
     constructor(layout){if(!validate(layout,{continuity:false}).valid)throw new Error('INVALID_LAYOUT');this.layout=JSON.parse(JSON.stringify(layout));this.undoStack=[];this.redoStack=[];}
-    commit(tiles){const next={...this.layout,tiles};const check=validate(next,{continuity:false});if(!check.valid)return check;this.undoStack.push(this.layout);if(this.undoStack.length>100)this.undoStack.shift();this.redoStack=[];this.layout=next;return check;}
+    commit(tiles){const next={...this.layout,tiles,...(this.layout.mode==='AI_HYBRID'?{visualStatus:'MANUALLY_EDITED'}:{})};const check=validate(next,{continuity:false});if(!check.valid)return check;this.undoStack.push(this.layout);if(this.undoStack.length>100)this.undoStack.shift();this.redoStack=[];this.layout=next;return check;}
     update(id,patch){const t=this.layout.tiles.find(t=>t.id===id);if(!t)return {valid:false,errors:['NO_SELECTION']};return this.commit(this.layout.tiles.map(t=>t.id===id?{...t,...patch,id:t.id,lengthMm:30,widthMm:3}:t));}
     add(tile){if(this.layout.tiles.length>=150)return {valid:false,errors:['TILE_LIMIT']};const id=Math.max(0,...this.layout.tiles.map(t=>t.id))+1;return this.commit([...this.layout.tiles,{...tile,id,sequenceIndex:Number.isFinite(tile.sequenceIndex)?tile.sequenceIndex:id-1,lengthMm:30,widthMm:3}]);}
     remove(id){return this.commit(this.layout.tiles.filter(t=>t.id!==id));}

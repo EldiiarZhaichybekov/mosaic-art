@@ -249,3 +249,21 @@ globalThis.TileMessages = {
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.reference']=["Приложенный рисунок","Supplied drawing","提供的线稿"][i]);
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.asymmetric']=["Асимметричная геометрия","Asymmetric geometry","非对称几何形状"][i]);
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.candidates']=['Кандидаты','Candidate paths','候选路径'][i]);
+// Opt-in Result 3 experiment. Normal Result 1/2 strings are unchanged.
+for(const [key,values] of Object.entries({
+hybridPlanning:['AI разрабатывает композицию…','AI is planning the composition…','AI 正在设计构图…'],
+hybridQA:['AI проверяет узнаваемость и композицию…','AI is reviewing recognition and composition…','AI 正在检查辨识度和构图…'],
+hybridAccepted:['AI одобрил композицию; проверьте её перед изготовлением.','AI accepted the composition; inspect it before fabrication.','AI 已批准构图；制作前请检查。'],
+hybridReview:['Эксперимент: композиция требует визуальной проверки.','Experimental: composition needs visual review.','实验结果：构图需要视觉审核。'],
+hybridFallback:['Использована резервная математическая раскладка, не AI-композиция.','Using a deterministic fallback, not an AI composition.','当前为数学备用布局，并非 AI 构图。'],
+AI_CONFIG_MISSING:['Ключ AI не настроен на сервере. Использован резервный расчёт.','Server AI key is not configured. Using fallback.','服务器未配置 AI 密钥。已使用备用计算。'],
+AI_EXPERIMENT_DISABLED:['AI-эксперимент не включён на сервере. Использован резервный расчёт.','The AI experiment is not enabled on the server. Using fallback.','服务器未启用 AI 实验。已使用备用计算。'],
+AI_AUTH_ERROR:['Не удалось авторизовать AI-сервис. Использован резервный расчёт.','AI authentication failed. Using fallback.','AI 身份验证失败。已使用备用计算。'],
+AI_TIMEOUT:['AI не ответил вовремя. Использован резервный расчёт.','AI timed out. Using fallback.','AI 响应超时。已使用备用计算。'],
+AI_NETWORK_ERROR:['Не удалось связаться с AI. Использован резервный расчёт.','Could not connect to AI. Using fallback.','无法连接 AI。已使用备用计算。'],
+AI_PLAN_INVALID:['AI вернул непригодный план. Использован резервный расчёт.','AI returned an invalid plan. Using fallback.','AI 返回了无效方案。已使用备用计算。'],
+AI_RESPONSE_INVALID:['Не удалось прочитать ответ AI. Использован резервный расчёт.','Could not read the AI response. Using fallback.','无法读取 AI 响应。已使用备用计算。'],
+AI_VISION_ERROR:['AI не смог обработать визуальные данные. Использован резервный расчёт.','AI could not process the visual input. Using fallback.','AI 无法处理视觉输入。已使用备用计算。'],
+AI_RATE_LIMIT:['Достигнут лимит AI-запросов. Использован резервный расчёт.','AI request limit reached. Using fallback.','已达到 AI 请求限制。已使用备用计算。'],
+AI_MODEL_ERROR:['AI-сервис вернул ошибку. Использован резервный расчёт.','AI service failed. Using fallback.','AI 服务发生错误。已使用备用计算。']
+}))['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['tile.'+key]=values[i]);

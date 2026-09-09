@@ -2182,7 +2182,7 @@ function initUI() {
   el.threshold.closest('.ctrl').id = 'threshold-control';
   el.traceSeg.closest('.ctrl').id = 'trace-control';
   let optimizedUI;
-  const physicalHooks = {notify,t,getFormat:()=>el.canvasFmt.value,
+  const physicalHooks = {notify,t,getFormat:()=>el.canvasFmt.value,getImage:()=>state.uploadedImg,getCanvas:()=>state.canvas,
     onPhysical:()=>{optimizedUI?.hide();state.variant='tiles';},
     onDetailed:()=>{optimizedUI?.hide();state.variant='detailed';document.title=t('app.title');if(!state.resultData)return;
       state.finalPaths=finalLineArt(state.resultData);state.internalLines=state.resultData.internal_lines;
