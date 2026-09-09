@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "name": "mosaic-art",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "functions": { "api/result3.js": { "maxDuration": 40 } }
 }

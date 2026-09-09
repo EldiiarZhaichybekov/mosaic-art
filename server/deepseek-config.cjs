@@ -9,7 +9,7 @@ module.exports = function configuration(env = process.env) {
     // solver. Explicit 0 is the server-side kill switch. Local stays opt-in.
     enabled: env.DEEPSEEK_RESULT3_ENABLED === '1' ||
       (env.DEEPSEEK_RESULT3_ENABLED === undefined && env.VERCEL_ENV === 'production'),
-    timeoutMs: 12000,
+    timeoutMs: 30000,
     maxTokens: 4500
   };
 };
