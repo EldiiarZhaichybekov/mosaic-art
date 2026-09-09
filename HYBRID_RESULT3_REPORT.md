@@ -2,6 +2,10 @@
 
 This is an **experimental implementation, not a verified visual-quality release**. The user approved publishing the experiment without replacing the ordinary Result 3. Deployment and live test outcomes are reported separately in the delivery message.
 
+## Publication verification
+
+The experiment was published and the unchanged default pipeline passed its production smoke test. A live request using the supplied drawing reached DeepSeek: after approximately 28 seconds the model returned parseable JSON, but server-side composition schema validation rejected it (`AI_PLAN_INVALID`, request `2733713a-e71c-4b56-88d5-8a21fe9f37a6`). Authentication/configuration are therefore working; successful composition and visual QA are **not** yet verified. The safe deterministic fallback was retained. The first live attempt had reached the original 12-second timeout; diagnostic limits are now 30 seconds for the provider, 35 for the browser, and 40 for this Vercel function. These timings do not meet the 5–10 second target. Investigating the exact schema mismatch is the next task; it must not be silently normalized or treated as success.
+
 ## Configuration and security
 
 - The historical `api/trace.js` used `DEEPSEEK_API_KEY` and `DEEPSEEK_MODEL`. The user confirmed the Production key exists in Vercel project `mosaic-art 2`.
