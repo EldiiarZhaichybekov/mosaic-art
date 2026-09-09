@@ -187,6 +187,7 @@
   .tile-tabs button[aria-pressed="true"] { background:#4338ca; color:white; border-color:#4338ca; }
   #result-controls .tile-tabs button { min-height:62px; font-size:15px; }
   #result-controls small { display:block; margin-top:4px; }
+  #result-controls small {overflow-wrap:anywhere;}
   #tile-panel { display:flex; flex-direction:column; gap:8px; }
   #tile-canvas { display:block; width:100%; height:auto; max-height:calc(100vh - 220px); object-fit:contain; }
   #cv[hidden], #tile-canvas[hidden], #tile-panel[hidden], #result-controls[hidden], #tile-editor[hidden], #tile-orientation[hidden], #tile-plan-info[hidden] { display:none !important; }
@@ -200,6 +201,14 @@
   .server-contour #threshold-control, .server-contour #trace-control { display:none !important; }
   .tile-active #tile-panel button:disabled { opacity:.45; cursor:not-allowed; }
   @media(max-width:920px) { #tile-canvas { max-height:none; } }
+  #optimized-canvas {display:block;width:100%;height:auto;max-height:calc(100vh - 220px);object-fit:contain;}
+  #optimized-canvas[hidden], #optimized-panel[hidden] {display:none!important;}
+  #optimized-panel {padding:12px 0;}
+  #optimized-status {font-size:12px;line-height:1.5;}
+  #optimized-recompute {min-height:44px;padding:10px 14px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#334155;font-weight:700;cursor:pointer;}
+  #optimized-recompute:disabled {opacity:.45;cursor:not-allowed;}
+  .optimized-active #sec-diag, .optimized-active #sec-canvas, .optimized-active .brand p, .optimized-active #sec-notes, .optimized-active #threshold-control, .optimized-active #trace-control, .optimized-active #btn-gen {display:none!important;}
+  @media(max-width:920px) {#optimized-canvas {max-height:none;} #result-controls .tile-tabs button {font-size:12px;}}
 </style>
 </head>
 <body>
@@ -209,7 +218,8 @@
     <div id="result-controls" hidden>
       <div class="tile-tabs" role="group" data-i18n-attr="aria-label:result.label" aria-label="Результат">
         <button id="result-detailed" aria-pressed="true"><span data-i18n="tile.result1">РЕЗУЛЬТАТ 1</span><small data-i18n="tile.detailed">Детальный</small></button>
-        <button id="result-tiles" aria-pressed="false"><span data-i18n="tile.result2">РЕЗУЛЬТАТ 2</span><small data-i18n="tile.physical">Раскладка пластин</small></button>
+        <button id="result-optimized" aria-pressed="false"><span data-i18n="tile.result2">РЕЗУЛЬТАТ 2</span><small data-i18n="opt.name">Оптимизированный</small></button>
+        <button id="result-tiles" aria-pressed="false"><span data-i18n="opt.result3">РЕЗУЛЬТАТ 3</span><small data-i18n="tile.physical">Раскладка пластин</small></button>
       </div>
       <p id="result-description" class="tile-help" aria-live="polite"></p>
     </div>
@@ -357,6 +367,8 @@
 <script src="tile-layout.js"></script>
 <script src="tile-i18n.js"></script>
 <script src="tile-ui.js"></script>
+<script src="optimized-contour.js"></script>
+<script src="optimized-ui.js"></script>
 <script>
 "use strict";
 /* ============================================================================
@@ -723,6 +735,7 @@ function applyLanguage(lang) {
     el.setAttribute(attr, t(key));
   }
   globalThis.TileUI?.refreshLanguage?.();
+  globalThis.OptimizedUI?.refreshLanguage?.();
 }
 
 /* ------------------------- geometry primitives --------------------------- */
@@ -2168,22 +2181,26 @@ function initUI() {
   }
   el.threshold.closest('.ctrl').id = 'threshold-control';
   el.traceSeg.closest('.ctrl').id = 'trace-control';
+  let optimizedUI;
   const physicalHooks = {notify,t,getFormat:()=>el.canvasFmt.value,
-    onPhysical:()=>{state.variant='tiles';},
-    onDetailed:()=>{state.variant='detailed';document.title=t('app.title');if(!state.resultData)return;
+    onPhysical:()=>{optimizedUI?.hide();state.variant='tiles';},
+    onDetailed:()=>{optimizedUI?.hide();state.variant='detailed';document.title=t('app.title');if(!state.resultData)return;
       state.finalPaths=finalLineArt(state.resultData);state.internalLines=state.resultData.internal_lines;
       drawDashes(renderedPaths(),...state.canvas);renderContourInfo(state.scaled,...state.canvas);
     }};
   let tileUI;
   try { tileUI = TileUI.create(physicalHooks); }
   catch(error) {
-    // Optional Result 2 assets must not prevent Result 1 from initializing.
+    // Optional Result 3 assets must not prevent Result 1 from initializing.
     console.error('Physical UI unavailable',error);
     tileUI={isActive:()=>false,export:()=>{},reset:()=>{$('result-controls').hidden=true;},sourceChanged:()=>{
       $('result-controls').hidden=false;$('result-tiles').disabled=true;
       notify(t('tile.optionalUnavailable'),'warning');
     }};
   }
+
+  try {optimizedUI=OptimizedUI.create({t,notify,onSelect:()=>{tileUI.deactivate?.();state.variant='optimized';}});}
+  catch(error){console.error('Optimized UI unavailable',error);$('result-optimized').disabled=true;}
 
   // Diagnostic-only overlay: screen-pixel dashes make the sampled external
   // boundary inspectable without changing the 30 mm SVG/JPG export paths.
@@ -2277,6 +2294,8 @@ function initUI() {
     details.lastChild.textContent = CONTOUR_DEBUG && data.debug ? JSON.stringify(data.debug, null, 2) : "";
     try { tileUI.sourceChanged(data); }
     catch(error) {console.error('optional_physical_ui_failure',{requestId:data.clientDiagnostics?.requestId,error});notify(t('tile.optionalUnavailable'),'warning');}
+    try {optimizedUI?.sourceChanged(data,[cw,ch]);}
+    catch(error){console.error('optional_optimized_ui_failure',{requestId:data.request_id,error});notify(t('opt.failure'),'warning');}
   }
 
   let contourGeneration = 0;
@@ -2297,6 +2316,7 @@ function initUI() {
   }
 
   function setShape(polys, name) {
+    optimizedUI?.reset();
     document.body.classList.remove('server-contour');
     state.resultData = null; state.variant = "detailed";
     tileUI.reset();
@@ -2432,6 +2452,7 @@ function initUI() {
     run();
   });
   el.btnSvg.addEventListener("click", () => {
+    if(optimizedUI?.isActive()){optimizedUI.export('svg');return;}
     if(tileUI.isActive()){tileUI.export('svg');return;}
     if (!state.dashes.length) run();
     const svg = exportDashesSVG(renderedPaths(), state.canvas[0], state.canvas[1]);
@@ -2439,6 +2460,7 @@ function initUI() {
     notifyKey("msg.svgReady", "success");
   });
   el.btnJpg.addEventListener("click", () => {
+    if(optimizedUI?.isActive()){optimizedUI.export('jpg');return;}
     if(tileUI.isActive()){tileUI.export('jpg');return;}
     if (!state.dashes.length) run();
     const url = exportDashesJPG(renderedPaths(), state.canvas[0], state.canvas[1]);
@@ -2572,7 +2594,7 @@ function initUI() {
   el.lang.addEventListener("change", () => {
     applyLanguage(el.lang.value);
     if(tileUI.isActive()) document.title=t('tile.title');
-    if (state.resultData && !tileUI.isActive()) $("result-description").textContent = t("result.detailedHelp");
+    if (state.resultData && !tileUI.isActive() && !optimizedUI?.isActive()) $("result-description").textContent = t("result.detailedHelp");
     if (state.scaled && state.canvas.length) renderContourInfo(state.scaled, state.canvas[0], state.canvas[1]);
   });
 

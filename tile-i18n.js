@@ -1,4 +1,4 @@
-/* Result 2 messages are merged into the existing application I18N catalog. */
+/* Result mode messages are merged into the existing application I18N catalog. */
 globalThis.TileMessages = {
   "ru": {
     "tile.layout": "РАСКЛАДКА",
@@ -224,3 +224,28 @@ globalThis.TileMessages = {
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['tile.invalidResponse']=["Не удалось прочитать результат обработки. Попробуйте ещё раз.","The processing result could not be read. Please try again.","无法读取处理结果。请重试。"][i]);
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['tile.clientError']=["Не удалось отобразить результат в браузере. Обновите страницу и попробуйте ещё раз.","The browser could not display the result. Refresh the page and try again.","浏览器无法显示结果。请刷新页面后重试。"][i]);
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['tile.resourceLimit']=["Недостаточно ресурсов для обработки. Попробуйте уменьшить изображение.","Not enough resources to process this image. Try reducing its size.","处理资源不足。请尝试缩小图片。"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.name']=["Оптимизированный","Optimized","优化"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.result3']=["РЕЗУЛЬТАТ 3","RESULT 3","结果 3"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.title']=["DrawACRL — оптимизированный контур","DrawACRL — optimized contour","DrawACRL — 优化轮廓"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.help']=["Чистый векторный контур и основные структурные линии. Без ограничений физических пластин.","Clean vector contour and major structural paths. Independent of physical tile constraints.","清晰的矢量轮廓及主要结构线，不受实体板片限制。"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.pending']=["Объединяю линии и убираю мелкие детали…","Joining paths and removing minor detail…","正在合并路径并移除细小细节…"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.ready']=["Оптимизированный контур готов.","Optimized contour ready.","优化轮廓已就绪。"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.failure']=["Не удалось подготовить оптимизированный контур. Детальный результат сохранён.","Could not prepare the optimized contour. The detailed result is preserved.","无法生成优化轮廓。详细结果已保留。"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.empty']=["Загрузите изображение для оптимизации.","Upload an image to optimize.","请上传图片以进行优化。"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.recompute']=["Пересчитать контур","Recompute contour","重新计算轮廓"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.exported']=["Файл оптимизированного контура подготовлен.","Optimized contour file prepared.","优化轮廓文件已准备好。"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.debug']=["Диагностика оптимизации","Optimization diagnostics","优化诊断"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.final']=["Итоговый контур","Final contour","最终轮廓"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.input']=["Исходные линии Result 1","Result 1 input paths","结果 1 输入路径"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.merged']=["Объединённые пути","Merged coherent paths","合并后的连续路径"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.rejected']=["Удалённые мелкие детали","Rejected minor detail","已移除的细小细节"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.reconstructed']=["Восстановленные участки","Reconstructed sections","重建部分"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.symmetry']=["Поддержка симметрией","Symmetry-supported paths","对称辅助路径"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.experiments']=["Сравнение геометрии Result 1 / Result 2","Result 1 / Result 2 geometry comparison","结果 1 / 结果 2 几何对比"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.language']=["Язык","Language","语言"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.fixture']=["Пример","Fixture","示例"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.bat']=["Летучая мышь — исходный пример","Bat — original fixture","蝙蝠 — 原始示例"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.butterfly']=["Бабочка","Butterfly","蝴蝶"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.reference']=["Приложенный рисунок","Supplied drawing","提供的线稿"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.asymmetric']=["Асимметричная геометрия","Asymmetric geometry","非对称几何形状"][i]);
+['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.candidates']=['Кандидаты','Candidate paths','候选路径'][i]);

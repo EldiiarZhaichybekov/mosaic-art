@@ -1,4 +1,4 @@
-/* Isolated physical Result 2 UI. Result 1 canvas and export functions are untouched. */
+/* Isolated physical Result 3 UI. Result 1 canvas and export functions are untouched. */
 (function(root){
   'use strict';
   const T=root.TileLayout;
@@ -105,6 +105,7 @@
     $('tile-debug-download').onclick=()=>{if(doc)download('physical-diagnostics.json',JSON.stringify({request:source.clientDiagnostics,layout:doc.layout},null,2),'application/json');};
     root.TileUI.refreshLanguage=()=>{if(active)document.title=tr('title');$('result-description').textContent=tr(active?'physicalHelp':'detailedHelp');$('tile-add').textContent=tr(adding?'clickCanvas':'add');refresh();};
     return {
+      deactivate(){choose(false);},
       sourceChanged(data){source=data;doc=null;selected=null;if(worker)worker.terminate();job++;pending=false;$('tile-format').value=getFormat();$('result-controls').hidden=!data;choose(false);},
       reset(){source=null;doc=null;if(worker)worker.terminate();job++;pending=false;choose(false);$('result-controls').hidden=true;},
       isActive:()=>active,

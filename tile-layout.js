@@ -1,4 +1,4 @@
-/* Physical Result 2 only. No dependency on Result 1 rendering or detector. */
+/* Physical Result 3 and reusable path assembly. Result 1 is never modified. */
 (function(root) {
   'use strict';
   const RULES = Object.freeze({length:30,width:3,margin:15,maxTiles:150,maxGap:2,maxDeviation:3});
@@ -64,7 +64,7 @@
     return {contour:source.contour.map(map),internal:(source.internal_lines||[]).map(p=>p.map(map)),scale:s};
   }
   function regularize(points,radius) {
-    // Result 2 target only, 1 mm cells. Rolling-distance opening/closing removes
+    // Result 3 target only, 1 mm cells. Rolling-distance opening/closing removes
     // sub-tile spikes and slots; no photograph or Result 1 pixels are changed.
     const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),ox=Math.floor(Math.min(...xs))-radius-3,oy=Math.floor(Math.min(...ys))-radius-3;
     const w=Math.ceil(Math.max(...xs)-ox)+radius+4,h=Math.ceil(Math.max(...ys)-oy)+radius+4;
@@ -182,7 +182,7 @@
     }
     return best;
   }
-  function buildStructures(internal,contour=[]) {
+  function buildStructures(internal,contour=[],options={}) {
     const start=Date.now(),observed=internal.filter(p=>p.length>=2&&p.every(q=>q.length===2&&q.every(Number.isFinite))).map(p=>p.map(q=>[...q]));
     const symmetryStart=Date.now(),symmetry=symmetryAxis(contour),symmetryMs=Date.now()-symmetryStart;
     const evidence=new SegmentGrid(observed),boundary=contour.length?new SegmentGrid([pathModel(contour,true).points]):null;
@@ -220,8 +220,8 @@
       const p=item.points,m=pathModel(p),xs=p.map(q=>q[0]),ys=p.map(q=>q[1]),width=Math.max(...xs)-Math.min(...xs),height=Math.max(...ys)-Math.min(...ys),extent=Math.hypot(width,height),closed=dist(p[0],p.at(-1))<1;
       const samples=Array.from({length:32},(_,i)=>m.at(m.length*i/31)),mirrorSupport=symmetry.confidence>=.85?support(samples.map(symmetry.reflect)):0;
       const tileCost=Math.max(1,Math.ceil(m.length/31)),structuralValue=extent*(1+.25*mirrorSupport),score=structuralValue/tileCost;
-      const reason=closed&&Math.min(width,height)<35?'SMALL_LOOP':m.length<45||extent<30?'MINOR_FRAGMENT':extent/m.length<.3?'LOW_SPATIAL_EXTENT':null;
-      const out={...item,points:simplifyOpen(p,.6),lengthMm:m.length,extentMm:extent,tileCost,structuralValue,score,mirrorSupport,symmetryConfidence:symmetry.confidence,reason:reason||'COHERENT_MAJOR_PATH'};
+      const reason=closed&&Math.min(width,height)<(options.smallLoop??35)?'SMALL_LOOP':m.length<(options.minLength??45)||extent<(options.minExtent??30)?'MINOR_FRAGMENT':extent/m.length<.3?'LOW_SPATIAL_EXTENT':null;
+      const out={...item,points:simplifyOpen(p,options.simplification??.6),lengthMm:m.length,extentMm:extent,tileCost,structuralValue,score,mirrorSupport,symmetryConfidence:symmetry.confidence,reason:reason||'COHERENT_MAJOR_PATH'};
       if(reason)rejected.push(out);else selected.push(out);
     }
     selected.sort((a,b)=>b.score-a.score||b.lengthMm-a.lengthMm||a.ids[0]-b.ids[0]);

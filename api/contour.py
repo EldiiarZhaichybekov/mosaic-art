@@ -547,6 +547,11 @@ def ping(path="/"):
 @app.route('/tile-ui.js', methods=['GET'])
 @app.route('/tile-worker.js', methods=['GET'])
 @app.route('/tile-i18n.js', methods=['GET'])
+@app.route('/optimized-contour.js', methods=['GET'])
+@app.route('/optimized-ui.js', methods=['GET'])
+@app.route('/optimized-worker.js', methods=['GET'])
+@app.route('/tests/optimized_inspector.html', methods=['GET'])
+@app.route('/tests/fixtures/optimized-cases.json', methods=['GET'])
 def physical_asset():
     # Explicit local-dev allowlist. Vercel serves these same static files.
     return send_from_directory(str(Path(__file__).resolve().parent.parent), request.path[1:])
