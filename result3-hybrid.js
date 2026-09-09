@@ -24,16 +24,7 @@ function validateContext(context){
   return context;
 }
 function validatePlan(plan,context){
-  validateContext(context);keys(plan,['version','objectAnalysis','essentialFeatures','globalIntent','complexityBudget','routes','omissions']);
-  if(plan.version!==1||!text(plan.objectAnalysis)||!text(plan.globalIntent)||!Array.isArray(plan.essentialFeatures)||plan.essentialFeatures.length>12||!plan.essentialFeatures.every(s=>text(s,160))||!Number.isInteger(plan.complexityBudget)||plan.complexityBudget<3||plan.complexityBudget>150||!Array.isArray(plan.routes)||!plan.routes.length||plan.routes.length>48)fail();
-  const known=new Map(context.paths.map(p=>[p.id,p])),ids=new Set();
-  if(!Array.isArray(plan.omissions)||plan.omissions.length>160||!plan.omissions.every(id=>known.has(id)))fail();
-  for(const r of plan.routes){keys(r,['id','role','priority','sourcePathIds','source','strategy','viaAnchors','reason']);
-    if(!/^[a-zA-Z0-9_-]{1,40}$/.test(r.id)||ids.has(r.id)||!['outer','structural','characteristic'].includes(r.role)||!Number.isFinite(r.priority)||r.priority<0||r.priority>1||!['result2','result1-restored','ai-reconstructed'].includes(r.source)||!strategies.includes(r.strategy)||!text(r.reason)||!Array.isArray(r.sourcePathIds)||!r.sourcePathIds.length||r.sourcePathIds.length>12||!r.sourcePathIds.every(id=>known.has(id)&&!plan.omissions.includes(id))||!Array.isArray(r.viaAnchors)||r.viaAnchors.length>24||!r.viaAnchors.every(point))fail();
-    if(r.viaAnchors.length<2&&!(['FOLLOW','RESTORE'].includes(r.strategy)&&r.viaAnchors.length===0))fail();
-    if(r.source==='result1-restored'&&!r.sourcePathIds.some(id=>known.get(id).source==='result1'))fail();ids.add(r.id);
-  }
-  if(!plan.routes.some(r=>r.role==='outer'))fail();return JSON.parse(JSON.stringify(plan));
+  validateContext(context);return (typeof module!=='undefined'?require('./result3-contract.js'):root.Result3Contract).plan(plan,context);
 }
 function validateQA(qa,plan){
   keys(qa,['version','accept','recognizabilityScore','silhouetteScore','cleanlinessScore','compositionScore','repairs']);

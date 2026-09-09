@@ -3,6 +3,7 @@ const configuration=require('../server/deepseek-config.cjs');
 const {complete,AIError}=require('../server/deepseek-client.cjs');
 const prompts=require('../server/result3-prompts.cjs');
 const H=require('../result3-hybrid.js');
+const C=require('../result3-contract.js');
 const {randomUUID}=require('node:crypto');
 const recent=new Map();
 function image(value){
@@ -37,10 +38,10 @@ module.exports=async function handler(req,res){
     const quota=recent.get(ip)||{start:now,count:0};if(quota.count>=12)throw new AIError('AI_RATE_LIMIT',429);quota.count++;recent.set(ip,quota);
     phase='input_validation';let input;try{input=messages(body);}catch(error){throw error instanceof AIError?error:new AIError('PLAN_INVALID',400);}
     phase=body.phase;const result=await complete(config,input);modelStatus=result.httpStatus;
-    phase='response_validation';let value;try{value=body.phase==='plan'?H.validatePlan(result.value,body.context):H.validateQA(result.value,body.plan);}catch{throw new AIError('AI_PLAN_INVALID');}
+    phase='response_validation';let value;try{value=body.phase==='plan'?H.validatePlan(result.value,body.context):H.validateQA(result.value,body.plan);}catch(error){throw Object.assign(new AIError(error.code||'AI_PLAN_INVALID'),{issues:error.issues,diagnostics:{responseShape:result.responseShape,contentLength:result.contentLength,parsedShape:C.shape(result.value)}});}
     const durationMs=Date.now()-began;
     console.info(JSON.stringify({event:'result3_ai_complete',requestId,phase:body.phase,model:config.model,httpStatus:modelStatus,inputPaths:body.context.paths.length,routes:value.routes?.length,restored:value.routes?.filter(r=>r.source==='result1-restored').length,omitted:value.omissions?.length,durationMs}));
     res.status(200).json({value,requestId,durationMs});
-  }catch(error){const code=error.code||'INTERNAL_ERROR',status=error.status||500;console.error(JSON.stringify({event:'result3_ai_failed',requestId,phase,code,httpStatus:error.httpStatus||modelStatus,durationMs:Date.now()-began,...(error instanceof AIError?{stack:error.stack}:{})}));res.status(status).json({error:{code,requestId}});}
+  }catch(error){const code=error.code||'INTERNAL_ERROR',status=error.status||500;console.error(JSON.stringify({event:'result3_ai_failed',requestId,phase,code,issues:error.issues,diagnostics:error.diagnostics,httpStatus:error.httpStatus||modelStatus,durationMs:Date.now()-began,...(error instanceof AIError?{stack:error.stack}:{})}));res.status(status).json({error:{code,requestId,issues:error.issues,diagnostics:error.diagnostics}});}
 };
 module.exports.messages=messages;

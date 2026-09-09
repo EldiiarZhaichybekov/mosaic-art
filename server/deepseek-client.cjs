@@ -9,7 +9,7 @@ async function complete(config,messages,{fetchImpl=fetch}={}) {
     const raw=await response.text();if(raw.length>100000)throw new AIError('AI_RESPONSE_INVALID');
     let data;try{data=JSON.parse(raw);}catch{throw new AIError('AI_RESPONSE_INVALID');}
     const answer=data.choices?.[0];if(answer?.finish_reason!=='stop'||typeof answer?.message?.content!=='string')throw new AIError('AI_RESPONSE_INVALID');
-    try{return {value:JSON.parse(answer.message.content),httpStatus:response.status,usage:data.usage};}catch{throw new AIError('AI_RESPONSE_INVALID');}
+    try{return {value:JSON.parse(answer.message.content),httpStatus:response.status,usage:data.usage,responseShape:{keys:Object.keys(data),finishReason:answer.finish_reason,contentType:typeof answer.message.content},contentLength:answer.message.content.length};}catch{throw new AIError('AI_RESPONSE_INVALID');}
   }catch(error){if(error instanceof AIError)throw error;throw new AIError(['TimeoutError','AbortError'].includes(error.name)?'AI_TIMEOUT':'AI_NETWORK_ERROR',504);}
 }
 module.exports={complete,AIError};

@@ -1,5 +1,5 @@
 /* Opt-in experimental Result 3. All CPU work stays off the main UI thread. */
-importScripts('tile-layout.js','optimized-contour.js','result3-hybrid.js');
+importScripts('tile-layout.js','optimized-contour.js','result3-contract.js','result3-hybrid.js');
 function render(paths,canvas,layout,labels=false){
   const out=new OffscreenCanvas(canvas[0]*2,canvas[1]*2),ctx=out.getContext('2d');ctx.scale(2,2);ctx.fillStyle='white';ctx.fillRect(0,0,...canvas);ctx.strokeStyle='#475569';ctx.lineWidth=.5;
   for(const path of paths){ctx.beginPath();path.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();if(labels){ctx.font='4px sans-serif';ctx.fillStyle='#4338ca';ctx.fillText(path.id,...path.points[0]);}}
