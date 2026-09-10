@@ -15,6 +15,11 @@ const qaSchema=obj({version:{type:'integer',enum:[1]},accept:{type:'boolean'},re
 // Bind source references to this request's actual graph. Same factory is used
 // by the provider request and local validation; geometry is not modified.
 function schemaForContext(context){const schema=JSON.parse(JSON.stringify(planSchema)),ids=context.paths.map(p=>p.id);schema.properties.routes.items.properties.sourcePathIds.items.enum=ids;schema.properties.omissions.items.enum=ids;return schema;}
+function schemaForQA(plan){const schema=JSON.parse(JSON.stringify(qaSchema)),ids=plan.routes.map(r=>r.id),omittable=plan.routes.filter(r=>r.role!=='outer').map(r=>r.id),item=schema.properties.repairs.items;
+item.properties.routeId.enum=ids;
+item.anyOf=[{type:'object',properties:{action:{type:'string',enum:['SIMPLIFY']}}}];
+if(omittable.length)item.anyOf.push({type:'object',properties:{action:{type:'string',enum:['OMIT']},routeId:{type:'string',enum:omittable}}});
+schema.anyOf=[{type:'object',properties:{accept:{type:'boolean',enum:[false]}}},{type:'object',properties:{repairs:{type:'array',maxItems:0}}}];return schema;}
 class ContractError extends Error{constructor(code,issues){super(code);this.code=code;this.issues=issues;}}
 // Deliberately small JSON Schema subset: every keyword used above is handled.
 // No coercion, stripping, defaults or normalization of model decisions.
@@ -38,6 +43,11 @@ r.sourcePathIds.forEach((id,j)=>{if(!known.has(id))error('AI_UNKNOWN_PATH_ID',p+
 if(r.source==='result1-restored'&&!r.sourcePathIds.some(id=>known.get(id).source==='result1'))error('AI_PLAN_SEMANTIC_INVALID',p+'/sourcePathIds','Restoration requires a Result 1 path');
 });if(!value.routes.some(r=>r.role==='outer'))error('AI_PLAN_SEMANTIC_INVALID','/routes','At least one outer route is required');return JSON.parse(JSON.stringify(value));}
 function example(context){const p=context.paths.find(p=>p.source==='result2')||context.paths[0];return {version:1,objectAnalysis:'Subject',essentialFeatures:['Main silhouette'],globalIntent:'Preserve identity',complexityBudget:100,routes:[{id:'outer_1',role:'outer',priority:1,sourcePathIds:[p.id],source:p.source==='result1'?'result1-restored':'result2',strategy:'FOLLOW',viaAnchors:[],reason:'Main boundary'}],omissions:[]};}
+function qa(value,plan){const issues=validate(qaSchema,value);if(issues.length)throw new ContractError('AI_SCHEMA_INVALID',issues);
+const error=(path,reason)=>{throw new ContractError('AI_QA_SEMANTIC_INVALID',[{path,keyword:'semantic',reason}]);},seen=new Set();
+value.repairs.forEach((r,i)=>{const path='/repairs/'+i,route=plan.routes.find(p=>p.id===r.routeId);if(!route)error(path+'/routeId','Unknown composition route ID');if(seen.has(r.routeId))error(path+'/routeId','Duplicate repair for the same route');if(r.action==='OMIT'&&route.role==='outer')error(path+'/action','An outer route cannot be omitted');seen.add(r.routeId);});
+if(value.accept&&value.repairs.length)error('/repairs','An accepted assessment must have no repairs');
+const scoped=validate(schemaForQA(plan),value);if(scoped.length)throw new ContractError('AI_SCHEMA_INVALID',scoped);return JSON.parse(JSON.stringify(value));}
 function shape(value){if(value===null)return 'null';if(Array.isArray(value))return {type:'array',length:value.length};if(typeof value==='object')return Object.fromEntries(Object.entries(value).slice(0,24).map(([k,v])=>[k.slice(0,60),shape(v)]));return typeof value;}
-const api={planSchema,schemaForContext,qaSchema,validate,plan,example,shape,ContractError};if(typeof module!=='undefined')module.exports=api;root.Result3Contract=api;
+const api={planSchema,schemaForContext,qaSchema,schemaForQA,validate,plan,qa,example,shape,ContractError};if(typeof module!=='undefined')module.exports=api;root.Result3Contract=api;
 })(globalThis);

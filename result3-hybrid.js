@@ -27,10 +27,7 @@ function validatePlan(plan,context){
   validateContext(context);return (typeof module!=='undefined'?require('./result3-contract.js'):root.Result3Contract).plan(plan,context);
 }
 function validateQA(qa,plan){
-  keys(qa,['version','accept','recognizabilityScore','silhouetteScore','cleanlinessScore','compositionScore','repairs']);
-  if(qa.version!==1||typeof qa.accept!=='boolean'||!['recognizabilityScore','silhouetteScore','cleanlinessScore','compositionScore'].every(k=>Number.isFinite(qa[k])&&qa[k]>=0&&qa[k]<=1)||!Array.isArray(qa.repairs)||qa.repairs.length>4)throw Error('QA_INVALID');
-  const seen=new Set();for(const r of qa.repairs){keys(r,['routeId','action','reason']);const route=plan.routes.find(p=>p.id===r.routeId);if(!route||seen.has(r.routeId)||!['SIMPLIFY','OMIT'].includes(r.action)||r.action==='OMIT'&&route.role==='outer'||!text(r.reason))throw Error('QA_INVALID');seen.add(r.routeId);}
-  if(qa.accept&&qa.repairs.length)throw Error('QA_INVALID');return JSON.parse(JSON.stringify(qa));
+  return (typeof module!=='undefined'?require('./result3-contract.js'):root.Result3Contract).qa(qa,plan);
 }
 function target(plan,context){
   const clean=validatePlan(plan,context),[w,h]=context.canvas;
