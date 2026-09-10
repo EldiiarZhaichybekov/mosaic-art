@@ -2,6 +2,8 @@
 
 This is an **experimental implementation, not a verified visual-quality release**. The user approved publishing the experiment without replacing the ordinary Result 3. Deployment and live test outcomes are reported separately in the delivery message.
 
+**2026-09-10 update:** the contract fix is deployed and a real Responses/json_schema plan completed the hybrid pipeline without fallback: 9 target routes, 44 physically valid tiles, 9.905 seconds total, planning_attempts=1. Visual QA rejected composition; visual quality remains a separate open task. See [RESULT3_CONTRACT_REPORT.md](RESULT3_CONTRACT_REPORT.md) for the exact diagnosis, current schema, timeout/correction policy and live request evidence. The sections below record the original experiment and its earlier release gates, superseded by that contract report where noted.
+
 ## Publication verification
 
 The experiment was published and the unchanged default pipeline passed its production smoke test. A live request using the supplied drawing reached DeepSeek: after approximately 28 seconds the model returned parseable JSON, but server-side composition schema validation rejected it (`AI_PLAN_INVALID`, request `2733713a-e71c-4b56-88d5-8a21fe9f37a6`). Authentication/configuration are therefore working; successful composition and visual QA are **not** yet verified. The safe deterministic fallback was retained. The first live attempt had reached the original 12-second timeout; diagnostic limits are now 30 seconds for the provider, 35 for the browser, and 40 for this Vercel function. These timings do not meet the 5–10 second target. Investigating the exact schema mismatch is the next task; it must not be silently normalized or treated as success.

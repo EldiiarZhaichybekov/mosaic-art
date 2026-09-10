@@ -1,0 +1,387 @@
+{
+  "description": "Real accepted production plan: prose redacted, references and coordinates unchanged. Input geometry is optimized-cases.json/reference.",
+  "requestId": "c8306101-a13b-472b-b84d-2f7d6c97f088",
+  "plan": {
+    "version": 1,
+    "objectAnalysis": "[redacted]",
+    "essentialFeatures": [
+      "[redacted]",
+      "[redacted]",
+      "[redacted]",
+      "[redacted]",
+      "[redacted]",
+      "[redacted]"
+    ],
+    "globalIntent": "[redacted]",
+    "complexityBudget": 120,
+    "routes": [
+      {
+        "id": "outer_left_wing",
+        "role": "outer",
+        "priority": 1,
+        "sourcePathIds": [
+          "r2_0",
+          "r2_1",
+          "r2_2",
+          "r2_3"
+        ],
+        "source": "result2",
+        "strategy": "FOLLOW_SIMPLIFIED",
+        "viaAnchors": [
+          [
+            0.168,
+            0.338
+          ],
+          [
+            0.082,
+            0.366
+          ],
+          [
+            0.13,
+            0.415
+          ],
+          [
+            0.289,
+            0.509
+          ],
+          [
+            0.347,
+            0.586
+          ],
+          [
+            0.42,
+            0.654
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "outer_right_wing",
+        "role": "outer",
+        "priority": 1,
+        "sourcePathIds": [
+          "r2_4",
+          "r2_5",
+          "r2_6",
+          "r2_7",
+          "r2_8",
+          "r2_9",
+          "r2_10",
+          "r2_11"
+        ],
+        "source": "result2",
+        "strategy": "FOLLOW_SIMPLIFIED",
+        "viaAnchors": [
+          [
+            0.42,
+            0.654
+          ],
+          [
+            0.559,
+            0.568
+          ],
+          [
+            0.747,
+            0.589
+          ],
+          [
+            0.94,
+            0.624
+          ],
+          [
+            0.799,
+            0.484
+          ],
+          [
+            0.611,
+            0.449
+          ],
+          [
+            0.479,
+            0.403
+          ],
+          [
+            0.338,
+            0.354
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "upper_wing_structure",
+        "role": "structural",
+        "priority": 0.9,
+        "sourcePathIds": [
+          "r2_15",
+          "r2_20",
+          "r2_22",
+          "r2_28",
+          "r2_29"
+        ],
+        "source": "result2",
+        "strategy": "MERGE_AND_CONTINUE",
+        "viaAnchors": [
+          [
+            0.066,
+            0.376
+          ],
+          [
+            0.346,
+            0.348
+          ],
+          [
+            0.082,
+            0.37
+          ],
+          [
+            0.291,
+            0.355
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "right_radial_struts",
+        "role": "characteristic",
+        "priority": 0.85,
+        "sourcePathIds": [
+          "r2_13",
+          "r2_14",
+          "r2_17",
+          "r2_18",
+          "r2_25",
+          "r2_27",
+          "r2_32",
+          "r2_39"
+        ],
+        "source": "result2",
+        "strategy": "MERGE_AND_CONTINUE",
+        "viaAnchors": [
+          [
+            0.552,
+            0.537
+          ],
+          [
+            0.844,
+            0.582
+          ],
+          [
+            0.718,
+            0.442
+          ],
+          [
+            0.935,
+            0.622
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "left_radial_struts",
+        "role": "characteristic",
+        "priority": 0.85,
+        "sourcePathIds": [
+          "r2_16",
+          "r2_21",
+          "r2_23",
+          "r2_31",
+          "r2_34",
+          "r2_35",
+          "r2_37",
+          "r2_41"
+        ],
+        "source": "result2",
+        "strategy": "MERGE_AND_CONTINUE",
+        "viaAnchors": [
+          [
+            0.222,
+            0.435
+          ],
+          [
+            0.341,
+            0.399
+          ],
+          [
+            0.349,
+            0.419
+          ],
+          [
+            0.257,
+            0.443
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "central_body_legs",
+        "role": "structural",
+        "priority": 0.95,
+        "sourcePathIds": [
+          "r2_30",
+          "r2_33",
+          "r2_36",
+          "r2_43",
+          "r2_45"
+        ],
+        "source": "result2",
+        "strategy": "FOLLOW_SIMPLIFIED",
+        "viaAnchors": [
+          [
+            0.412,
+            0.64
+          ],
+          [
+            0.313,
+            0.618
+          ],
+          [
+            0.55,
+            0.537
+          ],
+          [
+            0.475,
+            0.576
+          ],
+          [
+            0.428,
+            0.653
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "wing_dividing_struts",
+        "role": "characteristic",
+        "priority": 0.8,
+        "sourcePathIds": [
+          "r2_12",
+          "r2_19",
+          "r2_26"
+        ],
+        "source": "result2",
+        "strategy": "MERGE_AND_CONTINUE",
+        "viaAnchors": [
+          [
+            0.066,
+            0.378
+          ],
+          [
+            0.312,
+            0.619
+          ],
+          [
+            0.506,
+            0.42
+          ],
+          [
+            0.716,
+            0.444
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "lower_membrane_details",
+        "role": "characteristic",
+        "priority": 0.7,
+        "sourcePathIds": [
+          "r2_38",
+          "r2_40",
+          "r2_44"
+        ],
+        "source": "result2",
+        "strategy": "FOLLOW_SIMPLIFIED",
+        "viaAnchors": [
+          [
+            0.325,
+            0.484
+          ],
+          [
+            0.402,
+            0.454
+          ],
+          [
+            0.382,
+            0.489
+          ],
+          [
+            0.313,
+            0.518
+          ]
+        ],
+        "reason": "[redacted]"
+      },
+      {
+        "id": "restored_right_wing_fill",
+        "role": "characteristic",
+        "priority": 0.75,
+        "sourcePathIds": [
+          "r1_93",
+          "r1_47",
+          "r1_79"
+        ],
+        "source": "result1-restored",
+        "strategy": "RESTORE",
+        "viaAnchors": [
+          [
+            0.852,
+            0.605
+          ],
+          [
+            0.714,
+            0.466
+          ],
+          [
+            0.704,
+            0.537
+          ],
+          [
+            0.549,
+            0.539
+          ]
+        ],
+        "reason": "[redacted]"
+      }
+    ],
+    "omissions": [
+      "r2_24",
+      "r2_42",
+      "r1_48",
+      "r1_21",
+      "r1_77",
+      "r1_27",
+      "r1_44",
+      "r1_49",
+      "r1_102",
+      "r1_36",
+      "r1_35",
+      "r1_34",
+      "r1_81",
+      "r1_53",
+      "r1_12",
+      "r1_56",
+      "r1_76",
+      "r1_16",
+      "r1_13",
+      "r1_83",
+      "r1_58",
+      "r1_3",
+      "r1_15"
+    ]
+  },
+  "qa": {
+    "version": 1,
+    "accept": false,
+    "recognizabilityScore": 0.18,
+    "silhouetteScore": 0.2,
+    "cleanlinessScore": 0.25,
+    "compositionScore": 0.22,
+    "repairs": []
+  },
+  "expected": {
+    "targetRoutes": 9,
+    "tiles": 44,
+    "mode": "AI_HYBRID",
+    "visualStatus": "AI_REJECTED"
+  }
+}

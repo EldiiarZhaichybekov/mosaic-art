@@ -35,3 +35,17 @@ Provider timeout: 30 seconds, correction: 10 seconds, client per-request: 45 sec
 Contract, endpoint, hybrid, physical tile, optimized contour and client tests pass locally. Mocked results are not real DeepSeek measurements. Result 1/2 frozen checks pass. Solver, fallback geometry and composition philosophy are unchanged. Real production verification of this repair is recorded below after deployment.
 
 First structured-output test, request `135bc186-a0f9-456c-9718-168fc6f04b53`: completed Responses output, valid JSON and base schema, but `/omissions/1` referenced an unknown ID. Wall time 14,298 ms; fallback was used. This is new evidence of an ID error, distinct from the original numeric/string-length failure. The next contract revision binds both source reference arrays to context-specific enums; unknown-reference violations retain AI_UNKNOWN_PATH_ID classification and are not automatically retried.
+
+### Successful live contract verification (2026-09-10)
+
+Production revision `dc5c73a769749b77aaed2fedf07f2ed2221f538f` at https://mosaic-art-rho.vercel.app/?hybrid=1&lang=ru.
+
+- Plan request `c8306101-a13b-472b-b84d-2f7d6c97f088`: HTTP 200, 6,405 ms server / 7,617 ms wall, planning_attempts=1. Model responded; JSON, context-bound schema and semantic checks passed.
+- QA request `fcb6c7ff-8959-49a0-9e0c-ae2661787df7`: HTTP 200, 1,444 ms server / 2,260 ms wall; QA contract passed.
+- Actual AI plan generated 9 manufacturable target routes and 44 whole tiles. Physical validation: valid, zero errors. Mode AI_HYBRID, **fallback NOT used**, two provider calls, no format correction and no local repair.
+- End-to-end hybrid run: 9,905 ms. This is one measured test, not a latency guarantee.
+- Visual QA returned AI_REJECTED (recognizability .18, silhouette .20, cleanliness .25, composition .22), with no repair proposals. This is **not** a visual-quality success. Improving composition is the next separately scoped task.
+- Sanitized accepted plan retained in `tests/fixtures/deepseek-accepted-plan.json`; offline replay verifies identical route/tile counts and physical validity. Text is redacted; source IDs/coordinates are preserved. These replay tests do not make another API call.
+- Production `/api/contour` smoke also passed: 564 external points, 1 internal line; normal pipeline unchanged.
+
+Full validation commands: `node tests/test_result3_contract.cjs`, `node tests/test_result3_api.cjs`, `node tests/test_hybrid.cjs`, `node tests/test_tiles.cjs`, `node tests/test_optimized.cjs`, `node tests/test_client.cjs`, `node tests/test_structures.cjs`, `node tests/check_hybrid_fixtures.cjs`. Real opt-in test: `node tests/smoke_hybrid_deployed.cjs https://mosaic-art-rho.vercel.app /path/to/the/authorized/download.png` with Sharp available via NODE_PATH. It uploads the authorized fixture and incurs real model calls; it must not be treated as an offline unit test.
