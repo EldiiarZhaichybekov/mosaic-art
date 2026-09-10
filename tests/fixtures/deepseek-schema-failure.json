@@ -1,0 +1,262 @@
+{
+  "description": "Sanitized observed production validation failure; no raw assistant text or images retained.",
+  "requestId": "d6844574-90fd-48a8-903a-5f8a8319280c",
+  "code": "AI_SCHEMA_INVALID",
+  "issues": [
+    {
+      "path": "/objectAnalysis",
+      "keyword": "maxLength",
+      "limit": 400,
+      "actualLength": 415
+    },
+    {
+      "path": "/routes/2/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/5/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/7/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/8/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/9/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/10/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/11/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/12/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/13/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/14/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/15/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/16/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/17/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/18/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/19/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/20/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/21/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/22/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 2
+    },
+    {
+      "path": "/routes/23/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/24/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/25/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/26/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/27/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/28/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/29/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/30/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 4
+    },
+    {
+      "path": "/routes/31/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 3
+    },
+    {
+      "path": "/routes/32/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 4
+    },
+    {
+      "path": "/routes/33/priority",
+      "keyword": "range",
+      "minimum": 0,
+      "maximum": 1,
+      "actual": 4
+    },
+    {
+      "path": "/omissions/0",
+      "keyword": "maxLength",
+      "limit": 40,
+      "actualLength": 76
+    },
+    {
+      "path": "/omissions/3",
+      "keyword": "maxLength",
+      "limit": 40,
+      "actualLength": 56
+    }
+  ],
+  "diagnostics": {
+    "responseShape": {
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices",
+        "usage",
+        "system_fingerprint"
+      ],
+      "finishReason": "stop",
+      "contentType": "string"
+    },
+    "contentLength": 9884,
+    "parsedShape": {
+      "version": "number",
+      "objectAnalysis": "string",
+      "essentialFeatures": {
+        "type": "array",
+        "length": 6
+      },
+      "globalIntent": "string",
+      "complexityBudget": "number",
+      "routes": {
+        "type": "array",
+        "length": 34
+      },
+      "omissions": {
+        "type": "array",
+        "length": 4
+      }
+    }
+  }
+}

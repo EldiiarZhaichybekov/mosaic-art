@@ -86,8 +86,8 @@ async function run({context,images,request,fallback}){
   try{const p=await request('plan',{context,images});plan=validatePlan(p.value,context);const targetStart=Date.now(),routes=target(plan,context),targetMs=Date.now()-targetStart;layout=follow(routes,context.canvas,plan.complexityBudget);const initial=JSON.parse(JSON.stringify(layout));
     const review=await images.review(layout);const q=await request('qa',{context,plan,images:{source:images.source,result2:images.result2,review}}),qa=validateQA(q.value,plan);
     layout.visualStatus=qa.accept?'AI_ACCEPTED':'AI_REJECTED';const repairStart=Date.now();if(!qa.accept&&qa.repairs.length)layout=repair(layout,qa,plan.complexityBudget);
-    return {layout,initial,plan,qa,calls:2,repairs:!qa.accept&&qa.repairs.length?1:0,timings:{...initial.timings,targetMs,repairMs:Date.now()-repairStart,planningMs:p.durationMs,qaMs:q.durationMs,totalMs:Date.now()-started}};
-  }catch(error){const safe=await fallback();if(!physical(safe).valid||safe.status!=='ok')throw Error('FALLBACK_FAILED');return {layout:{...safe,mode:'DETERMINISTIC_FALLBACK',visualStatus:'UNREVIEWED'},errorCode:error.code||error.message,timings:{totalMs:Date.now()-started}};}
+    return {layout,initial,plan,qa,calls:2,planning_attempts:p.planning_attempts||1,providerCalls:(p.planning_attempts||1)+(q.planning_attempts||1),contract:p.contract,validationHistory:p.validationHistory,repairs:!qa.accept&&qa.repairs.length?1:0,timings:{...initial.timings,targetMs,repairMs:Date.now()-repairStart,planningMs:p.durationMs,qaMs:q.durationMs,totalMs:Date.now()-started}};
+  }catch(error){const safe=await fallback();if(!physical(safe).valid||safe.status!=='ok')throw Error('FALLBACK_FAILED');return {layout:{...safe,mode:'DETERMINISTIC_FALLBACK',visualStatus:'UNREVIEWED'},errorCode:error.code||error.message,contractFailure:error.contractFailure,timings:{totalMs:Date.now()-started}};}
 }
 const api={prepare,validateContext,validatePlan,validateQA,target,follow,physical,repair,exportSVG,run};if(typeof module!=='undefined')module.exports=api;root.Result3Hybrid=api;
 })(globalThis);

@@ -18,9 +18,9 @@ self.onmessage=async({data})=>{
     const r2=await render(optimized.paths,sourceCanvas),map=await render(context.paths.map(p=>({...p,points:p.points.map(q=>q.map((v,i)=>v*canvas[i]))})),canvas,null,true),prepareMs=performance.now()-started;
     const request=async(phase,payload)=>{
       self.postMessage({id,progress:phase});let response;
-      try{response=await fetch('/api/result3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phase,...payload}),signal:AbortSignal.timeout(35000)});}catch(error){throw Object.assign(Error(),{code:['AbortError','TimeoutError'].includes(error.name)?'AI_TIMEOUT':'AI_NETWORK_ERROR'});}
+      try{response=await fetch('/api/result3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phase,...payload}),signal:AbortSignal.timeout(45000)});}catch(error){throw Object.assign(Error(),{code:['AbortError','TimeoutError'].includes(error.name)?'AI_TIMEOUT':'AI_NETWORK_ERROR'});}
       let answer;try{answer=await response.json();}catch{throw Object.assign(Error(),{code:'AI_RESPONSE_INVALID'});}
-      if(!response.ok)throw Object.assign(Error(),{code:answer.error?.code||'AI_MODEL_ERROR'});return answer;
+      if(!response.ok)throw Object.assign(Error(),{code:answer.error?.code||'AI_MODEL_ERROR',contractFailure:answer.error});return answer;
     };
     const result=await Result3Hybrid.run({context,images:{source:sourceImage,result2:r2,pathMap:map,review:layout=>render([],canvas,layout)},request,fallback});
     result.layout.orientation=result.layout.canvas[0]===result.layout.canvas[1]?'square':result.layout.canvas[0]>result.layout.canvas[1]?'landscape':'portrait';

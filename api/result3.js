@@ -1,9 +1,10 @@
 'use strict';
 const configuration=require('../server/deepseek-config.cjs');
-const {complete,AIError}=require('../server/deepseek-client.cjs');
+const {AIError}=require('../server/deepseek-client.cjs');
 const prompts=require('../server/result3-prompts.cjs');
 const H=require('../result3-hybrid.js');
 const C=require('../result3-contract.js');
+const planner=require('../server/result3-planner.cjs');
 const {randomUUID}=require('node:crypto');
 const recent=new Map();
 function image(value){
@@ -16,6 +17,7 @@ function messages(body){
   if(body.phase==='plan'&&body.images?.pathMap)content.push({type:'text',text:'Technical numbered Result 1 and Result 2 path map'},image(body.images.pathMap));
   if(body.phase==='qa'){H.validatePlan(body.plan,body.context);content.push({type:'text',text:'Actual physical layout for visual review'},image(body.images?.review));}
   content.push({type:'text',text:JSON.stringify({context:body.context,...(body.phase==='qa'?{plan:body.plan}:{})})});
+  if(body.phase==='plan')content.push({type:'text',text:JSON.stringify({AVAILABLE_RESULT2_PATH_IDS:body.context.paths.filter(p=>p.source==='result2').map(p=>p.id),AVAILABLE_RESULT1_RESTORE_IDS:body.context.paths.filter(p=>p.source==='result1').map(p=>p.id),contractRules:'Use ONLY listed source IDs, including omissions. Never put explanations in omissions. Priorities are 0..1. All required fields must exist; no nulls or extra properties. Coordinate anchors are pairs in 0..1; do not invent anchor IDs.',minimalValidExample:C.example(body.context)})});
   return [{role:'system',content:prompts[body.phase]},{role:'user',content}];
 }
 module.exports=async function handler(req,res){
@@ -37,11 +39,10 @@ module.exports=async function handler(req,res){
     for(const [key,value]of recent)if(now-value.start>60000)recent.delete(key);
     const quota=recent.get(ip)||{start:now,count:0};if(quota.count>=12)throw new AIError('AI_RATE_LIMIT',429);quota.count++;recent.set(ip,quota);
     phase='input_validation';let input;try{input=messages(body);}catch(error){throw error instanceof AIError?error:new AIError('PLAN_INVALID',400);}
-    phase=body.phase;const result=await complete(config,input);modelStatus=result.httpStatus;
-    phase='response_validation';let value;try{value=body.phase==='plan'?H.validatePlan(result.value,body.context):H.validateQA(result.value,body.plan);}catch(error){throw Object.assign(new AIError(error.code||'AI_PLAN_INVALID'),{issues:error.issues,diagnostics:{responseShape:result.responseShape,contentLength:result.contentLength,parsedShape:C.shape(result.value)}});}
+    phase=body.phase;const result=await planner.generate(config,input,body);modelStatus=result.httpStatus;const value=result.value;
     const durationMs=Date.now()-began;
-    console.info(JSON.stringify({event:'result3_ai_complete',requestId,phase:body.phase,model:config.model,httpStatus:modelStatus,inputPaths:body.context.paths.length,routes:value.routes?.length,restored:value.routes?.filter(r=>r.source==='result1-restored').length,omitted:value.omissions?.length,durationMs}));
-    res.status(200).json({value,requestId,durationMs});
-  }catch(error){const code=error.code||'INTERNAL_ERROR',status=error.status||500;console.error(JSON.stringify({event:'result3_ai_failed',requestId,phase,code,issues:error.issues,diagnostics:error.diagnostics,httpStatus:error.httpStatus||modelStatus,durationMs:Date.now()-began,...(error instanceof AIError?{stack:error.stack}:{})}));res.status(status).json({error:{code,requestId,issues:error.issues,diagnostics:error.diagnostics}});}
+    console.info(JSON.stringify({event:'result3_ai_complete',requestId,phase:body.phase,model:config.model,httpStatus:modelStatus,planning_attempts:result.planning_attempts,jsonParsed:true,schemaPassed:true,semanticsPassed:true,inputPaths:body.context.paths.length,routes:value.routes?.length,restored:value.routes?.filter(r=>r.source==='result1-restored').length,omitted:value.omissions?.length,durationMs}));
+    res.status(200).json({value,requestId,durationMs,planning_attempts:result.planning_attempts,validationHistory:result.validationHistory,contract:{jsonParsed:true,schemaPassed:true,semanticsPassed:true}});
+  }catch(error){const code=error.code||'INTERNAL_ERROR',status=error.status||500;console.error(JSON.stringify({event:'result3_ai_failed',requestId,phase,code,issues:error.issues,diagnostics:error.diagnostics,planning_attempts:error.planning_attempts,httpStatus:error.httpStatus||modelStatus,durationMs:Date.now()-began,...(error instanceof AIError?{stack:error.stack}:{})}));res.status(status).json({error:{code,requestId,issues:error.issues,diagnostics:error.diagnostics,planning_attempts:error.planning_attempts,validationHistory:error.validationHistory}});}
 };
 module.exports.messages=messages;

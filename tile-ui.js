@@ -24,8 +24,9 @@
     const debug=document.createElement('details');debug.hidden=!debugEnabled;debug.id='tile-debug';
     debug.innerHTML=`<summary data-i18n="tile.debug">${tr('debug')}</summary><select id="tile-debug-layer" aria-label="${tr('debug')}" data-i18n-attr="aria-label:tile.debug">${['final','observed','reconstructed','symmetry','rejected','skeleton','outer','tiles','collisions'].map(k=>`<option value="${k}" data-i18n="tile.${k}">${tr(k)}</option>`).join('')}</select><button id="tile-debug-download" data-i18n="tile.debugDownload">${tr('debugDownload')}</button>`;
     panel.append(debug);
+    if(hybridEnabled)debug.hidden=false;
     const hybridDetails=document.createElement('pre');hybridDetails.style.cssText='max-height:300px;overflow:auto;white-space:pre-wrap;font-size:10px';
-    if(debugEnabled&&hybridEnabled){for(const [value,label]of Object.entries({'hybrid-input':'Hybrid: numbered input','hybrid-target':'Hybrid: target','hybrid-restored':'Hybrid: restored routes','hybrid-removed':'Hybrid: omitted paths','hybrid-initial':'Hybrid: initial tiles','hybrid-final':'Hybrid: final tiles'})){const option=document.createElement('option');option.value=value;option.textContent=label;$('tile-debug-layer').append(option);}debug.append(hybridDetails);}
+    if(hybridEnabled){for(const [value,label]of Object.entries({'hybrid-input':'Hybrid: numbered input','hybrid-target':'Hybrid: target','hybrid-restored':'Hybrid: restored routes','hybrid-removed':'Hybrid: omitted paths','hybrid-initial':'Hybrid: initial tiles','hybrid-final':'Hybrid: final tiles'})){const option=document.createElement('option');option.value=value;option.textContent=label;$('tile-debug-layer').append(option);}debug.append(hybridDetails);}
     const canvas=document.createElement('canvas');canvas.id='tile-canvas';canvas.hidden=true;canvas.setAttribute('data-i18n-attr','aria-label:tile.canvasAria');canvas.setAttribute('aria-label',tr('canvasAria'));stage.append(canvas);
     let source=null,doc=null,active=false,orientation='auto',mounting=false,editing=false,selected=null,adding=false,worker=null,job=0,pending=false,drag=null,notice='unavailable';
     function message(check){return check.errors.map(e=>{const key='tile.'+e;return t(key)!==key?t(key):tr('invalid');}).join(' ');}
@@ -51,10 +52,10 @@
     function render(temporary) {
       if(!doc){canvas.width=800;canvas.height=600;const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,800,600);ctx.fillStyle='#475569';ctx.font='18px sans-serif';ctx.fillText(pending?tr('pending'):tr('unavailable'),25,60);return;}
       const layout=temporary||doc.layout,[w,h]=layout.canvas,dpr=Math.min(2,window.devicePixelRatio||1),scale=2*dpr;
-      canvas.width=w*scale;canvas.height=h*scale;canvas.style.aspectRatio=`${w}/${h}`;const ctx=canvas.getContext('2d');ctx.setTransform(scale,0,0,scale,0,0);draw(ctx,layout,mounting,editing?selected:null,debugEnabled?$('tile-debug-layer').value:'final');
+      canvas.width=w*scale;canvas.height=h*scale;canvas.style.aspectRatio=`${w}/${h}`;const ctx=canvas.getContext('2d');ctx.setTransform(scale,0,0,scale,0,0);draw(ctx,layout,mounting,editing?selected:null,(debugEnabled||hybridEnabled)?$('tile-debug-layer').value:'final');
     }
     function refresh() {
-      if(debugEnabled&&hybridEnabled){const d=doc?.layout.hybridDiagnostics;hybridDetails.textContent=d?JSON.stringify({mode:doc.layout.mode,visualStatus:doc.layout.visualStatus,plan:d.plan,qa:d.qa,repairs:d.repairs,errorCode:d.errorCode,timings:d.timings},null,2):'';}
+      if(hybridEnabled){const d=doc?.layout.hybridDiagnostics;hybridDetails.textContent=d?JSON.stringify({planner:d.errorCode?'failed':'accepted',reason:d.errorCode,issues:d.contractFailure?.issues,planning_attempts:d.planning_attempts||d.contractFailure?.planning_attempts,validationHistory:d.validationHistory||d.contractFailure?.validationHistory,mode:doc.layout.mode,visualStatus:doc.layout.visualStatus,...(debugEnabled?{plan:d.plan,qa:d.qa}:{}),repairs:d.repairs,timings:d.timings},null,2):'';}
       $('tile-orientation').hidden=$('tile-format').value!=='30x40';$('tile-plan-info').hidden=!mounting||!doc;
       $('tile-add').disabled=!doc||doc.layout.tiles.length>=150||pending;
       $('tile-undo').disabled=!doc?.undoStack.length;$('tile-redo').disabled=!doc?.redoStack.length;
