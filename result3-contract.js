@@ -5,6 +5,9 @@ const obj=properties=>({type:'object',properties,required:Object.keys(properties
 const unit={type:'number',minimum:0,maximum:1};
 const planSchema=obj({version:{type:'integer',enum:[1]},objectAnalysis:str(),essentialFeatures:list(str(160),0,12),globalIntent:str(),complexityBudget:{type:'integer',minimum:3,maximum:150},routes:list(obj({id:{type:'string',pattern:'^[a-zA-Z0-9_-]{1,40}$'},role:{type:'string',enum:['outer','structural','characteristic']},priority:unit,sourcePathIds:list(str(40),1,12),source:{type:'string',enum:['result2','result1-restored','ai-reconstructed']},strategy:{type:'string',enum:['FOLLOW','FOLLOW_SIMPLIFIED','CUT_CORNER','MERGE_AND_CONTINUE','BRIDGE','REROUTE','SYMMETRY_ASSIST','RESTORE','TERMINATE']},viaAnchors:list(list(unit,2,2),0,24),reason:str()}),1,48),omissions:list(str(40))});
 const qaSchema=obj({version:{type:'integer',enum:[1]},accept:{type:'boolean'},recognizabilityScore:unit,silhouetteScore:unit,cleanlinessScore:unit,compositionScore:unit,repairs:list(obj({routeId:str(40),action:{type:'string',enum:['SIMPLIFY','OMIT']},reason:str()}),0,4)});
+// Bind source references to this request's actual graph. Same factory is used
+// by the provider request and local validation; geometry is not modified.
+function schemaForContext(context){const schema=JSON.parse(JSON.stringify(planSchema)),ids=context.paths.map(p=>p.id);schema.properties.routes.items.properties.sourcePathIds.items.enum=ids;schema.properties.omissions.items.enum=ids;return schema;}
 class ContractError extends Error{constructor(code,issues){super(code);this.code=code;this.issues=issues;}}
 // Deliberately small JSON Schema subset: every keyword used above is handled.
 // No coercion, stripping, defaults or normalization of model decisions.
@@ -17,7 +20,7 @@ if(type==='string'){if(s.maxLength!==undefined&&v.length>s.maxLength)errors.push
 if(type==='array'){if(v.length<s.minItems||v.length>s.maxItems)errors.push({path,keyword:'itemsCount',minimum:s.minItems,maximum:s.maxItems,actualLength:v.length});v.slice(0,200).forEach((x,i)=>visit(s.items,x,path+'/'+i));}
 if(type==='object'){for(const k of s.required||[])if(!Object.hasOwn(v,k))errors.push({path:path+'/'+k,keyword:'required'});for(const k of Object.keys(v)){if(!s.properties[k]){errors.push({path:path+'/'+k.slice(0,60),keyword:'additionalProperties'});continue;}visit(s.properties[k],v[k],path+'/'+k);}}
 }visit(schema,value,'');return errors.slice(0,40);}
-function plan(value,context){const issues=validate(planSchema,value);if(issues.length)throw new ContractError('AI_SCHEMA_INVALID',issues);
+function plan(value,context){const issues=validate(schemaForContext(context),value);if(issues.length){const references=issues.filter(e=>e.keyword==='enum'&&/^\/(omissions\/\d+|routes\/\d+\/sourcePathIds\/\d+)$/.test(e.path));if(references.length)throw new ContractError('AI_UNKNOWN_PATH_ID',references.map(e=>({path:e.path,keyword:'semantic',reason:'ID is not in available source paths'})));throw new ContractError('AI_SCHEMA_INVALID',issues);}
 const known=new Map(context.paths.map(p=>[p.id,p])),used=new Set();
 const error=(code,path,reason)=>{throw new ContractError(code,[{path,keyword:'semantic',reason}]);};
 value.omissions.forEach((id,i)=>{if(!known.has(id))error('AI_UNKNOWN_PATH_ID','/omissions/'+i,'ID is not in available source paths');});
@@ -29,5 +32,5 @@ if(r.source==='result1-restored'&&!r.sourcePathIds.some(id=>known.get(id).source
 });if(!value.routes.some(r=>r.role==='outer'))error('AI_PLAN_SEMANTIC_INVALID','/routes','At least one outer route is required');return JSON.parse(JSON.stringify(value));}
 function example(context){const p=context.paths.find(p=>p.source==='result2')||context.paths[0];return {version:1,objectAnalysis:'Subject',essentialFeatures:['Main silhouette'],globalIntent:'Preserve identity',complexityBudget:100,routes:[{id:'outer_1',role:'outer',priority:1,sourcePathIds:[p.id],source:p.source==='result1'?'result1-restored':'result2',strategy:'FOLLOW',viaAnchors:[],reason:'Main boundary'}],omissions:[]};}
 function shape(value){if(value===null)return 'null';if(Array.isArray(value))return {type:'array',length:value.length};if(typeof value==='object')return Object.fromEntries(Object.entries(value).slice(0,24).map(([k,v])=>[k.slice(0,60),shape(v)]));return typeof value;}
-const api={planSchema,qaSchema,validate,plan,example,shape,ContractError};if(typeof module!=='undefined')module.exports=api;root.Result3Contract=api;
+const api={planSchema,schemaForContext,qaSchema,validate,plan,example,shape,ContractError};if(typeof module!=='undefined')module.exports=api;root.Result3Contract=api;
 })(globalThis);

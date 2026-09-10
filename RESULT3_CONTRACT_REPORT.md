@@ -8,7 +8,7 @@ Sanitized evidence: `tests/fixtures/deepseek-schema-failure.json`. Raw assistant
 
 ## Contract
 
-`result3-contract.js` exports the sole plan JSON Schema, sent verbatim through DeepSeek Responses `text.format: {type: "json_schema", name: "result3_composition_plan", schema}` and consumed by the local/server validator. The JavaScript project has no TypeScript type layer. The validator is a small in-project JSON Schema subset implementation, **not Ajv**; it implements every keyword used by these schemas and does not coerce or strip data.
+`result3-contract.js` exports the sole plan JSON Schema and `schemaForContext(context)`, which binds sourcePathIds and omissions enums to the actual available IDs. That exact schema is sent through DeepSeek Responses `text.format: {type: "json_schema", name: "result3_composition_plan", schema}` and consumed by the local/server validator. The JavaScript project has no TypeScript type layer. The validator is a small in-project JSON Schema subset implementation, **not Ajv**; it implements every keyword used by these schemas and does not coerce or strip data.
 
 Required root fields: version (1), objectAnalysis (string ≤400), essentialFeatures (≤12 strings ≤160), globalIntent (string ≤400), complexityBudget (integer 3–150), routes (1–48), omissions (≤160 source IDs ≤40 chars). Extra properties and nulls are rejected.
 
@@ -33,3 +33,5 @@ Provider timeout: 30 seconds, correction: 10 seconds, client per-request: 45 sec
 ## Verification
 
 Contract, endpoint, hybrid, physical tile, optimized contour and client tests pass locally. Mocked results are not real DeepSeek measurements. Result 1/2 frozen checks pass. Solver, fallback geometry and composition philosophy are unchanged. Real production verification of this repair is recorded below after deployment.
+
+First structured-output test, request `135bc186-a0f9-456c-9718-168fc6f04b53`: completed Responses output, valid JSON and base schema, but `/omissions/1` referenced an unknown ID. Wall time 14,298 ms; fallback was used. This is new evidence of an ID error, distinct from the original numeric/string-length failure. The next contract revision binds both source reference arrays to context-specific enums; unknown-reference violations retain AI_UNKNOWN_PATH_ID classification and are not automatically retried.

@@ -1,13 +1,13 @@
 'use strict';
 const C=require('../result3-contract.js'),H=require('../result3-hybrid.js'),{complete,AIError}=require('./deepseek-client.cjs');
 async function generate(config,input,body,{transport=complete}={}){
-  const schema=body.phase==='plan'?C.planSchema:C.qaSchema,history=[];
+  const schema=body.phase==='plan'?C.schemaForContext(body.context):C.qaSchema,history=[];
   let messages=input;
   for(let attempt=1;attempt<=2;attempt++){
     let result;
     try{
       result=await transport(attempt===1?config:{...config,timeoutMs:10000},messages,{schema,name:body.phase==='plan'?'result3_composition_plan':'result3_visual_qa'});
-      const issues=C.validate(schema,result.value);if(issues.length)throw Object.assign(new AIError('AI_SCHEMA_INVALID'),{issues});
+      if(body.phase==='qa'){const issues=C.validate(schema,result.value);if(issues.length)throw Object.assign(new AIError('AI_SCHEMA_INVALID'),{issues});}
       const value=body.phase==='plan'?H.validatePlan(result.value,body.context):H.validateQA(result.value,body.plan);
       return {...result,value,planning_attempts:attempt,validationHistory:history};
     }catch(error){
