@@ -1,5 +1,11 @@
 # Result 3 contract repair
 
+## Follow-up: missing design anchors
+
+The user's next failure reported AI_PLAN_SEMANTIC_INVALID at `/routes/0/viaAnchors`, attempt 1: the selected strategy required at least two coordinate anchors. The excerpt does not contain the strategy name or exact array length, so neither is inferred. Root cause: the server enforced the strategy/anchor relationship after parsing, while the native schema allowed 0–24 anchors independently of strategy. The prompt mentioned the condition, but the schema did not enforce it.
+
+The route schema now uses two small `anyOf` constraints: either FOLLOW/RESTORE with zero anchors, or any existing strategy with 2–24 anchors. The custom validator handles these same constraints locally. This preserves precisely the previously accepted combinations, including FOLLOW/RESTORE with explicit anchors. Missing design anchors remain a semantic failure with no automatic retry; no points or strategies are substituted. Tests cover all nine strategies at 0, 1, 2, 24 and 25 anchors and replay the previously accepted production plan unchanged. This is a contract correction, not a solver or composition change.
+
 ## Observed cause
 
 Production request `d6844574-90fd-48a8-903a-5f8a8319280c` completed in 13,753 ms wall time. DeepSeek returned a completed (`stop`) string containing valid JSON, with the expected root fields and 34 routes. Validation rejected priorities of 2–4 (allowed: 0–1), objectAnalysis length 415 (maximum 400), and two omissions entries of length 76 and 56 (maximum 40). This was not an authentication or JSON parsing failure. The old JSON-mode prompt did not communicate all of these constraints precisely.
