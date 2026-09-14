@@ -1,5 +1,21 @@
 # Result 3 contract repair
 
+## 2026-09-14: align strategy anchors with existing target geometry
+
+The model choice remains unchanged: the centralized default is still `deepseek-v4-flash-vision-exp`, with `process.env.DEEPSEEK_MODEL` as the only override. The reported distinction between `deepseek-v4-flash` and `deepseek-v4-flash-vision-exp` is treated as a model-family/capability distinction, not as an instruction to switch models.
+
+The remaining live failure after 8124c1e was caused by an over-narrow Result 3 contract, not by the DeepSeek connection. The deterministic target builder already treats `viaAnchors: []` as "reuse the selected source geometry" for every strategy:
+
+```js
+const input = r.viaAnchors.length ? r.viaAnchors : r.sourcePathIds.flatMap(...)
+```
+
+The contract, however, only allowed empty anchors for FOLLOW/RESTORE. A valid composition intent such as FOLLOW_SIMPLIFIED, CUT_CORNER or BRIDGE with selected source paths and no custom anchors was therefore rejected before target generation, causing deterministic fallback.
+
+The provider and local schemas now allow `viaAnchors: []` for any strategy. If the model supplies custom design anchors, it must still provide 2..24 normalized coordinate pairs. A single anchor remains invalid. No coordinates are invented, no route strategy is rewritten, and semantic failures such as unknown IDs, duplicate routes, selected-and-omitted paths, invalid Result 1 restoration, or missing outer route are still rejected without retry.
+
+Updated tests verify that every strategy accepts either source-following empty anchors or 2..24 design anchors, rejects single/oversized anchor arrays, preserves derived omissions, and keeps previously captured target geometry unchanged.
+
 ## 2026-09-14: remove redundant model omission decisions
 
 After publishing bdecfc1, request `696c061b-d715-4d20-a25f-3f670811187c` failed at `/routes/3/sourcePathIds/0`: the model both selected and omitted the same source path (8,192 ms wall). This was a real semantic contradiction, not an API availability failure.

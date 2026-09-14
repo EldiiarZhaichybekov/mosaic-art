@@ -4,11 +4,11 @@ const str=(maxLength=400)=>({type:'string',maxLength}),list=(items,minItems=0,ma
 const obj=properties=>({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
 const unit={type:'number',minimum:0,maximum:1};
 const planSchema=obj({version:{type:'integer',enum:[1]},objectAnalysis:str(),essentialFeatures:list(str(160),0,12),globalIntent:str(),complexityBudget:{type:'integer',minimum:3,maximum:150},routes:list(obj({id:{type:'string',pattern:'^[a-zA-Z0-9_-]{1,40}$'},role:{type:'string',enum:['outer','structural','characteristic']},priority:unit,sourcePathIds:list(str(40),1,12),source:{type:'string',enum:['result2','result1-restored','ai-reconstructed']},strategy:{type:'string',enum:['FOLLOW','FOLLOW_SIMPLIFIED','CUT_CORNER','MERGE_AND_CONTINUE','BRIDGE','REROUTE','SYMMETRY_ASSIST','RESTORE','TERMINATE']},viaAnchors:list(list(unit,2,2),0,24),reason:str()}),1,48),omissions:list(str(40))});
-// Preserve the existing accepted combinations, but tell the model about them.
-// Empty anchors reuse source geometry ONLY for FOLLOW/RESTORE. Other routes
-// must contain their own 2..24 anchors. A single anchor is never meaningful.
+// Empty anchors reuse the selected source geometry. If the model supplies
+// design anchors, require an actual segment/polyline; a single anchor is never
+// meaningful and must stay invalid.
 planSchema.properties.routes.items.anyOf=[
-  {type:'object',properties:{strategy:{type:'string',enum:['FOLLOW','RESTORE']},viaAnchors:{type:'array',maxItems:0}}},
+  {type:'object',properties:{viaAnchors:{type:'array',maxItems:0}}},
   {type:'object',properties:{viaAnchors:{type:'array',minItems:2}}}
 ];
 const qaSchema=obj({version:{type:'integer',enum:[1]},accept:{type:'boolean'},recognizabilityScore:unit,silhouetteScore:unit,cleanlinessScore:unit,compositionScore:unit,repairs:list(obj({routeId:str(40),action:{type:'string',enum:['SIMPLIFY','OMIT']},reason:str()}),0,4)});
@@ -38,7 +38,7 @@ if(type==='array'){if(v.length<s.minItems||v.length>s.maxItems)errors.push({path
 if(type==='object'){for(const k of s.required||[])if(!Object.hasOwn(v,k))errors.push({path:path+'/'+k,keyword:'required'});for(const k of Object.keys(v)){if(!s.properties?.[k]){if(s.additionalProperties===false)errors.push({path:path+'/'+k.slice(0,60),keyword:'additionalProperties'});continue;}visit(s.properties[k],v[k],path+'/'+k);}}
 if(s.anyOf&&!s.anyOf.some(branch=>validate(branch,v).length===0))errors.push({path,keyword:'anyOf',reason:'No allowed combination of fields matches'});
 }visit(schema,value,'');return errors.slice(0,40);}
-function assertPlanSchema(schema,value){const issues=validate(schema,value);if(issues.length){const references=issues.filter(e=>e.keyword==='enum'&&/^\/(omissions\/\d+|routes\/\d+\/sourcePathIds\/\d+)$/.test(e.path));if(references.length)throw new ContractError('AI_UNKNOWN_PATH_ID',references.map(e=>({path:e.path,keyword:'semantic',reason:'ID is not in available source paths'})));const anchors=issues.filter(e=>e.keyword==='anyOf'&&/^\/routes\/\d+$/.test(e.path));if(anchors.length&&anchors.length===issues.length)throw new ContractError('AI_PLAN_SEMANTIC_INVALID',anchors.map(e=>({path:e.path+'/viaAnchors',keyword:'semantic',reason:'Use 2..24 coordinate anchors, or an empty array only with FOLLOW/RESTORE'})));throw new ContractError('AI_SCHEMA_INVALID',issues);}}
+function assertPlanSchema(schema,value){const issues=validate(schema,value);if(issues.length){const references=issues.filter(e=>e.keyword==='enum'&&/^\/(omissions\/\d+|routes\/\d+\/sourcePathIds\/\d+)$/.test(e.path));if(references.length)throw new ContractError('AI_UNKNOWN_PATH_ID',references.map(e=>({path:e.path,keyword:'semantic',reason:'ID is not in available source paths'})));const anchors=issues.filter(e=>e.keyword==='anyOf'&&/^\/routes\/\d+$/.test(e.path));if(anchors.length&&anchors.length===issues.length)throw new ContractError('AI_PLAN_SEMANTIC_INVALID',anchors.map(e=>({path:e.path+'/viaAnchors',keyword:'semantic',reason:'Use either an empty array to reuse selected source geometry, or 2..24 normalized coordinate anchors'})));throw new ContractError('AI_SCHEMA_INVALID',issues);}}
 function plan(value,context){assertPlanSchema(schemaForContext(context),value);
 const known=new Map(context.paths.map(p=>[p.id,p])),used=new Set();
 const error=(code,path,reason)=>{throw new ContractError(code,[{path,keyword:'semantic',reason}]);};
