@@ -20,6 +20,8 @@ Live smoke after deploying 7255dac confirmed the plan side of the contract on pr
 
 Result 3 now keeps a successfully generated, physically valid AI_HYBRID layout when the visual QA response is invalid. It marks `visualStatus: "AI_QA_INVALID"`, preserves the QA error diagnostics, and asks the user to inspect the composition manually instead of replacing the layout with deterministic fallback. Fallback is still used for planning failure, unreachable AI service, timeout before plan, or impossible physical geometry.
 
+Final production smoke on revision `2f72b89f658eef2c377b482130b422e76fc77d4a` passed with a synthetic image, not a user file. Plan request `82e70653-c26d-4350-bafd-139efe68c97e`: HTTP 200, 10,600 ms server, planning_attempts=2, JSON/schema/semantics passed. QA request `91834edc-d6f3-461b-8def-04390fc7be61`: HTTP 200, 2,358 ms server, JSON/schema/semantics passed. Result: `mode: "AI_HYBRID"`, `visualStatus: "AI_ACCEPTED"`, 35 physical 30 x 3 mm tiles, providerCalls=3, no deterministic fallback. This verifies the deployed contract/orchestration path, not general visual quality for every uploaded image.
+
 ## 2026-09-14: remove redundant model omission decisions
 
 After publishing bdecfc1, request `696c061b-d715-4d20-a25f-3f670811187c` failed at `/routes/3/sourcePathIds/0`: the model both selected and omitted the same source path (8,192 ms wall). This was a real semantic contradiction, not an API availability failure.
