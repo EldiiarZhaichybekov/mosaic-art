@@ -15,6 +15,11 @@ const qaSchema=obj({version:{type:'integer',enum:[1]},accept:{type:'boolean'},re
 // Bind source references to this request's actual graph. Same factory is used
 // by the provider request and local validation; geometry is not modified.
 function schemaForContext(context){const schema=JSON.parse(JSON.stringify(planSchema)),ids=context.paths.map(p=>p.id);schema.properties.routes.items.properties.sourcePathIds.items.enum=ids;schema.properties.omissions.items.enum=ids;return schema;}
+// Provider contract derives from the application schema, without redundant
+// omission decisions. Reject a model-supplied omissions field; never strip it.
+function planningSchema(context){const schema=schemaForContext(context);delete schema.properties.omissions;schema.required=schema.required.filter(k=>k!=='omissions');return schema;}
+function planningExample(context){const value=example(context);delete value.omissions;return value;}
+function acceptPlanningValue(value,context){assertPlanSchema(planningSchema(context),value);const used=new Set(value.routes.flatMap(r=>r.sourcePathIds));return plan({...value,omissions:context.paths.filter(p=>!used.has(p.id)).map(p=>p.id)},context);}
 function schemaForQA(plan){const schema=JSON.parse(JSON.stringify(qaSchema)),ids=plan.routes.map(r=>r.id),omittable=plan.routes.filter(r=>r.role!=='outer').map(r=>r.id),item=schema.properties.repairs.items;
 item.properties.routeId.enum=ids;
 item.anyOf=[{type:'object',properties:{action:{type:'string',enum:['SIMPLIFY']}}}];
@@ -33,7 +38,8 @@ if(type==='array'){if(v.length<s.minItems||v.length>s.maxItems)errors.push({path
 if(type==='object'){for(const k of s.required||[])if(!Object.hasOwn(v,k))errors.push({path:path+'/'+k,keyword:'required'});for(const k of Object.keys(v)){if(!s.properties?.[k]){if(s.additionalProperties===false)errors.push({path:path+'/'+k.slice(0,60),keyword:'additionalProperties'});continue;}visit(s.properties[k],v[k],path+'/'+k);}}
 if(s.anyOf&&!s.anyOf.some(branch=>validate(branch,v).length===0))errors.push({path,keyword:'anyOf',reason:'No allowed combination of fields matches'});
 }visit(schema,value,'');return errors.slice(0,40);}
-function plan(value,context){const issues=validate(schemaForContext(context),value);if(issues.length){const references=issues.filter(e=>e.keyword==='enum'&&/^\/(omissions\/\d+|routes\/\d+\/sourcePathIds\/\d+)$/.test(e.path));if(references.length)throw new ContractError('AI_UNKNOWN_PATH_ID',references.map(e=>({path:e.path,keyword:'semantic',reason:'ID is not in available source paths'})));const anchors=issues.filter(e=>e.keyword==='anyOf'&&/^\/routes\/\d+$/.test(e.path));if(anchors.length&&anchors.length===issues.length)throw new ContractError('AI_PLAN_SEMANTIC_INVALID',anchors.map(e=>({path:e.path+'/viaAnchors',keyword:'semantic',reason:'Use 2..24 coordinate anchors, or an empty array only with FOLLOW/RESTORE'})));throw new ContractError('AI_SCHEMA_INVALID',issues);}
+function assertPlanSchema(schema,value){const issues=validate(schema,value);if(issues.length){const references=issues.filter(e=>e.keyword==='enum'&&/^\/(omissions\/\d+|routes\/\d+\/sourcePathIds\/\d+)$/.test(e.path));if(references.length)throw new ContractError('AI_UNKNOWN_PATH_ID',references.map(e=>({path:e.path,keyword:'semantic',reason:'ID is not in available source paths'})));const anchors=issues.filter(e=>e.keyword==='anyOf'&&/^\/routes\/\d+$/.test(e.path));if(anchors.length&&anchors.length===issues.length)throw new ContractError('AI_PLAN_SEMANTIC_INVALID',anchors.map(e=>({path:e.path+'/viaAnchors',keyword:'semantic',reason:'Use 2..24 coordinate anchors, or an empty array only with FOLLOW/RESTORE'})));throw new ContractError('AI_SCHEMA_INVALID',issues);}}
+function plan(value,context){assertPlanSchema(schemaForContext(context),value);
 const known=new Map(context.paths.map(p=>[p.id,p])),used=new Set();
 const error=(code,path,reason)=>{throw new ContractError(code,[{path,keyword:'semantic',reason}]);};
 value.omissions.forEach((id,i)=>{if(!known.has(id))error('AI_UNKNOWN_PATH_ID','/omissions/'+i,'ID is not in available source paths');});
@@ -49,5 +55,5 @@ value.repairs.forEach((r,i)=>{const path='/repairs/'+i,route=plan.routes.find(p=
 if(value.accept&&value.repairs.length)error('/repairs','An accepted assessment must have no repairs');
 const scoped=validate(schemaForQA(plan),value);if(scoped.length)throw new ContractError('AI_SCHEMA_INVALID',scoped);return JSON.parse(JSON.stringify(value));}
 function shape(value){if(value===null)return 'null';if(Array.isArray(value))return {type:'array',length:value.length};if(typeof value==='object')return Object.fromEntries(Object.entries(value).slice(0,24).map(([k,v])=>[k.slice(0,60),shape(v)]));return typeof value;}
-const api={planSchema,schemaForContext,qaSchema,schemaForQA,validate,plan,qa,example,shape,ContractError};if(typeof module!=='undefined')module.exports=api;root.Result3Contract=api;
+const api={planSchema,schemaForContext,planningSchema,planningExample,acceptPlanningValue,qaSchema,schemaForQA,validate,plan,qa,example,shape,ContractError};if(typeof module!=='undefined')module.exports=api;root.Result3Contract=api;
 })(globalThis);

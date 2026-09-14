@@ -1,13 +1,13 @@
 'use strict';
 const C=require('../result3-contract.js'),H=require('../result3-hybrid.js'),{complete,AIError}=require('./deepseek-client.cjs');
 async function generate(config,input,body,{transport=complete}={}){
-  const schema=body.phase==='plan'?C.schemaForContext(body.context):C.schemaForQA(body.plan),history=[];
+  const schema=body.phase==='plan'?C.planningSchema(body.context):C.schemaForQA(body.plan),history=[];
   let messages=input;
   for(let attempt=1;attempt<=2;attempt++){
     let result;
     try{
       result=await transport(attempt===1?config:{...config,timeoutMs:10000},messages,{schema,name:body.phase==='plan'?'result3_composition_plan':'result3_visual_qa'});
-      const value=body.phase==='plan'?H.validatePlan(result.value,body.context):H.validateQA(result.value,body.plan);
+      const value=body.phase==='plan'?C.acceptPlanningValue(result.value,body.context):H.validateQA(result.value,body.plan);
       return {...result,value,planning_attempts:attempt,validationHistory:history};
     }catch(error){
       const code=error.code||(body.phase==='qa'?'AI_QA_SEMANTIC_INVALID':'AI_PLAN_SEMANTIC_INVALID'),diagnostics={phase:body.phase,...(error.diagnostics||{}),...(result?{responseShape:result.responseShape,contentLength:result.contentLength,parsedShape:C.shape(result.value)}:{})};

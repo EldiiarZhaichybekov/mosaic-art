@@ -1,5 +1,13 @@
 # Result 3 contract repair
 
+## 2026-09-14: remove redundant model omission decisions
+
+After publishing bdecfc1, request `696c061b-d715-4d20-a25f-3f670811187c` failed at `/routes/3/sourcePathIds/0`: the model both selected and omitted the same source path (8,192 ms wall). This was a real semantic contradiction, not an API availability failure.
+
+The provider contract is now `planningSchema(context)`, mechanically derived from the same shared application schema but **without the omissions property**. It is sent to the model and validated as-is by `acceptPlanningValue`. After successful wire validation, the server derives omissions as available source IDs minus all selected sourcePathIds. The internal application response retains its existing omissions field, so UI, worker, target, solver and exports keep their interfaces. Routes, coordinates, priorities, strategies and reasons are preserved exactly. This only changes diagnostic omission metadata to the full complement of selected sources.
+
+A model-supplied omissions field is rejected as an unexpected property, never silently filtered. Syntax correction remains bounded to one attempt; semantic failures are still not retried. The provider example no longer contains omissions. Tests verify exact transmitted schema, complement calculation, no input mutation, rejection of contradictory supplied omissions, and identical target geometry from the previously captured accepted plan. Earlier schema examples below describe the **internal** application object; omit omissions for the current model-facing object. This simplification implements the original requirement not to ask the model for fields the deterministic layer can derive.
+
 ## Follow-up: missing design anchors
 
 The user's next failure reported AI_PLAN_SEMANTIC_INVALID at `/routes/0/viaAnchors`, attempt 1: the selected strategy required at least two coordinate anchors. The excerpt does not contain the strategy name or exact array length, so neither is inferred. Root cause: the server enforced the strategy/anchor relationship after parsing, while the native schema allowed 0–24 anchors independently of strategy. The prompt mentioned the condition, but the schema did not enforce it.
