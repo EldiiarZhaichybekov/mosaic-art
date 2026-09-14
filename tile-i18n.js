@@ -265,5 +265,7 @@ AI_PLAN_INVALID:['AI вернул непригодный план. Исполь�
 AI_RESPONSE_INVALID:['Не удалось прочитать ответ AI. Использован резервный расчёт.','Could not read the AI response. Using fallback.','无法读取 AI 响应。已使用备用计算。'],
 AI_VISION_ERROR:['AI не смог обработать визуальные данные. Использован резервный расчёт.','AI could not process the visual input. Using fallback.','AI 无法处理视觉输入。已使用备用计算。'],
 AI_RATE_LIMIT:['Достигнут лимит AI-запросов. Использован резервный расчёт.','AI request limit reached. Using fallback.','已达到 AI 请求限制。已使用备用计算。'],
-AI_MODEL_ERROR:['AI-сервис вернул ошибку. Использован резервный расчёт.','AI service failed. Using fallback.','AI 服务发生错误。已使用备用计算。']
+AI_MODEL_ERROR:['AI-сервис вернул ошибку. Использован резервный расчёт.','AI service failed. Using fallback.','AI 服务发生错误。已使用备用计算。'],
+AI_QA_SEMANTIC_INVALID:['AI построил раскладку, но вернул противоречивую визуальную проверку. Проверьте результат вручную.','AI built the layout, but returned a contradictory visual review. Inspect the result manually.','AI 已生成布局，但视觉审核结果互相矛盾。请手动检查。'],
+AI_SCHEMA_INVALID:['AI построил раскладку, но ответ проверки имел неверный формат. Проверьте результат вручную.','AI built the layout, but the review response had an invalid format. Inspect it manually.','AI 已生成布局，但审核响应格式无效。请手动检查。']
 }))['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['tile.'+key]=values[i]);

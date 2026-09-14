@@ -16,6 +16,10 @@ The provider and local schemas now allow `viaAnchors: []` for any strategy. If t
 
 Updated tests verify that every strategy accepts either source-following empty anchors or 2..24 design anchors, rejects single/oversized anchor arrays, preserves derived omissions, and keeps previously captured target geometry unchanged.
 
+Live smoke after deploying 7255dac confirmed the plan side of the contract on production: request `0f05e3f8-a246-4f6c-b215-aa43af5be97a` returned HTTP 200, JSON parsed, schema passed and semantics passed on the first planning attempt. The next failure moved to visual QA: request `a1f78bd5-7e29-4444-8c7f-504027e94e32` returned `accept: true` with non-empty repairs, which is contradictory under the QA contract.
+
+Result 3 now keeps a successfully generated, physically valid AI_HYBRID layout when the visual QA response is invalid. It marks `visualStatus: "AI_QA_INVALID"`, preserves the QA error diagnostics, and asks the user to inspect the composition manually instead of replacing the layout with deterministic fallback. Fallback is still used for planning failure, unreachable AI service, timeout before plan, or impossible physical geometry.
+
 ## 2026-09-14: remove redundant model omission decisions
 
 After publishing bdecfc1, request `696c061b-d715-4d20-a25f-3f670811187c` failed at `/routes/3/sourcePathIds/0`: the model both selected and omitted the same source path (8,192 ms wall). This was a real semantic contradiction, not an API availability failure.
