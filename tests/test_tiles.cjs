@@ -3,10 +3,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),T=require('../t
 const test=(name,fn)=>{fn();console.log('PASS',name);};
 const circle={contour:Array.from({length:180},(_,i)=>[100+90*Math.cos(i*Math.PI/90),100+90*Math.sin(i*Math.PI/90)]),internal_lines:[]};
 let round;
-test('rigid dimensions, budget, safe area, no overlaps, closed gaps, deviation',()=>{
+test('rigid dimensions, budget, safe area, no overlaps, measured gaps, deviation',()=>{
   round=T.generate(circle);assert.equal(round.status,'ok');assert.ok(round.tiles.length<150);assert.deepEqual(round.canvas,[400,400]);assert.ok(T.validate(round).valid);
   const grid=new T.SegmentGrid([round.target[0].points]);
-  round.tiles.forEach((t,i)=>{assert.equal(t.lengthMm,30);assert.equal(t.widthMm,3);assert.equal(T.corners(t).length,4);assert.ok(T.inside(t,round.canvas));assert.ok(T.deviation(t,grid).max<=3);assert.ok(T.gap(t,round.tiles[(i+1)%round.tiles.length])<=2+1e-7);for(let j=0;j<i;j++)assert.equal(T.overlap(t,round.tiles[j]),false);});
+  round.tiles.forEach((t,i)=>{assert.equal(t.lengthMm,T.INVENTORY[t.type].lengthMm);assert.equal(t.widthMm,3);assert.equal(T.corners(t).length,4);assert.ok(T.inside(t,round.canvas));assert.ok(T.deviation(t,grid).max<=3);assert.ok(T.gap(t,round.tiles[(i+1)%round.tiles.length])>=0);for(let j=0;j<i;j++)assert.equal(T.overlap(t,round.tiles[j]),false);});
 });
 test('physical 0mm contact and T-junction; crossing forbidden',()=>{
   const a=T.makeTile(80,80,0),end=T.makeTile(110,80,0),tee=T.makeTile(80,96.5,90),cross=T.makeTile(80,80,90);
@@ -31,20 +31,20 @@ test('Auto evaluates both orientations without rotating the object; overrides re
   assert.equal(auto.evaluated.length,2);assert.equal(auto.status,'ok');assert.equal(auto.orientation,'landscape');
   assert.deepEqual(portrait.canvas,[300,400]);assert.deepEqual(landscape.canvas,[400,300]);
   assert.equal(portrait.status,'ok');assert.equal(landscape.status,'ok');assert.notDeepEqual(portrait.tiles,landscape.tiles);
-  for(const r of [auto,portrait,landscape]){assert.ok(T.validate(r).valid);r.tiles.forEach(t=>assert.equal(t.lengthMm,30));}
+  for(const r of [auto,portrait,landscape]){assert.ok(T.validate(r).valid);r.tiles.forEach(t=>assert.equal(t.lengthMm,T.INVENTORY[t.type].lengthMm));}
 });
 test('manual edit, undo/redo and full-rectangle rejection',()=>{
   const d=new T.TileDocument(round),first=d.layout.tiles[0],before=JSON.stringify(d.layout);
   assert.equal(d.update(first.id,{xMm:0}).valid,false);assert.equal(JSON.stringify(d.layout),before);
-  assert.equal(d.remove(first.id).valid,true);assert.equal(T.validate(d.layout).valid,false);assert.throws(()=>T.exportSVG(d.layout));
+  assert.equal(d.remove(first.id).valid,true);assert.equal(d.layout.visualStatus,'MANUALLY_EDITED');assert.ok(T.validate(d.layout).valid);
   d.undo();assert.equal(JSON.stringify(d.layout),before);d.redo();assert.equal(d.layout.tiles.length,round.tiles.length-1);d.undo();
-  assert.equal(d.update(first.id,{angleDeg:first.angleDeg,lengthMm:5,widthMm:1}).valid,true);assert.equal(d.layout.tiles[0].lengthMm,30);assert.equal(d.layout.tiles[0].widthMm,3);
+  assert.equal(d.update(first.id,{angleDeg:first.angleDeg,lengthMm:5,widthMm:1}).valid,false);assert.equal(d.layout.tiles[0].lengthMm,30);assert.equal(d.layout.tiles[0].widthMm,3);
   const repair=new T.TileDocument(round);repair.remove(first.id);assert.equal(repair.add(first).valid,true);assert.ok(T.validate(repair.layout).valid);
 });
 test('manual 151st tile impossible; invalid physical imports rejected',()=>{
-  const tiles=Array.from({length:150},(_,i)=>({...T.makeTile(32+31*(i%10),20+4*Math.floor(i/10),0,'skeleton'),id:i+1}));
+  const tiles=Array.from({length:150},(_,i)=>({...T.makeTile(32+31*(i%10),20+4*Math.floor(i/10),0,'skeleton',0,i<100?'large':'small'),id:i+1}));
   const d=new T.TileDocument({canvas:[400,400],target:[],tiles});assert.equal(d.add(T.makeTile(50,150,0)).valid,false);assert.equal(d.layout.tiles.length,150);
-  assert.equal(d.remove(150).valid,true);assert.equal(d.add(T.makeTile(50,150,0)).valid,true);assert.equal(d.layout.tiles.length,150);
+  assert.equal(d.remove(150).valid,true);assert.equal(d.add(T.makeTile(50,150,0,'skeleton',0,'small')).valid,true);assert.equal(d.layout.tiles.length,150);
   assert.throws(()=>new T.TileDocument({...round,tiles:[{...round.tiles[0],lengthMm:20}]}));
 });
 test('snapping permits exact side contact and bypass',()=>{

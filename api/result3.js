@@ -4,6 +4,7 @@ const {AIError}=require('../server/deepseek-client.cjs');
 const prompts=require('../server/result3-prompts.cjs');
 const H=require('../result3-hybrid.js');
 const C=require('../result3-contract.js');
+const {INVENTORY}=require('../tile-layout.js');
 const planner=require('../server/result3-planner.cjs');
 const {randomUUID}=require('node:crypto');
 const recent=new Map();
@@ -16,7 +17,8 @@ function messages(body){
   const content=[{type:'text',text:'Original source image'},image(body.images?.source),{type:'text',text:'Result 2 optimized geometry'},image(body.images?.result2)];
   if(body.phase==='plan'&&body.images?.pathMap)content.push({type:'text',text:'Technical numbered Result 1 and Result 2 path map'},image(body.images.pathMap));
   if(body.phase==='qa'){H.validatePlan(body.plan,body.context);content.push({type:'text',text:'Actual physical layout for visual review'},image(body.images?.review));}
-  content.push({type:'text',text:JSON.stringify({context:body.context,...(body.phase==='qa'?{plan:body.plan}:{})})});
+  if(body.phase==='qa'&&body.inventoryUsage!==undefined){const u=body.inventoryUsage;if(!u||Object.keys(u).some(k=>!['largeUsed','smallUsed','totalUsed'].includes(k))||![u.largeUsed,u.smallUsed,u.totalUsed].every(n=>Number.isInteger(n)&&n>=0)||u.largeUsed>INVENTORY.large.available||u.smallUsed>INVENTORY.small.available||u.totalUsed!==u.largeUsed+u.smallUsed)throw new AIError('REQUEST_INVALID',400);content.push({type:'text',text:JSON.stringify({currentInventory:{...u,largeRemaining:INVENTORY.large.available-u.largeUsed,smallRemaining:INVENTORY.small.available-u.smallUsed,totalRemaining:INVENTORY.totalMaximum-u.totalUsed}})});}
+  content.push({type:'text',text:JSON.stringify({context:{...body.context,inventory:INVENTORY},...(body.phase==='qa'?{plan:body.plan}:{})})});
   if(body.phase==='plan')content.push({type:'text',text:JSON.stringify({AVAILABLE_RESULT2_PATH_IDS:body.context.paths.filter(p=>p.source==='result2').map(p=>p.id),AVAILABLE_RESULT1_RESTORE_IDS:body.context.paths.filter(p=>p.source==='result1').map(p=>p.id),contractRules:'Use ONLY listed source IDs. Do not return omissions: unselected IDs are derived by the application. Priorities are 0..1. All required fields must exist; no nulls or extra properties. Coordinate anchors are optional coordinate pairs in 0..1: use [] to follow selected source geometry, or 2..24 pairs to define a designed route. Do not invent anchor IDs.',minimalValidExample:C.planningExample(body.context)})});
   return [{role:'system',content:prompts[body.phase]},{role:'user',content}];
 }

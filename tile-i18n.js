@@ -249,6 +249,24 @@ globalThis.TileMessages = {
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.reference']=["Приложенный рисунок","Supplied drawing","提供的线稿"][i]);
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.case.asymmetric']=["Асимметричная геометрия","Asymmetric geometry","非对称几何形状"][i]);
 ['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['opt.candidates']=['Кандидаты','Candidate paths','候选路径'][i]);
+// Result 3 physical inventory. Result 1/2 messages stay unchanged.
+for(const [key,values] of Object.entries({
+addLarge:['Добавить 30 мм','Add 30 mm','添加 30 毫米'],
+addSmall:['Добавить 10 мм','Add 10 mm','添加 10 毫米'],
+pieceSize:['Размер, мм','Size, mm','尺寸，毫米'],
+count:['Пластины: {count} / 150 · 30 мм: {large} / 100 · 10 мм: {small} / 50','Pieces: {count} / 150 · 30 mm: {large} / 100 · 10 mm: {small} / 50','板片：{count} / 150 · 30 毫米：{large} / 100 · 10 毫米：{small} / 50'],
+help:['Красные детали — целые пластины 30×3 или 10×3 мм. Пунктир — целевая форма. Отступ от краёв 15 мм. В наборе 100 больших и 50 малых пластин.','Red parts are whole 30×3 or 10×3 mm strips. Dashes show the target. Edge clearance: 15 mm. Kit: 100 large and 50 small strips.','红色部件是完整的 30×3 或 10×3 毫米板片。虚线为目标。边距 15 毫米。套装含 100 块大片和 50 块小片。'],
+physicalHelp:['Раскладка из целых пластин 30×3 и 10×3 мм.','Layout of whole 30×3 and 10×3 mm strips.','完整 30×3 和 10×3 毫米板片布局。'],
+title:['Prismosaic — раскладка пластин','Prismosaic — physical layout','Prismosaic — 实体布局'],
+canvasAria:['Раскладка пластин 30×3 и 10×3 мм','Physical 30×3 and 10×3 mm strip layout','30×3 和 10×3 毫米实体板片布局'],
+LARGE_LIMIT:['В наборе только 100 пластин длиной 30 мм.','The kit contains only 100 strips of 30 mm.','套装仅含 100 块 30 毫米板片。'],
+SMALL_LIMIT:['В наборе только 50 пластин длиной 10 мм.','The kit contains only 50 strips of 10 mm.','套装仅含 50 块 10 毫米板片。'],
+TILE_TYPE:['Неизвестный тип пластины.','Unknown strip type.','未知板片类型。'],
+checked:['Размеры, количество и отсутствие пересечений проверены.','Dimensions, inventory and non-overlap checked.','已检查尺寸、数量及无重叠。'],
+coordinateHelp:['Начало координат — верхний левый угол. X вправо, Y вниз; угол по часовой стрелке. Метка на пластине: номер·длина в мм. Печатайте в масштабе 100%, проверьте линейкой обе длины.','Origin: top left. X right, Y down; clockwise angles. Strip label: number·length in mm. Print at 100% and check both lengths with a ruler.','原点：左上角。X 向右，Y 向下；顺时针角度。标注：编号·长度（毫米）。按 100% 打印并用尺检查两种长度。'],
+mountHeader:['{w}×{h} мм · 30 мм: {large}/100 · 10 мм: {small}/50 · Всего: {count}/150','{w}×{h} mm · 30 mm: {large}/100 · 10 mm: {small}/50 · Total: {count}/150','{w}×{h} 毫米 · 30 毫米：{large}/100 · 10 毫米：{small}/50 · 共：{count}/150'],
+mountFooter:['Метка: номер·длина (мм) · Координаты центров · Масштаб 100%','Label: number·length (mm) · Center coordinates · Print at 100%','标注：编号·长度（毫米）· 中心坐标 · 按 100% 打印']
+}))['ru','en','zh'].forEach((lang,i)=>TileMessages[lang]['tile.'+key]=values[i]);
 // Opt-in Result 3 experiment. Normal Result 1/2 strings are unchanged.
 for(const [key,values] of Object.entries({
 hybridPlanning:['AI разрабатывает композицию…','AI is planning the composition…','AI 正在设计构图…'],

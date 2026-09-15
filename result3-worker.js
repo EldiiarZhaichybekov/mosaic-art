@@ -3,7 +3,7 @@ importScripts('tile-layout.js','optimized-contour.js','result3-contract.js','res
 function render(paths,canvas,layout,labels=false){
   const out=new OffscreenCanvas(canvas[0]*2,canvas[1]*2),ctx=out.getContext('2d');ctx.scale(2,2);ctx.fillStyle='white';ctx.fillRect(0,0,...canvas);ctx.strokeStyle='#475569';ctx.lineWidth=.5;
   for(const path of paths){ctx.beginPath();path.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();if(labels){ctx.font='4px sans-serif';ctx.fillStyle='#4338ca';ctx.fillText(path.id,...path.points[0]);}}
-  for(const t of layout?.tiles||[]){ctx.save();ctx.translate(t.xMm,t.yMm);ctx.rotate(t.angleDeg*Math.PI/180);ctx.fillStyle='#dc2626';ctx.fillRect(-15,-1.5,30,3);ctx.restore();}
+  for(const t of layout?.tiles||[]){ctx.save();ctx.translate(t.xMm,t.yMm);ctx.rotate(t.angleDeg*Math.PI/180);ctx.fillStyle='#dc2626';ctx.fillRect(-t.lengthMm/2,-t.widthMm/2,t.lengthMm,t.widthMm);ctx.restore();}
   return out.convertToBlob({type:'image/jpeg',quality:.8}).then(blob=>{const reader=new FileReaderSync();return reader.readAsDataURL(blob);});
 }
 self.onmessage=async({data})=>{

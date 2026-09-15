@@ -4,6 +4,8 @@ const str=(maxLength=400)=>({type:'string',maxLength}),list=(items,minItems=0,ma
 const obj=properties=>({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
 const unit={type:'number',minimum:0,maximum:1};
 const planSchema=obj({version:{type:'integer',enum:[1]},objectAnalysis:str(),essentialFeatures:list(str(160),0,12),globalIntent:str(),complexityBudget:{type:'integer',minimum:3,maximum:150},routes:list(obj({id:{type:'string',pattern:'^[a-zA-Z0-9_-]{1,40}$'},role:{type:'string',enum:['outer','structural','characteristic']},priority:unit,sourcePathIds:list(str(40),1,12),source:{type:'string',enum:['result2','result1-restored','ai-reconstructed']},strategy:{type:'string',enum:['FOLLOW','FOLLOW_SIMPLIFIED','CUT_CORNER','MERGE_AND_CONTINUE','BRIDGE','REROUTE','SYMMETRY_ASSIST','RESTORE','TERMINATE']},viaAnchors:list(list(unit,2,2),0,24),reason:str()}),1,48),omissions:list(str(40))});
+// Optional only for saved v1 plans; new provider requests require an explicit size intent.
+planSchema.properties.routes.items.properties.piecePreference={type:'string',enum:['LARGE','SMALL_FOR_TURN','MIXED']};
 // Empty anchors reuse the selected source geometry. If the model supplies
 // design anchors, require an actual segment/polyline; a single anchor is never
 // meaningful and must stay invalid.
@@ -11,18 +13,18 @@ planSchema.properties.routes.items.anyOf=[
   {type:'object',properties:{viaAnchors:{type:'array',maxItems:0}}},
   {type:'object',properties:{viaAnchors:{type:'array',minItems:2}}}
 ];
-const qaSchema=obj({version:{type:'integer',enum:[1]},accept:{type:'boolean'},recognizabilityScore:unit,silhouetteScore:unit,cleanlinessScore:unit,compositionScore:unit,repairs:list(obj({routeId:str(40),action:{type:'string',enum:['SIMPLIFY','OMIT']},reason:str()}),0,4)});
+const qaSchema=obj({version:{type:'integer',enum:[1]},accept:{type:'boolean'},recognizabilityScore:unit,silhouetteScore:unit,cleanlinessScore:unit,compositionScore:unit,repairs:list(obj({routeId:str(40),action:{type:'string',enum:['SIMPLIFY','OMIT','REBUILD_WITH_SMALL','REBUILD_WITH_LARGE']},reason:str()}),0,4)});
 // Bind source references to this request's actual graph. Same factory is used
 // by the provider request and local validation; geometry is not modified.
 function schemaForContext(context){const schema=JSON.parse(JSON.stringify(planSchema)),ids=context.paths.map(p=>p.id);schema.properties.routes.items.properties.sourcePathIds.items.enum=ids;schema.properties.omissions.items.enum=ids;return schema;}
 // Provider contract derives from the application schema, without redundant
 // omission decisions. Reject a model-supplied omissions field; never strip it.
-function planningSchema(context){const schema=schemaForContext(context);delete schema.properties.omissions;schema.required=schema.required.filter(k=>k!=='omissions');return schema;}
+function planningSchema(context){const schema=schemaForContext(context);schema.properties.routes.items.required.push('piecePreference');delete schema.properties.omissions;schema.required=schema.required.filter(k=>k!=='omissions');return schema;}
 function planningExample(context){const value=example(context);delete value.omissions;return value;}
 function acceptPlanningValue(value,context){assertPlanSchema(planningSchema(context),value);const used=new Set(value.routes.flatMap(r=>r.sourcePathIds));return plan({...value,omissions:context.paths.filter(p=>!used.has(p.id)).map(p=>p.id)},context);}
 function schemaForQA(plan){const schema=JSON.parse(JSON.stringify(qaSchema)),ids=plan.routes.map(r=>r.id),omittable=plan.routes.filter(r=>r.role!=='outer').map(r=>r.id),item=schema.properties.repairs.items;
 item.properties.routeId.enum=ids;
-item.anyOf=[{type:'object',properties:{action:{type:'string',enum:['SIMPLIFY']}}}];
+item.anyOf=[{type:'object',properties:{action:{type:'string',enum:['SIMPLIFY','REBUILD_WITH_SMALL','REBUILD_WITH_LARGE']}}}];
 if(omittable.length)item.anyOf.push({type:'object',properties:{action:{type:'string',enum:['OMIT']},routeId:{type:'string',enum:omittable}}});
 schema.anyOf=[{type:'object',properties:{accept:{type:'boolean',enum:[false]}}},{type:'object',properties:{repairs:{type:'array',maxItems:0}}}];return schema;}
 class ContractError extends Error{constructor(code,issues){super(code);this.code=code;this.issues=issues;}}
@@ -48,7 +50,7 @@ if(used.has(r.id))error('AI_PLAN_SEMANTIC_INVALID',p+'/id','Duplicate route ID')
 r.sourcePathIds.forEach((id,j)=>{if(!known.has(id))error('AI_UNKNOWN_PATH_ID',p+'/sourcePathIds/'+j,'ID is not in available source paths');if(value.omissions.includes(id))error('AI_PLAN_SEMANTIC_INVALID',p+'/sourcePathIds/'+j,'A selected source path is also omitted');});
 if(r.source==='result1-restored'&&!r.sourcePathIds.some(id=>known.get(id).source==='result1'))error('AI_PLAN_SEMANTIC_INVALID',p+'/sourcePathIds','Restoration requires a Result 1 path');
 });if(!value.routes.some(r=>r.role==='outer'))error('AI_PLAN_SEMANTIC_INVALID','/routes','At least one outer route is required');return JSON.parse(JSON.stringify(value));}
-function example(context){const p=context.paths.find(p=>p.source==='result2')||context.paths[0];return {version:1,objectAnalysis:'Subject',essentialFeatures:['Main silhouette'],globalIntent:'Preserve identity',complexityBudget:100,routes:[{id:'outer_1',role:'outer',priority:1,sourcePathIds:[p.id],source:p.source==='result1'?'result1-restored':'result2',strategy:'FOLLOW',viaAnchors:[],reason:'Main boundary'}],omissions:[]};}
+function example(context){const p=context.paths.find(p=>p.source==='result2')||context.paths[0];return {version:1,objectAnalysis:'Subject',essentialFeatures:['Main silhouette'],globalIntent:'Preserve identity',complexityBudget:100,routes:[{id:'outer_1',role:'outer',priority:1,sourcePathIds:[p.id],source:p.source==='result1'?'result1-restored':'result2',strategy:'FOLLOW',piecePreference:'MIXED',viaAnchors:[],reason:'Main boundary'}],omissions:[]};}
 function qa(value,plan){const issues=validate(qaSchema,value);if(issues.length)throw new ContractError('AI_SCHEMA_INVALID',issues);
 const error=(path,reason)=>{throw new ContractError('AI_QA_SEMANTIC_INVALID',[{path,keyword:'semantic',reason}]);},seen=new Set();
 value.repairs.forEach((r,i)=>{const path='/repairs/'+i,route=plan.routes.find(p=>p.id===r.routeId);if(!route)error(path+'/routeId','Unknown composition route ID');if(seen.has(r.routeId))error(path+'/routeId','Duplicate repair for the same route');if(r.action==='OMIT'&&route.role==='outer')error(path+'/action','An outer route cannot be omitted');seen.add(r.routeId);});

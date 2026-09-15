@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),handler=require('../api/result3');
 const previousFetch=global.fetch,oldKey=process.env.DEEPSEEK_API_KEY,oldEnabled=process.env.DEEPSEEK_RESULT3_ENABLED;
 const context={version:1,canvas:[400,400],paths:[{id:'r2_0',source:'result2',role:'outer',points:[[.1,.1],[.9,.9]]}]};
-const plan={version:1,objectAnalysis:'fixture',essentialFeatures:[],globalIntent:'test',complexityBudget:30,routes:[{id:'outer',role:'outer',priority:1,sourcePathIds:['r2_0'],source:'result2',strategy:'FOLLOW',viaAnchors:[],reason:''}],omissions:[]};
+const plan={version:1,objectAnalysis:'fixture',essentialFeatures:[],globalIntent:'test',complexityBudget:30,routes:[{id:'outer',role:'outer',priority:1,sourcePathIds:['r2_0'],source:'result2',strategy:'FOLLOW',piecePreference:'MIXED',viaAnchors:[],reason:''}],omissions:[]};
 const wirePlan={...plan};delete wirePlan.omissions;
 const images={source:'data:image/png;base64,YQ==',result2:'data:image/png;base64,YQ=='};
 let seq=0;

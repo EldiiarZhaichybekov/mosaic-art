@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),H=require('../result3-hybrid'),T=require('../tile-layout'),O=require('../optimized-contour'),config=require('../server/deepseek-config.cjs'),{complete}=require('../server/deepseek-client.cjs'),{messages}=require('../api/result3');
 const source={contour:[[20,20],[380,20],[380,380],[20,380],[20,20]],internal_lines:[[[50,180],[180,180]],[[180,180],[300,180]]]};
 const ctx=H.prepare(source,O.generate(source));
-const route=(id,role,anchors)=>({id,role,priority:1,sourcePathIds:['r2_0'],source:'result2',strategy:'REROUTE',viaAnchors:anchors,reason:'clear geometry'});
+const route=(id,role,anchors)=>({id,role,priority:1,sourcePathIds:['r2_0'],source:'result2',strategy:'REROUTE',piecePreference:'MIXED',viaAnchors:anchors,reason:'clear geometry'});
 const plan={version:1,objectAnalysis:'shape',essentialFeatures:['outer'],globalIntent:'intentional',complexityBudget:100,routes:[route('outer','outer',[[.1,.1],[.9,.1],[.9,.9],[.1,.9],[.1,.1]])],omissions:[]};
 const qa={version:1,accept:true,recognizabilityScore:.8,silhouetteScore:.8,cleanlinessScore:.8,compositionScore:.8,repairs:[]};
 const test=(name,fn)=>{fn();console.log('PASS',name);};
@@ -17,10 +17,10 @@ test('restore Result 1 path',()=>{const r={...plan.routes[0],id:'restore',role:'
 test('omitted source cannot reappear in selected routes',()=>{assert.throws(()=>H.validatePlan({...plan,omissions:['r2_0']},ctx));});
 test('target can deviate substantially from Result 2',()=>{const target=H.target(plan,ctx);assert.ok(T.nearestOnPath(target[0].points[0],source.contour).distance>3);});
 const layout=H.follow(H.target(plan,ctx),ctx.canvas,100);
-test('sequential follower exact rigid dimensions and count',()=>{assert.ok(layout.tiles.length>10&&layout.tiles.length<=100);assert.ok(layout.tiles.every(t=>t.lengthMm===30&&t.widthMm===3));});
+test('sequential follower exact rigid dimensions and count',()=>{assert.ok(layout.tiles.length>10&&layout.tiles.length<=100);assert.ok(layout.tiles.every(t=>t.lengthMm===T.INVENTORY[t.type].lengthMm&&t.widthMm===3));});
 test('SAT overlap and full rectangle safe area',()=>{assert.ok(H.physical(layout).valid);assert.ok(layout.tiles.every(t=>T.inside(t,layout.canvas)));});
 test('AI cannot override physical rules',()=>{assert.equal(H.physical({...layout,tiles:[{...layout.tiles[0],lengthMm:29}]}).valid,false);assert.equal(H.physical({...layout,tiles:[layout.tiles[0],{...layout.tiles[0],id:2}]}).valid,false);});
-test('export uses actual tile geometry',()=>{const svg=H.exportSVG(layout);assert.equal((svg.match(/width="30" height="3"/g)||[]).length,layout.tiles.length);});
+test('export uses actual tile geometry',()=>{const svg=H.exportSVG(layout);assert.equal((svg.match(/data-tile-type=/g)||[]).length,layout.tiles.length);});
 test('hybrid uses existing editor, mounting export, undo and redo',()=>{const l={...layout,visualStatus:'AI_ACCEPTED'},doc=new T.TileDocument(l),id=l.tiles.at(-1).id;assert.ok(doc.remove(id).valid);assert.equal(doc.layout.visualStatus,'MANUALLY_EDITED');doc.undo();assert.equal(doc.layout.visualStatus,'AI_ACCEPTED');doc.redo();assert.equal(doc.layout.tiles.length,l.tiles.length-1);assert.ok(T.exportSVG(doc.layout,{mounting:true}).includes('data-tile-id'));});
 test('hybrid cannot bypass export physical checks',()=>{assert.throws(()=>T.exportSVG({...layout,tiles:[{...layout.tiles[0],xMm:1}]}));assert.throws(()=>T.exportSVG({...layout,target:[{role:'outer',points:[['bad',0],[0,0]]}]}));});
 test('QA schema disallows invented route and outer omission',()=>{assert.throws(()=>H.validateQA({...qa,accept:false,repairs:[{routeId:'missing',action:'OMIT',reason:''}]},plan));assert.throws(()=>H.validateQA({...qa,accept:false,repairs:[{routeId:'outer',action:'OMIT',reason:''}]},plan));});

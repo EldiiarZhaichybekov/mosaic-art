@@ -2,19 +2,32 @@
 (function(root) {
   'use strict';
   const RULES = Object.freeze({length:30,width:3,margin:15,maxTiles:150,maxGap:2,maxDeviation:3});
+  const INVENTORY=Object.freeze({large:Object.freeze({lengthMm:30,widthMm:3,available:100}),small:Object.freeze({lengthMm:10,widthMm:3,available:50}),totalMaximum:150});
+  function inventory(tiles) {
+    const largeUsed=tiles.filter(t=>t.type==='large').length,smallUsed=tiles.filter(t=>t.type==='small').length,totalUsed=tiles.length,errors=[];
+    if(largeUsed>INVENTORY.large.available)errors.push('LARGE_LIMIT');
+    if(smallUsed>INVENTORY.small.available)errors.push('SMALL_LIMIT');
+    if(totalUsed>INVENTORY.totalMaximum)errors.push('TILE_LIMIT');
+    if(largeUsed+smallUsed!==totalUsed)errors.push('TILE_TYPE');
+    return {largeUsed,smallUsed,totalUsed,largeRemaining:Math.max(0,INVENTORY.large.available-largeUsed),smallRemaining:Math.max(0,INVENTORY.small.available-smallUsed),totalRemaining:Math.max(0,INVENTORY.totalMaximum-totalUsed),valid:!errors.length,errors};
+  }
+  // Only unambiguous legacy 30 mm placements migrate. Unknown types/sizes fail validation.
+  function migrateTile(t){return t.type===undefined&&(t.lengthMm===undefined||t.lengthMm===30)?{...t,type:'large',lengthMm:30,widthMm:t.widthMm??3}:{...t};}
   const EPS=1e-7, rad=Math.PI/180;
   const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
   const sub=(a,b)=>[a[0]-b[0],a[1]-b[1]], dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
   function pointSegment(p,a,b) {const v=sub(b,a),d=dot(v,v),t=d?Math.max(0,Math.min(1,dot(sub(p,a),v)/d)):0;return dist(p,[a[0]+t*v[0],a[1]+t*v[1]]);}
   function nearestOnPath(point,path) {let best={distance:Infinity,angle:0,station:0},travel=0;for(let i=1;i<path.length;i++){const a=path[i-1],v=sub(path[i],a),length=Math.hypot(...v),f=Math.max(0,Math.min(1,dot(sub(point,a),v)/Math.max(EPS,length*length))),p=[a[0]+f*v[0],a[1]+f*v[1]],d=dist(point,p);if(d<best.distance)best={distance:d,angle:Math.atan2(v[1],v[0])/rad,station:travel+f*length};travel+=length;}return best;}
-  function makeTile(x,y,angle,role='outer',path=0) {
-    return {id:0,xMm:x,yMm:y,angleDeg:angle,lengthMm:30,widthMm:3,role,sourcePathId:path,sequenceIndex:0};
+  function makeTile(x,y,angle,role='outer',path=0,type='large') {
+    if(!['large','small'].includes(type))throw Error('TILE_TYPE');
+    return {id:0,xMm:x,yMm:y,angleDeg:angle,type,lengthMm:INVENTORY[type].lengthMm,widthMm:INVENTORY[type].widthMm,role,sourcePathId:path,sequenceIndex:0};
   }
-  function ends(t) {const x=15*Math.cos(t.angleDeg*rad),y=15*Math.sin(t.angleDeg*rad);return [[t.xMm-x,t.yMm-y],[t.xMm+x,t.yMm+y]];}
-  function corners(t) {const a=t.angleDeg*rad,u=[Math.cos(a),Math.sin(a)],v=[-u[1],u[0]];return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([s,q])=>[t.xMm+s*15*u[0]+q*1.5*v[0],t.yMm+s*15*u[1]+q*1.5*v[1]]);}
+  function ends(t) {const x=t.lengthMm/2*Math.cos(t.angleDeg*rad),y=t.lengthMm/2*Math.sin(t.angleDeg*rad);return [[t.xMm-x,t.yMm-y],[t.xMm+x,t.yMm+y]];}
+  function corners(t) {const a=t.angleDeg*rad,u=[Math.cos(a),Math.sin(a)],v=[-u[1],u[0]];return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([s,q])=>[t.xMm+s*t.lengthMm/2*u[0]+q*t.widthMm/2*v[0],t.yMm+s*t.lengthMm/2*u[1]+q*t.widthMm/2*v[1]]);}
   function overlap(a,b) {
     // Exact separating-axis test on oriented rigid rectangles. Contact is valid.
-    if (Math.abs(a.xMm-b.xMm)>31 || Math.abs(a.yMm-b.yMm)>31) return false;
+    const reach=(Math.hypot(a.lengthMm,a.widthMm)+Math.hypot(b.lengthMm,b.widthMm))/2;
+    if (Math.abs(a.xMm-b.xMm)>reach || Math.abs(a.yMm-b.yMm)>reach) return false;
     const A=corners(a),B=corners(b);
     for(const t of [a,b]) for(const angle of [t.angleDeg,t.angleDeg+90]) {
       const u=[Math.cos(angle*rad),Math.sin(angle*rad)],pa=A.map(p=>dot(p,u)),pb=B.map(p=>dot(p,u));
@@ -42,9 +55,9 @@
   function deviation(t,grid,step=.5) {
     // Distance-to-set is 1-Lipschitz. Adding half a sample interval bounds
     // the unsampled centerline too; this is not just an endpoint check.
-    const [a,b]=ends(t);let max=0,sum=0;const n=Math.ceil(30/step);
+    const [a,b]=ends(t);let max=0,sum=0;const n=Math.ceil(t.lengthMm/step);
     for(let i=0;i<=n;i++){const d=grid.distance([a[0]+(b[0]-a[0])*i/n,a[1]+(b[1]-a[1])*i/n]);max=Math.max(max,d);sum+=d;if(max>3)return {max,mean:Infinity};}
-    return {max:max+15/n,mean:sum/(n+1)};
+    return {max:max+t.lengthMm/(2*n),mean:sum/(n+1)};
   }
   function simplifyOpen(p,tol) {
     if(p.length<=2)return p.map(q=>[...q]);let best=tol,index=-1;
@@ -150,18 +163,18 @@
   function validate(layout,{continuity=true}={}) {
     const errors=[],tiles=layout.tiles||[],canvas=layout.canvas;
     if(!canvas||![[300,400],[400,300],[400,400]].some(c=>c[0]===canvas[0]&&c[1]===canvas[1]))errors.push('CANVAS_INVALID');
-    if(tiles.length>150)errors.push('TILE_LIMIT');
+    errors.push(...inventory(tiles).errors);
     const ids=new Set();
-    for(const t of tiles){if(![t.xMm,t.yMm,t.angleDeg].every(Number.isFinite)||t.lengthMm!==30||t.widthMm!==3)errors.push('TILE_DIMENSIONS');if(!Number.isInteger(t.id)||t.id<1||!['outer','skeleton'].includes(t.role))errors.push('TILE_MODEL');if(ids.has(t.id))errors.push('DUPLICATE_ID');ids.add(t.id);if(canvas&&!inside(t,canvas))errors.push('SAFE_AREA');}
+    for(const t of tiles){if(![t.xMm,t.yMm,t.angleDeg].every(Number.isFinite)||!['large','small'].includes(t.type)||t.lengthMm!==INVENTORY[t.type]?.lengthMm||t.widthMm!==3)errors.push('TILE_DIMENSIONS');if(!Number.isInteger(t.id)||t.id<1||!['outer','skeleton','characteristic'].includes(t.role))errors.push('TILE_MODEL');if(ids.has(t.id))errors.push('DUPLICATE_ID');ids.add(t.id);if(canvas&&!inside(t,canvas))errors.push('SAFE_AREA');}
     for(let i=0;i<tiles.length;i++)for(let j=i+1;j<tiles.length;j++)if(overlap(tiles[i],tiles[j]))errors.push('OVERLAP');
     if(continuity&&(!Array.isArray(layout.target)||!layout.target.every(p=>Array.isArray(p.points)&&p.points.length>=2&&p.points.every(q=>Array.isArray(q)&&q.length===2&&q.every(Number.isFinite)))))return {valid:false,errors:[...errors,'TARGET_INVALID']};
     // AI compositions use independent manufacturable routes, not the old
     // single closed observed boundary. All rectangle constraints above remain.
-    if(continuity&&layout.mode==='AI_HYBRID'){
-      if(!tiles.length||!layout.target.some(p=>p.role==='outer'))errors.push('NO_OUTER');
+    if(continuity&&(layout.mode==='AI_HYBRID'||layout.routeMode)){
+      if(!tiles.some(t=>t.role==='outer')||!layout.target.some(p=>p.role==='outer'))errors.push('NO_OUTER');
       for(const t of tiles)if(!layout.target.some(p=>p.id===t.sourcePathId))errors.push('TARGET_INVALID');
     }
-    if(continuity&&layout.mode!=='AI_HYBRID'){const outer=tiles.filter(t=>t.role==='outer').sort((a,b)=>a.sequenceIndex-b.sequenceIndex),target=layout.target?.find(p=>p.role==='outer');
+    if(continuity&&layout.mode!=='AI_HYBRID'&&!layout.routeMode){const outer=tiles.filter(t=>t.role==='outer').sort((a,b)=>a.sequenceIndex-b.sequenceIndex),target=layout.target?.find(p=>p.role==='outer');
       if(outer.length<3||!target)errors.push('NO_OUTER');
       else {const grid=new SegmentGrid([target.points]);for(let i=0;i<outer.length;i++){const g=gap(outer[i],outer[(i+1)%outer.length]);if(g<0||g>2+EPS)errors.push('OUTER_GAP');if(deviation(outer[i],grid).max>3+EPS)errors.push('DEVIATION');}if(contourCovered(target.points,outer)>3+EPS)errors.push('TARGET_COVERAGE');}
       for(const t of tiles.filter(t=>t.role==='skeleton')){const p=layout.target?.find(p=>p.id===t.sourcePathId);if(!p||deviation(t,new SegmentGrid([p.points])).max>3+EPS)errors.push('DEVIATION');}
@@ -235,6 +248,72 @@
     return {paths:selected,observed,rejected,symmetry:axis,timings:{symmetryMs,reconstructionMs,selectionMs:Date.now()-selectionStart,structuralMs:Date.now()-start}};
   }
   function skeletonPaths(internal) {return buildStructures(internal).paths.map(p=>p.points);}
+  function followMixed(routes,canvas,budget=RULES.maxTiles,fixed=[],options={}) {
+    const began=Date.now(),tiles=fixed.map(migrateTile),routeCoverage={},stats={collisionRejections:0,skippedStations:0};
+    const rank=r=>r.role==='outer'?0:r.role==='characteristic'?1:2;
+    for(const route of routes.slice().sort((a,b)=>rank(a)-rank(b)||(b.priority||0)-(a.priority||0))){
+      // Remove sub-millimeter noise only in the physical target executor.
+      const points=simplifyOpen(route.points,.6),model=pathModel(points),startCount=tiles.length;
+      let station=0,largeBlockedByCollision=false;
+      function candidatesAt(state){
+        const used=inventory([...tiles,...state.newTiles]),pool=[];
+        for(const type of options.largeOnly?['large']:['large','small']){
+          const length=INVENTORY[type].lengthMm;
+          if(used[type+'Remaining']<1||used.totalUsed>=Math.min(budget,INVENTORY.totalMaximum))continue;
+          for(const shift of [0,.8,1.6,2.4]){
+            const s=state.station+shift;if(s+length>model.length+.1)continue;
+            const a=model.at(s),b=model.at(s+length),angle=Math.atan2(b[1]-a[1],b[0]-a[0])/rad;
+            // Center the exact rectangle on its chord; never stretch to arc length.
+            const tile=makeTile((a[0]+b[0])/2,(a[1]+b[1])/2,angle,route.role,route.id,type);
+            let max=0,squared=0;const end=ends(tile);
+            for(let j=0;j<=12;j++){const p=model.at(s+length*j/12),q=[end[0][0]+(end[1][0]-end[0][0])*j/12,end[0][1]+(end[1][1]-end[0][1])*j/12],d=dist(p,q);max=Math.max(max,d);squared+=d*d/13;}
+            if(max>RULES.maxDeviation-.25||!inside(tile,canvas))continue;
+            if([...tiles,...state.newTiles].some(t=>overlap(t,tile))){stats.collisionRejections++;if(type==='large'&&!state.newTiles.length)largeBlockedByCollision=true;continue;}
+            const scarcity=1+(INVENTORY.small.available-used.smallRemaining)/INVENTORY.small.available;
+            const smallCost=type==='small'?(route.piecePreference==='LARGE'?.4:.16)*scarcity:0;
+            const hint=type==='small'&&route.piecePreference==='SMALL_FOR_TURN'?.08:0;
+            const cost=squared*length/30*.9+shift*.12+smallCost-hint;
+            pool.push({tile,next:s+length,quality:squared,max,score:length/30-cost});
+          }
+        }
+        return pool;
+      }
+      while(station+10<=model.length+.1&&tiles.length<Math.min(budget,INVENTORY.totalMaximum)){
+        let beam=[{station,newTiles:[],steps:[],score:0}];
+        largeBlockedByCollision=false;const firstPool=candidatesAt(beam[0]),collisionAtStart=largeBlockedByCollision;
+        for(let depth=0;depth<4;depth++){
+          const next=[];
+          for(const state of beam){const pool=depth===0?firstPool:candidatesAt(state);
+            if(!pool.length){next.push(state);continue;}
+            for(const c of pool)next.push({station:c.next,newTiles:[...state.newTiles,c.tile],steps:[...state.steps,c],score:state.score+c.score});
+          }
+          next.sort((a,b)=>b.score-a.score||b.station-a.station);const seen=new Set();beam=[];
+          for(const state of next){const key=state.newTiles.map(t=>t.type[0]).join('')+':'+state.station.toFixed(1);if(seen.has(key))continue;seen.add(key);beam.push(state);if(beam.length===6)break;}
+        }
+        const best=beam.filter(b=>b.steps.length).sort((a,b)=>b.score-a.score||b.station-a.station)[0];
+        if(!best){station+=2;stats.skippedStations++;continue;}
+        const c=best.steps[0],t=c.tile,large=firstPool.find(p=>p.tile.type==='large');
+        t.decisionReason=t.type==='large'?'LARGE_SELECTED_EQUIVALENT_QUALITY':model.length-station<30?'SMALL_SELECTED_ENDPOINT':route.role==='characteristic'?'SMALL_SELECTED_CHARACTERISTIC_FEATURE':route.piecePreference==='SMALL_FOR_TURN'?'SMALL_SELECTED_AI_HINT':!large&&collisionAtStart?'SMALL_SELECTED_COLLISION_AVOIDANCE':'SMALL_SELECTED_CURVATURE';
+        t.id=tiles.length+1;t.sequenceIndex=tiles.length;t.routeId=route.id;tiles.push(t);station=c.next;
+      }
+      const placed=tiles.slice(startCount),count=inventory(placed);
+      const gaps=placed.slice(1).map((t,i)=>gap(placed[i],t));if(placed.length>1&&dist(points[0],points.at(-1))<.1)gaps.push(gap(placed.at(-1),placed[0]));
+      routeCoverage[route.id]={placed:placed.length,length:model.length,largeUsed:count.largeUsed,smallUsed:count.smallUsed,total:count.totalUsed,reasons:placed.reduce((r,t)=>(r[t.decisionReason]=(r[t.decisionReason]||0)+1,r),{}),remaining:inventory(tiles),coveredMm:placed.reduce((n,t)=>n+t.lengthMm,0),maxGapMm:Math.max(0,...gaps),gapsOver2mm:gaps.filter(g=>g>RULES.maxGap).length};
+    }
+    tiles.forEach((t,i)=>{t.id=i+1;t.sequenceIndex=i;});
+    const layout={schemaVersion:3,status:'ok',mode:'AI_HYBRID',canvas,tiles,target:routes,routeCoverage,inventory:inventory(tiles),stats,timings:{followerMs:Date.now()-began},visualStatus:'UNREVIEWED'};
+    const validationStart=Date.now(),checked=validate(layout,{continuity:false});layout.timings.validationMs=Date.now()-validationStart;
+    if(!tiles.length||!checked.valid)throw Error('GEOMETRY_FAILED');
+    return layout;
+  }
+  function generateMixedForCanvas(source,canvas){
+    const began=Date.now(),fitted=fit(source,canvas),structures=buildStructures(fitted.internal,fitted.contour);
+    const outer=simplifyClosed(fitted.contour,.6);outer.push(outer[0]);
+    const routes=[{id:0,role:'outer',priority:1,points:outer,piecePreference:'MIXED'},...structures.paths.map((p,i)=>({id:i+1,role:'skeleton',priority:.5,points:p.points,piecePreference:'LARGE',sourceIds:p.ids}))];
+    const result=followMixed(routes,canvas);
+    for(const t of result.tiles)t.sourceGroupId=routes.find(r=>r.id===t.sourcePathId)?.sourceIds?.[0];
+    return {...result,mode:'DETERMINISTIC_FALLBACK',routeMode:true,structures,fitScale:fitted.scale,simplificationMm:.6,score:0,orientation:canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait',timings:{...structures.timings,...result.timings,totalMs:Date.now()-began}};
+  }
   function generateForCanvas(source,canvas,factor=1) {
     const start=Date.now(),fitted=fit(source,canvas,factor),timings={};let outer=null,target=null,tolerance=0;
     let structures;try{structures=buildStructures(fitted.internal,fitted.contour);}catch(error){console.error('optional_structure_failure',error);structures={paths:[],observed:[],rejected:[],symmetry:{confidence:0},timings:{},failure:{stage:'structural_paths',name:error.name}};}Object.assign(timings,structures.timings);
@@ -286,7 +365,7 @@
   function generate(source,{format='40x40',orientation='auto'}={}) {
     if(!source?.contour||source.contour.length<3||!source.contour.every(p=>p.length===2&&p.every(Number.isFinite)))return {status:'LAYOUT_NOT_FEASIBLE',tiles:[],reason:'INVALID_TARGET'};
     const canvases=format==='40x40'?[[400,400]]:orientation==='portrait'?[[300,400]]:orientation==='landscape'?[[400,300]]:[[300,400],[400,300]];
-    const results=canvases.map(c=>generateForCanvas(source,c));
+    const results=canvases.map(c=>{try{return generateMixedForCanvas(source,c);}catch(error){return {status:'LAYOUT_NOT_FEASIBLE',canvas:c,tiles:[],target:[],reason:error.message};}});
     const valid=results.filter(r=>r.status==='ok');valid.sort((a,b)=>b.fitScale-a.fitScale||a.simplificationMm-b.simplificationMm||a.score-b.score||a.tiles.length-b.tiles.length);
     const result=valid[0]||results[0];result.evaluated=results.map(r=>({canvas:r.canvas,status:r.status,tiles:r.tiles.length,scale:r.fitScale,simplificationMm:r.simplificationMm,timings:r.timings}));result.auto=orientation==='auto'&&format==='30x40';return result;
   }
@@ -294,9 +373,9 @@
     const checked=validate(layout);if(!checked.valid)throw new Error(checked.errors.join(', '));
     const [w,h]=layout.canvas,lines=[`<svg xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${w} ${h}">`,`<rect width="${w}" height="${h}" fill="white"/>`,`<rect x="15" y="15" width="${w-30}" height="${h-30}" fill="none" stroke="#94a3b8" stroke-width="0.25" stroke-dasharray="2 2"/>`];
     for(const p of layout.target)lines.push(`<path d="M ${p.points.map(q=>q.join(',')).join(' L ')}" fill="none" stroke="#475569" stroke-width="0.35" stroke-dasharray="2 1.5"/>`);
-    for(const t of layout.tiles){lines.push(`<rect data-tile-id="${t.id}" x="-15" y="-1.5" width="30" height="3" transform="translate(${t.xMm} ${t.yMm}) rotate(${t.angleDeg})" fill="#dc2626"/>`);if(mounting)lines.push(`<text x="${t.xMm}" y="${t.yMm}" font-family="sans-serif" font-size="2.6" text-anchor="middle" dominant-baseline="middle" fill="white">${t.id}</text>`);}
+    for(const t of layout.tiles){lines.push(`<rect data-tile-id="${t.id}" data-tile-type="${t.type}" x="${-t.lengthMm/2}" y="${-t.widthMm/2}" width="${t.lengthMm}" height="${t.widthMm}" transform="translate(${t.xMm} ${t.yMm}) rotate(${t.angleDeg})" fill="#dc2626"/>`);if(mounting)lines.push(`<text x="0" y="0" transform="translate(${t.xMm} ${t.yMm}) rotate(${t.angleDeg})" font-family="sans-serif" font-size="${t.type==='small'?1.8:2.6}" text-anchor="middle" dominant-baseline="middle" fill="white">${t.id}·${t.lengthMm}</text>`);}
     const xml=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    if(mounting)lines.push(`<text x="15" y="7" font-family="sans-serif" font-size="3">${xml(labels.header||`${w} × ${h} mm · ${layout.orientation} · ${layout.tiles.length} / 150 tiles · 30 × 3 mm · margin 15 mm`)}</text>`,`<text x="15" y="${h-5}" font-family="sans-serif" font-size="2.5">${xml(labels.footer||'Origin: upper left. Tile coordinates refer to centers. Red rectangles are full tiles. Print at 100%.')}</text>`);
+    if(mounting)lines.push(`<text x="15" y="7" font-family="sans-serif" font-size="3">${xml(labels.header||`${w} × ${h} mm · ${layout.tiles.length} / 150 tiles · 30 mm: ${inventory(layout.tiles).largeUsed}/100 · 10 mm: ${inventory(layout.tiles).smallUsed}/50`)}</text>`,`<text x="15" y="${h-5}" font-family="sans-serif" font-size="2.5">${xml(labels.footer||'Label: number·length mm. Origin: upper left. Coordinates: centers. Print at 100%.')}</text>`);
     lines.push('</svg>');return lines.join('\n');
   }
   function snap(tile,layout,bypass=false) {
@@ -310,10 +389,10 @@
       const b=other.angleDeg*rad,v=[Math.cos(b),Math.sin(b)],normal=[-v[1],v[0]];
       // Endpoint and end-to-side snapping, with the complete rotated rectangle
       // support radius: T contact is with a side, not centerline intersection.
-      const support=15*Math.abs(dot(u,normal))+1.5*Math.abs(dot([-u[1],u[0]],normal));
+      const support=tile.lengthMm/2*Math.abs(dot(u,normal))+tile.widthMm/2*Math.abs(dot([-u[1],u[0]],normal));
       for(const g of [0,1,2]){
-        for(const e of ends(other))for(const sign of [-1,1])proposals.push({...tile,xMm:e[0]+sign*(15+g)*u[0],yMm:e[1]+sign*(15+g)*u[1]});
-        const along=Math.max(-15,Math.min(15,dot(sub([tile.xMm,tile.yMm],[other.xMm,other.yMm]),v)));
+        for(const e of ends(other))for(const sign of [-1,1])proposals.push({...tile,xMm:e[0]+sign*(tile.lengthMm/2+g)*u[0],yMm:e[1]+sign*(tile.lengthMm/2+g)*u[1]});
+        const along=Math.max(-other.lengthMm/2,Math.min(other.lengthMm/2,dot(sub([tile.xMm,tile.yMm],[other.xMm,other.yMm]),v)));
         for(const sign of [-1,1])proposals.push({...tile,xMm:other.xMm+along*v[0]+sign*(1.5+support+g)*normal[0],yMm:other.yMm+along*v[1]+sign*(1.5+support+g)*normal[1]});
       }
     }
@@ -321,14 +400,14 @@
     near.sort((a,b)=>dist([a.xMm,a.yMm],[tile.xMm,tile.yMm])-dist([b.xMm,b.yMm],[tile.xMm,tile.yMm]));return near[0]||tile;
   }
   class TileDocument {
-    constructor(layout){if(!validate(layout,{continuity:false}).valid)throw new Error('INVALID_LAYOUT');this.layout=JSON.parse(JSON.stringify(layout));this.undoStack=[];this.redoStack=[];}
-    commit(tiles){const next={...this.layout,tiles,...(this.layout.mode==='AI_HYBRID'?{visualStatus:'MANUALLY_EDITED'}:{})};const check=validate(next,{continuity:false});if(!check.valid)return check;this.undoStack.push(this.layout);if(this.undoStack.length>100)this.undoStack.shift();this.redoStack=[];this.layout=next;return check;}
-    update(id,patch){const t=this.layout.tiles.find(t=>t.id===id);if(!t)return {valid:false,errors:['NO_SELECTION']};return this.commit(this.layout.tiles.map(t=>t.id===id?{...t,...patch,id:t.id,lengthMm:30,widthMm:3}:t));}
-    add(tile){if(this.layout.tiles.length>=150)return {valid:false,errors:['TILE_LIMIT']};const id=Math.max(0,...this.layout.tiles.map(t=>t.id))+1;return this.commit([...this.layout.tiles,{...tile,id,sequenceIndex:Number.isFinite(tile.sequenceIndex)?tile.sequenceIndex:id-1,lengthMm:30,widthMm:3}]);}
+    constructor(layout){layout={...layout,schemaVersion:3,tiles:(layout.tiles||[]).map(migrateTile)};layout.inventory=inventory(layout.tiles);if(!validate(layout,{continuity:false}).valid)throw new Error('INVALID_LAYOUT');this.layout=JSON.parse(JSON.stringify(layout));this.undoStack=[];this.redoStack=[];}
+    commit(tiles){const next={...this.layout,tiles,inventory:inventory(tiles),visualStatus:'MANUALLY_EDITED'};const check=validate(next,{continuity:false});if(!check.valid)return check;this.undoStack.push(this.layout);if(this.undoStack.length>100)this.undoStack.shift();this.redoStack=[];this.layout=next;return check;}
+    update(id,patch){const t=this.layout.tiles.find(t=>t.id===id);if(!t)return {valid:false,errors:['NO_SELECTION']};return this.commit(this.layout.tiles.map(t=>t.id===id?{...t,...patch,id:t.id}:t));}
+    add(tile){const id=Math.max(0,...this.layout.tiles.map(t=>t.id))+1;return this.commit([...this.layout.tiles,{...migrateTile(tile),id,sequenceIndex:Number.isFinite(tile.sequenceIndex)?tile.sequenceIndex:id-1}]);}
     remove(id){return this.commit(this.layout.tiles.filter(t=>t.id!==id));}
     undo(){if(!this.undoStack.length)return;this.redoStack.push(this.layout);this.layout=this.undoStack.pop();}
     redo(){if(!this.redoStack.length)return;this.undoStack.push(this.layout);this.layout=this.redoStack.pop();}
   }
-  const api={version:'physical-tiles-v2',RULES,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,solveOuter,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
+  const api={version:'physical-tiles-v3',RULES,INVENTORY,inventory,migrateTile,followMixed,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,solveOuter,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
   if(typeof module!=='undefined')module.exports=api;root.TileLayout=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
