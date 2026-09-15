@@ -69,13 +69,14 @@
         if(active)for(const id of ['btn-svg','btn-jpg'])$(id).disabled=!check.valid||pending;
       }else { $('tile-count').textContent=tr('emptyCount');$('tile-status').textContent=tr(pending?'checking':notice);if(active)for(const id of ['btn-svg','btn-jpg'])$(id).disabled=true; }
       render();
+      root.WorkspaceUI?.emit({id:3,active,pending,phase:null,failed:!doc&&!pending&&notice==='failure',ready:!!doc,canvas:doc?.layout.canvas,inventory:doc?T.inventory(doc.layout.tiles):null,editing,mode:doc?.layout.mode,visualStatus:doc?.layout.visualStatus,canvasElement:canvas});
     }
     function compute() {
       if(!source)return;
       if(doc?.undoStack.length)notify(tr('resetEdits'),'info');
       if(worker)worker.terminate();worker=null;const id=++job;doc=null;selected=null;adding=false;drag=null;pending=true;
       $('tile-count').textContent=tr('emptyCount');$('tile-status').textContent=tr('checking');refresh();
-      try{worker=new Worker(hybridEnabled?'result3-worker.js':'tile-worker.js');worker.onmessage=event=>{if(event.data.id!==job)return;if(event.data.progress){$('tile-status').textContent=tr(event.data.progress==='plan'?'hybridPlanning':'hybridQA');return;}pending=false;worker.terminate();worker=null;const layout=event.data.result;
+      try{worker=new Worker(hybridEnabled?'result3-worker.js':'tile-worker.js');worker.onmessage=event=>{if(event.data.id!==job)return;if(event.data.progress){root.WorkspaceUI?.emit({id:3,active,pending:true,phase:event.data.progress});$('tile-status').textContent=tr(event.data.progress==='plan'?'hybridPlanning':'hybridQA');return;}pending=false;worker.terminate();worker=null;const layout=event.data.result;
         if(layout.status==='ok'&&T.validate(layout).valid){doc=new T.TileDocument(layout);console.info('Physical layout complete',{requestId:source.clientDiagnostics?.requestId,canvas:layout.canvas,count:layout.tiles.length,timings:layout.timings,evaluated:layout.evaluated});if(layout.hybridDiagnostics?.errorCode){const key='tile.'+(layout.mode==='DETERMINISTIC_FALLBACK'&&layout.hybridDiagnostics.errorCode==='AI_SCHEMA_INVALID'?'AI_PLAN_INVALID':layout.hybridDiagnostics.errorCode);notify(t(key)===key?tr('hybridFallback'):t(key),'warning',0);}else if(hybridEnabled&&layout.visualStatus!=='AI_ACCEPTED')notify(tr('hybridReview'),'warning',0);}
         else {notice='failure';notify(tr('failure'),'warning',0);console.warn('LAYOUT_NOT_FEASIBLE',layout);}
         refresh();};worker.onerror=event=>{if(id!==job)return;pending=false;worker.terminate();worker=null;console.error('Physical worker failed',{requestId:source.clientDiagnostics?.requestId,error:event.message});notice='failure';notify(tr('failure'),'error');refresh();};

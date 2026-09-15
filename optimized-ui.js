@@ -14,11 +14,12 @@
     }
     function refresh(){
       $('optimized-status').textContent=tr(pending?'pending':failed?'failure':result?'ready':'empty');$('optimized-recompute').disabled=pending||!source;
-      if(!active)return;
+      if(!active){root.WorkspaceUI?.emit({id:2,active,pending,failed,ready:!!result,canvas:sheet});return;}
       document.title=tr('title');$('result-description').textContent=tr('help');for(const id of ['btn-svg','btn-jpg'])$(id).disabled=!result||pending;
       const began=performance.now();canvas.width=sheet[0]*3;canvas.height=sheet[1]*3;const ctx=canvas.getContext('2d');ctx.scale(3,3);
       if(result){draw(ctx,result,debugEnabled?$('optimized-layer').value:'final');result.timings.renderMs=performance.now()-began;}
       else {ctx.fillStyle='white';ctx.fillRect(0,0,...sheet);}
+      root.WorkspaceUI?.emit({id:2,active,pending,failed,ready:!!result,canvas:sheet,canvasElement:canvas});
     }
     function stop(){if(worker)worker.terminate();worker=null;job++;pending=false;}
     function compute(){if(!source)return;stop();pending=true;failed=false;result=null;const id=job;refresh();

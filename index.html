@@ -210,6 +210,7 @@
   .optimized-active #sec-diag, .optimized-active #sec-canvas, .optimized-active .brand p, .optimized-active #sec-notes, .optimized-active #threshold-control, .optimized-active #trace-control, .optimized-active #btn-gen {display:none!important;}
   @media(max-width:920px) {#optimized-canvas {max-height:none;} #result-controls .tile-tabs button {font-size:12px;}}
 </style>
+<link rel="stylesheet" href="workspace.css">
 </head>
 <body>
 <div id="app">
@@ -369,6 +370,8 @@
 <script src="tile-ui.js"></script>
 <script src="optimized-contour.js"></script>
 <script src="optimized-ui.js"></script>
+<script src="workspace-i18n.js"></script>
+<script src="workspace.js"></script>
 <script>
 "use strict";
 /* ============================================================================
@@ -693,6 +696,7 @@ const I18N = {
 
 let currentLang = "ru";
 for(const lang of LANGS) Object.assign(I18N[lang],globalThis.TileMessages?.[lang]||{});
+for(const lang of LANGS) Object.assign(I18N[lang],globalThis.WorkspaceMessages?.[lang]||{});
 for (const [lang, values] of Object.entries({
   ru: ["Результат для просмотра и экспорта", "Результат 1 — Детальный", "Результат 2 — Очищенный", "Все принятые структурные линии. Экспортируется выбранный результат.", "Меньше мелких и повторяющихся линий. Экспортируется выбранный результат.", "Не удалось выделить объект на изображении.", "Объект найден, но устойчивый контур построить не удалось.", "Очищенный результат недоступен. Детальный результат можно просмотреть и скачать."],
   en: ["Preview and export result", "Result 1 — Detailed", "Result 2 — Refined", "All accepted structural lines. Export uses the selected result.", "Fewer tiny and duplicate lines. Export uses the selected result.", "Could not separate the object from the background.", "Object detected, but no usable contour was found.", "Refined result unavailable. The detailed result is still available to view and download."],
@@ -2174,6 +2178,7 @@ function initUI() {
     onDetailed:()=>{optimizedUI?.hide();state.variant='detailed';document.title=t('app.title');if(!state.resultData)return;
       state.finalPaths=finalLineArt(state.resultData);state.internalLines=state.resultData.internal_lines;
       drawDashes(renderedPaths(),...state.canvas);renderContourInfo(state.scaled,...state.canvas);
+      globalThis.WorkspaceUI?.emit({id:1,active:true,ready:true,canvas:state.canvas,canvasElement:el.cv});
     }};
   let tileUI;
   try { tileUI = TileUI.create(physicalHooks); }
@@ -2283,12 +2288,14 @@ function initUI() {
     catch(error) {console.error('optional_physical_ui_failure',{requestId:data.clientDiagnostics?.requestId,error});notify(t('tile.optionalUnavailable'),'warning');}
     try {optimizedUI?.sourceChanged(data,[cw,ch]);}
     catch(error){console.error('optional_optimized_ui_failure',{requestId:data.request_id,error});notify(t('opt.failure'),'warning');}
+    globalThis.WorkspaceUI?.emit({id:1,active:true,reveal:true,pending:false,failed:false,ready:true,canvas:state.canvas,canvasElement:el.cv});
   }
 
   let contourGeneration = 0;
   async function requestServerContour(cw, ch, image) {
     const generation = ++contourGeneration;
     notifyKey("msg.contourWait", "info", 1800);
+    globalThis.WorkspaceUI?.emit({id:1,pending:true,failed:false});
     try {
       const data = await fetchServerDashes(state.uploadedFile, cw, ch);
       if (generation !== contourGeneration) return false;
@@ -2298,6 +2305,7 @@ function initUI() {
     } catch (err) {
       if (generation !== contourGeneration) return false;
       reportContourError(err);
+      globalThis.WorkspaceUI?.emit({id:1,pending:false,failed:true});
       return false;
     }
   }
@@ -2501,6 +2509,7 @@ function initUI() {
     img.onload = () => {
       if (uploadGeneration !== contourGeneration) { URL.revokeObjectURL(url); return; }
       state.uploadedImg = img; state.uploadedFile = file;   // keep for live threshold re-tracing
+      globalThis.WorkspaceUI?.emit({id:'source',image:img,name:file.name});
       state.uploaded = true;
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
       requestServerContour(cw, ch, img).then(ok => {
@@ -2597,7 +2606,7 @@ function initUI() {
   el.valThr.textContent = el.threshold.value;
   run();
 
-
+  globalThis.WorkspaceUI?.create({t,handleFile});
 }
 
 
