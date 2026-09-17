@@ -27,9 +27,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
    await page.screenshot({path:`/private/tmp/prismosaic-workspace-${width}.png`});
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow ${width}`);
   }
-  await page.locator('#mobile-properties').click();await page.locator('#tile-edit').click();
+  await page.locator('#mobile-properties').click();
   await page.screenshot({path:'/private/tmp/prismosaic-mobile-properties.png'});
-  assert.equal(await page.locator('#tile-editor').isVisible(),true);
+  assert.equal(await page.locator('#tile-editor').isVisible(),false);
+  assert.equal(await page.locator('#tile-edit').isVisible(),false);
   await page.locator('#tile-view-plan').click();assert.equal(await page.locator('#tile-plan-info').isVisible(),true);
   await page.locator('#tile-plan-info summary').click();assert.ok(await page.locator('#tile-plan-table tbody tr').count()>0);
   for(const [id,suffix]of [['tile-csv','csv'],['btn-svg','svg'],['btn-jpg','jpg']]){
@@ -49,16 +50,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
    await page.screenshot({path:`/private/tmp/prismosaic-mobile-${lang}.png`});
   }
   await page.setViewportSize({width:1280,height:900});
-  const row=fs.readFileSync('/private/tmp/prismosaic-workspace-export.csv','utf8').split('\n')[1].split(',');
-  const tileBox=await page.locator('#tile-canvas').boundingBox();
-  await page.mouse.click(tileBox.x+Number(row[1])/400*tileBox.width,tileBox.y+Number(row[2])/400*tileBox.height);
-  assert.equal(await page.locator('#tile-x').isDisabled(),false);
-  const countBefore=await page.locator('#inventory-total-text').innerText();
-  await page.locator('#tile-delete').click();assert.notEqual(await page.locator('#inventory-total-text').innerText(),countBefore);
-  await page.locator('#tile-undo').click();assert.equal(await page.locator('#inventory-total-text').innerText(),countBefore);
-  await page.locator('#tile-redo').click();assert.notEqual(await page.locator('#inventory-total-text').innerText(),countBefore);
-  await page.locator('#tile-undo').click();
-  await page.locator('#tile-format').selectOption('30x40');
+  // Editor remains covered at model level, but has no customer entry point.
+  await page.locator('#tile-format + .size-buttons [data-value="30x40"]').click();
   await page.waitForFunction(()=>!document.querySelector('#tile-recompute').disabled);
   for(const orientation of ['portrait','landscape','auto']){
    await page.locator(`[data-orientation="${orientation}"]`).click();
@@ -68,7 +61,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
    if(orientation==='portrait')assert.ok(rect.height>rect.width);
    if(orientation==='landscape')assert.ok(rect.width>rect.height);
   }
-  await page.locator('#tile-format').selectOption('40x40');
+  await page.locator('#tile-format + .size-buttons [data-value="40x40"]').click();
   await page.waitForFunction(()=>!document.querySelector('#tile-recompute').disabled);
   // Cached switching must not spawn new processing workers or requests.
   let workers=0;const countWorker=()=>workers++;page.on('worker',countWorker);
@@ -76,17 +69,19 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   assert.equal(workers,0);page.off('worker',countWorker);
   // Replacing input with an unsupported/oversized file leaves a usable project.
   await page.locator('#file-input').setInputFiles({name:'bad.txt',mimeType:'text/plain',buffer:Buffer.from('not an image')});
-  assert.ok(await page.locator('.notice.error').count()>0);
+  await page.locator('#workspace-error').waitFor({state:'visible'});
+  await page.locator('#workspace-error button').click();
   // Deliberately simulated HTTP failure; never counted as a real AI/API result.
   await page.route('**/api/contour',route=>route.fulfill({status:504,contentType:'application/json',body:JSON.stringify({error:'PROCESSING_TIMEOUT',code:'PROCESSING_TIMEOUT'})}),{times:1});
   await page.locator('#file-input').setInputFiles(process.env.TEST_IMAGE||'/Users/eldiiarzhaichybekov/Downloads/download.png');
   await page.waitForFunction(()=>document.querySelector('#step-state-1').textContent==='Ошибка');
+  await page.locator('#workspace-error button').click();
   assert.equal(await page.locator('#result-tiles').isDisabled(),true);
   await page.locator('#retry-processing').click();
   await page.waitForFunction(()=>document.querySelector('#step-state-1').textContent==='Готово',null,{timeout:60000});
   assert.equal(await page.locator('#result-tiles').isDisabled(),false);
   await page.locator('#file-input').setInputFiles({name:'large.png',mimeType:'image/png',buffer:Buffer.alloc(3*1024*1024+1)});
-  assert.ok(await page.locator('.notice.error').count()>0);
-  assert.deepEqual(errors,[]);console.log('PASS upload → R1 → R2 → mixed fallback → editor → mounting → SVG/JPG/CSV; 6 widths; RU/EN/ZH; zero page errors');
+  await page.locator('#workspace-error').waitFor({state:'visible'});
+  assert.deepEqual(errors,[]);console.log('PASS upload → R1 → R2 → mixed fallback → mounting → SVG/JPG/CSV; hidden editor; 6 widths; RU/EN/ZH; zero page errors');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

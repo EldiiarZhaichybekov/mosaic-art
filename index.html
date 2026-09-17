@@ -211,6 +211,7 @@
   @media(max-width:920px) {#optimized-canvas {max-height:none;} #result-controls .tile-tabs button {font-size:12px;}}
 </style>
 <link rel="stylesheet" href="workspace.css">
+<link rel="stylesheet" href="workspace-refinement.css">
 </head>
 <body>
 <div id="app">
@@ -372,6 +373,7 @@
 <script src="optimized-ui.js"></script>
 <script src="workspace-i18n.js"></script>
 <script src="workspace.js"></script>
+<script src="workspace-refinement.js"></script>
 <script>
 "use strict";
 /* ============================================================================
@@ -2140,6 +2142,7 @@ function initUI() {
   // One notification service for upload, processing, export and validation.
   // Error notices remain until closed; transient states remove themselves.
   function notify(message, type = "info", duration) {
+    if(type === 'error' && globalThis.WorkspaceDialogs){globalThis.WorkspaceDialogs.error(message);return;}
     const host = document.getElementById("notifications");
     if (!host || !message) return;
     while (host.children.length >= 4) host.firstElementChild.remove();
@@ -2607,6 +2610,7 @@ function initUI() {
   run();
 
   globalThis.WorkspaceUI?.create({t,handleFile});
+  globalThis.WorkspaceRefinement?.create({t,presets:PRESETS});
 }
 
 

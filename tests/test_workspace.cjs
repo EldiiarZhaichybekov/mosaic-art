@@ -1,12 +1,16 @@
 'use strict';
 const fs=require('node:fs'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 require('../workspace-i18n');
+require('../workspace-refinement');
 const messages=globalThis.WorkspaceMessages;
 assert.deepEqual(Object.keys(messages.ru).sort(),Object.keys(messages.en).sort());
 assert.deepEqual(Object.keys(messages.ru).sort(),Object.keys(messages.zh).sort());
 const js=fs.readFileSync('workspace.js','utf8');
 for(const [,key]of js.matchAll(/\b(?:text|tr)\('([^']+)'\)/g))for(const lang of ['ru','en','zh'])assert.ok(messages[lang]['ws.'+key],lang+':'+key);
-for(const file of ['workspace.js','workspace-i18n.js','tile-ui.js','optimized-ui.js'])new Function(fs.readFileSync(file,'utf8'));
+for(const file of ['workspace.js','workspace-i18n.js','workspace-refinement.js','tile-ui.js','optimized-ui.js'])new Function(fs.readFileSync(file,'utf8'));
+const refinement=fs.readFileSync('workspace-refinement.js','utf8');
+for(const [,key]of refinement.matchAll(/\btr\('([^']+)'\)/g))for(const lang of ['ru','en','zh'])assert.ok(messages[lang]['ux.'+key],lang+':'+key);
+assert.ok(!refinement.includes('fetch(')&&!refinement.includes('new Worker('));
 assert.ok(!js.includes('fetch('),'workspace must not call processing APIs independently');
 assert.ok(!js.includes('new Worker('),'workspace must not duplicate workers');
 for(const [file,hash]of Object.entries({

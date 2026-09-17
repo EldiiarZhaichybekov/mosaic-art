@@ -49,7 +49,7 @@
     }
     function thumbnail(src,dest){if(!src?.width||!src?.height)return;const c=dest.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,dest.width,dest.height);const scale=Math.min((dest.width-16)/src.width,(dest.height-16)/src.height);c.drawImage(src,(dest.width-src.width*scale)/2,(dest.height-src.height*scale)/2,src.width*scale,src.height*scale);}
     function refresh(){
-      document.documentElement.lang=$('lang').value;document.title='Prismosaic — '+tr(sourceView?'source':empty?'newProject':active===3?'physical':active===2?'optimized':'detailed');
+      document.documentElement.lang=$('lang').value;document.title='Prismosaic';
       document.body.classList.toggle('workspace-empty',empty);document.body.classList.toggle('source-view',sourceView);original.hidden=!sourceView;
       recovery.hidden=!states[1].failed||states[1].pending||active!==1;
       $('workspace-heading').textContent=tr(empty?'newProject':sourceView?'source':active===3?'physical':active===2?'optimized':states[1].ready?'detailed':'preset');
@@ -85,13 +85,17 @@
     $('retry-processing').onclick=()=>$('btn-gen').click();
     $('preset').addEventListener('change',()=>{if($('preset').value!=='custom')update({id:'preset'});});
     $('mobile-properties').onclick=()=>properties(!document.body.classList.contains('properties-open'));$('properties-close').onclick=()=>properties(false);
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('properties-open'))properties(false);});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]')&&document.body.classList.contains('properties-open'))properties(false);});
     $('view-in').onclick=()=>{zoom=Math.min(3,zoom+.25);frame();};$('view-out').onclick=()=>{zoom=Math.max(.5,zoom-.25);frame();};$('view-fit').onclick=()=>{zoom=1;frame();viewport.scrollTo(0,0);};$('view-grid').onclick=()=>{grid=!grid;frame();};
     viewport.addEventListener('dragover',e=>{e.preventDefault();});viewport.addEventListener('drop',e=>{e.preventDefault();if(e.target.closest('#drop'))return;if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
     new ResizeObserver(()=>frame()).observe(viewport);
     $('lang').addEventListener('change',refresh);
     // Do not expose hidden algorithm diagnostics just because hybrid is enabled.
     if(new URLSearchParams(location.search).get('debug')!=='1'&&$('tile-debug'))$('tile-debug').hidden=true;
+    // Hide entry points, preserving the underlying editor implementation.
+    $('nav-editor').hidden=true;$('nav-export').hidden=true;
+    $('tile-edit').hidden=true;
+    $('tile-edit').addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();},true);
     refresh();
     return {refresh,update};
   }
