@@ -39,7 +39,28 @@
     function renderCards(){cards.replaceChildren();const query=search.value.trim().toLocaleLowerCase();for(const option of select.options){if(category!=='all'&&categoryMap[option.value]!==category)continue;if(!option.textContent.toLocaleLowerCase().includes(query))continue;const card=button('',()=>{chosen=option.value;renderCards();cards.querySelector(`[data-value="${chosen}"]`)?.focus();});card.className='silhouette-card';card.dataset.value=option.value;card.disabled=option.disabled;card.setAttribute('aria-pressed',String(chosen===option.value));const cv=make('canvas');cv.setAttribute('aria-hidden','true');drawPreview(cv,option.value);card.append(cv,make('span','',option.textContent));if(option.disabled)card.append(make('small','',tr('uploadFirst')));cards.append(card);}if(!cards.children.length)cards.append(make('p','',tr('none')));confirm.disabled=!Array.from(select.options).some(o=>o.value===chosen&&!o.disabled);categories.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.category===category)));}
     for(const key of ['all','animals','birds','symbols','nature','transport','other','uploaded']){const b=button(tr(key),()=>{category=key;renderCards();});b.dataset.category=key;categories.append(b);}
     search.oninput=renderCards;
-    function openLibrary(){chosen=select.value;category='all';search.value='';renderCards();library.showModal();search.focus();}
+    // Presentation lifecycle only: iOS keyboard changes the visual, not layout, viewport.
+    const mobileLibrary=matchMedia('(max-width:600px)'),libraryTitle=library.querySelector('h2');
+    libraryTitle.tabIndex=-1;
+    let scrollLock=null,viewportFrame=0;
+    function releaseScroll(){if(!scrollLock)return;const saved=scrollLock;scrollLock=null;for(const [key,value]of Object.entries(saved.styles))document.body.style[key]=value;window.scrollTo(saved.x,saved.y);}
+    function syncLibraryViewport(){
+      viewportFrame=0;
+      if(!library.open||!mobileLibrary.matches){library.style.removeProperty('--library-height');library.style.removeProperty('--library-top');releaseScroll();return;}
+      if(!scrollLock){const keys=['position','top','left','width','overflow'];scrollLock={x:scrollX,y:scrollY,styles:Object.fromEntries(keys.map(k=>[k,document.body.style[k]]))};Object.assign(document.body.style,{position:'fixed',top:-scrollLock.y+'px',left:'0',width:'100%',overflow:'hidden'});}
+      const viewport=window.visualViewport;
+      // Never counteract intentional pinch zoom or scale the user's content.
+      if(viewport&&Math.abs(viewport.scale-1)<.01){library.style.setProperty('--library-height',viewport.height+'px');library.style.setProperty('--library-top',viewport.offsetTop+'px');}
+    }
+    function queueViewport(){if(!viewportFrame)viewportFrame=requestAnimationFrame(syncLibraryViewport);}
+    function stopLibraryViewport(){if(library.open)return;cancelAnimationFrame(viewportFrame);viewportFrame=0;window.visualViewport?.removeEventListener('resize',queueViewport);window.visualViewport?.removeEventListener('scroll',queueViewport);window.removeEventListener('resize',queueViewport);syncLibraryViewport();}
+    library.addEventListener('close',stopLibraryViewport);
+    function openLibrary(){chosen=select.value;category='all';search.value='';renderCards();
+      // Focus the heading on phones: opening the library must not summon a keyboard.
+      libraryTitle.toggleAttribute('autofocus',mobileLibrary.matches);library.showModal();syncLibraryViewport();
+      window.visualViewport?.addEventListener('resize',queueViewport);window.visualViewport?.addEventListener('scroll',queueViewport);window.addEventListener('resize',queueViewport);
+      (mobileLibrary.matches?libraryTitle:search).focus({preventScroll:true});
+    }
     function syncControls(){for(const {select,group}of groups){group.setAttribute('aria-label',t('tile.canvas'));for(const b of group.children){b.textContent=t(b.dataset.value==='40x40'?'tile.size40':'tile.size30');b.setAttribute('aria-pressed',String(select.value===b.dataset.value));b.disabled=select.disabled;}}field.textContent=(select.selectedOptions[0]?.textContent||tr('select'))+' ›';}
     $('start-presets').addEventListener('click',()=>field.click());
     select.addEventListener('change',syncControls);

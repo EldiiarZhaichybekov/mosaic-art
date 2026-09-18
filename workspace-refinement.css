@@ -53,15 +53,20 @@
 .silhouette-card[aria-pressed=true]{outline:2px solid #222;outline-offset:0;background:#f0f0f0}
 .silhouette-card small{font-size:10px;line-height:1.4}
 .workspace-dialog footer{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #ddd;margin-top:20px;padding-top:18px}
-@media(max-width:600px){#silhouette-library{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;box-sizing:border-box;border:0;border-radius:0;padding:20px;margin:0}.library-body{display:flex;flex-direction:column;gap:12px}.library-categories{flex-direction:row;flex-wrap:wrap;gap:4px}.library-categories button{font-size:12px;padding:6px 10px}.library-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:45dvh}.workspace-dialog h2{font-size:18px}.workspace-dialog footer{position:sticky;bottom:0;background:white}}
 @media(prefers-reduced-motion:reduce){.processing-spinner{animation:none}}
-/* Mobile sheet: only cards scroll; the footer consumes its own safe-area space. */
+/* Mobile sheet: explicit bounds, no desktop centering or capped card height. */
 @media(max-width:600px){
- #silhouette-library{height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;overflow:hidden;padding:20px 20px 0}
+ html:has(#silhouette-library[open]){overflow:hidden;overscroll-behavior:none}
+ #silhouette-library{position:fixed;inset:0;top:var(--library-top,0px);bottom:auto;width:100%;max-width:100%;min-width:0;height:100vh;height:var(--library-height,100dvh);max-height:none;margin:0;transform:none;box-sizing:border-box;border:0;border-radius:0;overflow:hidden;padding:20px 20px 0}
+ #silhouette-library *{box-sizing:border-box;min-width:0;max-width:100%}
  #silhouette-library[open]{display:flex;flex-direction:column}
+ #silhouette-library>h2{font-size:18px}
+ #silhouette-library>h2:focus-visible{outline:2px solid #777;outline-offset:3px}
+ #silhouette-library :is(input,select,textarea){font-size:16px}
  #silhouette-library>h2,#silhouette-library>#silhouette-search{flex:0 0 auto}
- #silhouette-library .library-body{flex:1 1 auto;min-height:0;overflow:hidden}
- #silhouette-library .library-categories{flex:0 0 auto}
- #silhouette-library .library-grid{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ #silhouette-library .library-body{display:flex;flex-direction:column;gap:12px;flex:1 1 auto;min-height:0;overflow:hidden}
+ #silhouette-library .library-categories{flex:0 0 auto;flex-direction:row;flex-wrap:wrap;width:100%;gap:4px;padding:3px}
+ #silhouette-library .library-categories button{flex:0 0 auto;font-size:12px;padding:6px 10px}
+ #silhouette-library .library-grid{grid-template-columns:repeat(2,minmax(0,1fr));flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
  #silhouette-library>footer{position:static;flex:0 0 auto;margin-top:12px;padding:16px 0 max(16px,env(safe-area-inset-bottom));background:white}
 }

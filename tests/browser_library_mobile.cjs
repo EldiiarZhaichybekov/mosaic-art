@@ -5,6 +5,7 @@ const {chromium,webkit}=require('playwright'),assert=require('node:assert/strict
  await page.goto((process.env.BASE_URL||'http://127.0.0.1:8091')+'/?lang=ru');await page.locator('#start-presets').click();
  for(const [width,height]of [[390,844],[430,932],[375,812],[360,800],[390,650],[390,844],[1440,1000]]){
   await page.setViewportSize({width,height});
+  if(width<=600)await page.waitForFunction(()=>Math.abs(document.querySelector('#silhouette-library').getBoundingClientRect().height-visualViewport.height)<2);
   const data=await page.evaluate(()=>{const d=document.querySelector('#silhouette-library'),g=d.querySelector('.library-grid'),f=d.querySelector('footer');g.scrollTop=0;return {dialog:d.getBoundingClientRect().toJSON(),grid:g.getBoundingClientRect().toJSON(),footer:f.getBoundingClientRect().toJSON(),scroll:d.scrollHeight,client:d.clientHeight,overflow:document.documentElement.scrollWidth>innerWidth};});
   assert.ok(!data.overflow);if(width<=600){assert.ok(Math.abs(data.dialog.height-height)<2);assert.ok(Math.abs(data.footer.bottom-data.dialog.bottom)<2);assert.ok(data.scroll<=data.client+1);assert.ok(data.grid.bottom<=data.footer.top);assert.ok(data.grid.height>height*.25);}
   await page.locator('.library-grid').evaluate(e=>e.scrollTop=e.scrollHeight);
