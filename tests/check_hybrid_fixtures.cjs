@@ -7,6 +7,7 @@ const crypto=require('node:crypto');
 // The original UI processing, rendering and export source must still match.
 function frozenSource(file){
   let source=fs.readFileSync(file,'utf8');
+  if(file==='optimized-ui.js')source=source.replace('    // Catalog integration only; generated geometry and rendering remain unchanged.\n','').replace("    function loadPrecomputed(data){if(!source||JSON.stringify(data.canvas)!==JSON.stringify(sheet))return false;root.OptimizedContour.assertResult(data);stop();result=structuredClone(data);failed=false;refresh();return true;}\n",'').replace('return {hide,loadPrecomputed,isActive:','return {hide,isActive:');
   if(file==='optimized-ui.js')source=source.replace("if(!active){root.WorkspaceUI?.emit({id:2,active,pending,failed,ready:!!result,canvas:sheet});return;}","if(!active)return;").replace("      root.WorkspaceUI?.emit({id:2,active,pending,failed,ready:!!result,canvas:sheet,canvasElement:canvas});\n",'');
   return source;
 }

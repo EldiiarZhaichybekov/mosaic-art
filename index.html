@@ -373,6 +373,8 @@
 <script src="optimized-ui.js"></script>
 <script src="workspace-i18n.js"></script>
 <script src="workspace.js"></script>
+<script src="asset-library.js"></script>
+<script src="asset-library-ui.js"></script>
 <script src="workspace-refinement.js"></script>
 <script>
 "use strict";
@@ -2491,7 +2493,7 @@ function initUI() {
     run();
   };
 
-  const handleFile = file => {
+  const handleFile = (file, prepared = null) => {
     const uploadGeneration = ++contourGeneration;
     if (!file || !/^image\/(png|jpeg|webp)$/i.test(file.type)) { notifyKey("msg.noImage", "error"); return; }
     if (file.size > MAX_CONTOUR_UPLOAD_BYTES) { notifyKey("msg.imageTooLarge", "error"); return; }
@@ -2515,6 +2517,15 @@ function initUI() {
       globalThis.WorkspaceUI?.emit({id:'source',image:img,name:file.name});
       state.uploaded = true;
       const [cw, ch] = CANVAS_SIZES[el.canvasFmt.value] || CANVAS_SIZES["40x40"];
+      // Optional catalog cache, already validated against source bytes and processing version.
+      if (prepared && prepared.canvas[0] === cw && prepared.canvas[1] === ch) {
+        showServerContour(structuredClone(prepared.result1), cw, ch, img);
+        if (prepared.result2) optimizedUI?.loadPrecomputed(prepared.result2);
+        el.preset.querySelector('[value="custom"]').disabled = false;
+        el.preset.value = "custom";
+        URL.revokeObjectURL(url);
+        return;
+      }
       requestServerContour(cw, ch, img).then(ok => {
         // Image remains decoded after its object URL is released.
         URL.revokeObjectURL(url);
@@ -2610,7 +2621,27 @@ function initUI() {
   run();
 
   globalThis.WorkspaceUI?.create({t,handleFile});
-  globalThis.WorkspaceRefinement?.create({t,presets:PRESETS});
+  globalThis.WorkspaceRefinement?.create({t,onLibraryAsset:async asset => {
+    if (asset.id === 'custom' || (asset.presetId && PRESETS[asset.presetId])) {
+      el.preset.value = asset.presetId || 'custom';
+      el.preset.dispatchEvent(new Event('change', {bubbles:true}));
+      return;
+    }
+    globalThis.WorkspaceUI?.emit({id:'library',pending:true});
+    try {
+      const source = await globalThis.AssetLibrary.loadSource(asset, CANVAS_SIZES[el.canvasFmt.value] || [400,400]);
+      if (asset.type === 'photo') handleFile(source.file, source.prepared);
+      else {
+        ++contourGeneration; state.uploaded = false; state.uploadedImg = null;
+        setShape(source.polys, asset.id); run();
+        let option = Array.from(el.preset.options).find(o => o.value === asset.id);
+        if (!option) { option = document.createElement('option'); option.value = asset.id; el.preset.append(option); }
+        option.textContent = globalThis.AssetLibrary.localized(asset.title, document.documentElement.lang);
+        el.preset.value = asset.id;
+        globalThis.WorkspaceUI?.emit({id:'preset'});
+      }
+    } finally { globalThis.WorkspaceUI?.emit({id:'library',pending:false}); }
+  }});
 }
 
 

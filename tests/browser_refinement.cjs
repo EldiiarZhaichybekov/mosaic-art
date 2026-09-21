@@ -5,9 +5,9 @@ try{
  await page.goto((process.env.BASE_URL||'http://127.0.0.1:8091')+'/?lang=ru');
  await page.locator('#silhouette-picker').waitFor({state:'attached'});assert.equal(await page.title(),'Prismosaic');
  assert.equal(await page.locator('#nav-editor').isVisible(),false);assert.equal(await page.locator('#nav-export').isVisible(),false);
- await page.locator('#start-presets').click();await page.locator('#silhouette-library').waitFor({state:'visible'});
+ await page.locator('#start-presets').click();await page.waitForFunction(()=>document.querySelectorAll('.silhouette-card').length===15);await page.locator('#silhouette-library').waitFor({state:'visible'});
  assert.equal(await page.locator('.silhouette-card').count(),15);
- await page.locator('#silhouette-search').fill('Волк');assert.equal(await page.locator('.silhouette-card').count(),1);
+ await page.locator('#silhouette-search').fill('Волк');await page.waitForFunction(()=>document.querySelectorAll('.silhouette-card').length===1);assert.equal(await page.locator('.silhouette-card').count(),1);
  await page.locator('.silhouette-card').click();await page.locator('#silhouette-library footer button').last().click();
  assert.equal(await page.locator('#preset').inputValue(),'wolf');
  for(const width of [1440,1280,1024,768,430,390]){

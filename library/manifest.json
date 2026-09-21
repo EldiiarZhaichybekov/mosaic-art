@@ -1,0 +1,421 @@
+{
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "id": "animals",
+      "title": {
+        "ru": "Животные",
+        "en": "Animals",
+        "zh": "动物"
+      }
+    },
+    {
+      "id": "birds",
+      "title": {
+        "ru": "Птицы",
+        "en": "Birds",
+        "zh": "鸟类"
+      }
+    },
+    {
+      "id": "marine",
+      "title": {
+        "ru": "Морской мир",
+        "en": "Marine",
+        "zh": "海洋"
+      }
+    },
+    {
+      "id": "insects",
+      "title": {
+        "ru": "Насекомые",
+        "en": "Insects",
+        "zh": "昆虫"
+      }
+    },
+    {
+      "id": "nature",
+      "title": {
+        "ru": "Природа",
+        "en": "Nature",
+        "zh": "自然"
+      }
+    },
+    {
+      "id": "flowers",
+      "title": {
+        "ru": "Цветы",
+        "en": "Flowers",
+        "zh": "花卉"
+      }
+    },
+    {
+      "id": "transport",
+      "title": {
+        "ru": "Транспорт",
+        "en": "Transport",
+        "zh": "交通"
+      }
+    },
+    {
+      "id": "architecture",
+      "title": {
+        "ru": "Архитектура",
+        "en": "Architecture",
+        "zh": "建筑"
+      }
+    },
+    {
+      "id": "symbols",
+      "title": {
+        "ru": "Символы",
+        "en": "Symbols",
+        "zh": "符号"
+      }
+    },
+    {
+      "id": "objects",
+      "title": {
+        "ru": "Предметы",
+        "en": "Objects",
+        "zh": "物品"
+      }
+    },
+    {
+      "id": "holidays",
+      "title": {
+        "ru": "Праздники",
+        "en": "Holidays",
+        "zh": "节日"
+      }
+    },
+    {
+      "id": "other",
+      "title": {
+        "ru": "Другое",
+        "en": "Other",
+        "zh": "其他"
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "butterfly",
+      "type": "silhouette",
+      "presetId": "butterfly",
+      "title": {
+        "ru": "Бабочка (острые крылья)",
+        "en": "Butterfly (sharp wings)",
+        "zh": "蝴蝶（尖翼）"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "butterfly"
+      ],
+      "thumbnailUrl": "/library/silhouettes/butterfly/thumb.svg",
+      "sourceUrl": "/library/silhouettes/butterfly/source.json",
+      "sortOrder": 0,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "wolf",
+      "type": "silhouette",
+      "presetId": "wolf",
+      "title": {
+        "ru": "Волк (профиль)",
+        "en": "Wolf (profile)",
+        "zh": "狼（侧面）"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "wolf"
+      ],
+      "thumbnailUrl": "/library/silhouettes/wolf/thumb.svg",
+      "sourceUrl": "/library/silhouettes/wolf/source.json",
+      "sortOrder": 1,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "star",
+      "type": "silhouette",
+      "presetId": "star",
+      "title": {
+        "ru": "Звезда",
+        "en": "Star",
+        "zh": "星形"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "star"
+      ],
+      "thumbnailUrl": "/library/silhouettes/star/thumb.svg",
+      "sourceUrl": "/library/silhouettes/star/source.json",
+      "sortOrder": 2,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "heart",
+      "type": "silhouette",
+      "presetId": "heart",
+      "title": {
+        "ru": "Сердце",
+        "en": "Heart",
+        "zh": "心形"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "heart"
+      ],
+      "thumbnailUrl": "/library/silhouettes/heart/thumb.svg",
+      "sourceUrl": "/library/silhouettes/heart/source.json",
+      "sortOrder": 3,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "bird",
+      "type": "silhouette",
+      "presetId": "bird",
+      "title": {
+        "ru": "Птица (в полёте)",
+        "en": "Bird (flying)",
+        "zh": "飞鸟"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "bird"
+      ],
+      "thumbnailUrl": "/library/silhouettes/bird/thumb.svg",
+      "sourceUrl": "/library/silhouettes/bird/source.json",
+      "sortOrder": 4,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "cat",
+      "type": "silhouette",
+      "presetId": "cat",
+      "title": {
+        "ru": "Кот (голова)",
+        "en": "Cat (head)",
+        "zh": "猫（头）"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "cat"
+      ],
+      "thumbnailUrl": "/library/silhouettes/cat/thumb.svg",
+      "sourceUrl": "/library/silhouettes/cat/source.json",
+      "sortOrder": 5,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "fish",
+      "type": "silhouette",
+      "presetId": "fish",
+      "title": {
+        "ru": "Рыба",
+        "en": "Fish",
+        "zh": "鱼"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "fish"
+      ],
+      "thumbnailUrl": "/library/silhouettes/fish/thumb.svg",
+      "sourceUrl": "/library/silhouettes/fish/source.json",
+      "sortOrder": 6,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "tree",
+      "type": "silhouette",
+      "presetId": "tree",
+      "title": {
+        "ru": "Ель",
+        "en": "Spruce tree",
+        "zh": "云杉树"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "tree"
+      ],
+      "thumbnailUrl": "/library/silhouettes/tree/thumb.svg",
+      "sourceUrl": "/library/silhouettes/tree/source.json",
+      "sortOrder": 7,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "rocket",
+      "type": "silhouette",
+      "presetId": "rocket",
+      "title": {
+        "ru": "Ракета",
+        "en": "Rocket",
+        "zh": "火箭"
+      },
+      "categoryId": "transport",
+      "tags": [
+        "rocket"
+      ],
+      "thumbnailUrl": "/library/silhouettes/rocket/thumb.svg",
+      "sourceUrl": "/library/silhouettes/rocket/source.json",
+      "sortOrder": 8,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "crown",
+      "type": "silhouette",
+      "presetId": "crown",
+      "title": {
+        "ru": "Корона",
+        "en": "Crown",
+        "zh": "皇冠"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "crown"
+      ],
+      "thumbnailUrl": "/library/silhouettes/crown/thumb.svg",
+      "sourceUrl": "/library/silhouettes/crown/source.json",
+      "sortOrder": 9,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "moon",
+      "type": "silhouette",
+      "presetId": "moon",
+      "title": {
+        "ru": "Месяц",
+        "en": "Crescent moon",
+        "zh": "新月"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "moon"
+      ],
+      "thumbnailUrl": "/library/silhouettes/moon/thumb.svg",
+      "sourceUrl": "/library/silhouettes/moon/source.json",
+      "sortOrder": 10,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "flower",
+      "type": "silhouette",
+      "presetId": "flower",
+      "title": {
+        "ru": "Цветок",
+        "en": "Flower",
+        "zh": "花"
+      },
+      "categoryId": "flowers",
+      "tags": [
+        "flower"
+      ],
+      "thumbnailUrl": "/library/silhouettes/flower/thumb.svg",
+      "sourceUrl": "/library/silhouettes/flower/source.json",
+      "sortOrder": 11,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "house",
+      "type": "silhouette",
+      "presetId": "house",
+      "title": {
+        "ru": "Дом",
+        "en": "House",
+        "zh": "房子"
+      },
+      "categoryId": "architecture",
+      "tags": [
+        "house"
+      ],
+      "thumbnailUrl": "/library/silhouettes/house/thumb.svg",
+      "sourceUrl": "/library/silhouettes/house/source.json",
+      "sortOrder": 12,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "dragonfly",
+      "type": "silhouette",
+      "presetId": "dragonfly",
+      "title": {
+        "ru": "Стрекоза",
+        "en": "Dragonfly",
+        "zh": "蜻蜓"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "dragonfly"
+      ],
+      "thumbnailUrl": "/library/silhouettes/dragonfly/thumb.svg",
+      "sourceUrl": "/library/silhouettes/dragonfly/source.json",
+      "sortOrder": 13,
+      "sourceName": "Existing Prismosaic preset"
+    },
+    {
+      "id": "apple",
+      "type": "photo",
+      "title": {
+        "en": "Red apple",
+        "ru": "Красное яблоко",
+        "zh": "红苹果"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "apple",
+        "fruit",
+        "яблоко",
+        "фрукт",
+        "苹果",
+        "水果"
+      ],
+      "thumbnailUrl": "/library/photos/apple/thumb.webp",
+      "sourceUrl": "/library/photos/apple/source.jpg",
+      "featured": false,
+      "sortOrder": 0,
+      "recommendedCanvas": "40x40",
+      "difficulty": "hard",
+      "conversionQuality": "difficult",
+      "sourceName": "Wikimedia Commons — Red apple on white background.jpg",
+      "author": "Sprinno",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Red_apple_on_white_background.jpg",
+      "precomputed": {
+        "url": "/library/photos/apple/precomputed.json"
+      }
+    },
+    {
+      "id": "egg",
+      "type": "photo",
+      "title": {
+        "ru": "Яйцо на белом фоне",
+        "en": "Egg on white",
+        "zh": "白色背景上的鸡蛋"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "egg",
+        "object",
+        "яйцо",
+        "предмет",
+        "鸡蛋",
+        "物体"
+      ],
+      "thumbnailUrl": "/library/photos/egg/thumb.webp",
+      "sourceUrl": "/library/photos/egg/source.jpg",
+      "featured": true,
+      "sortOrder": 0,
+      "recommendedCanvas": "40x40",
+      "difficulty": "medium",
+      "conversionQuality": "difficult",
+      "sourceName": "Wikimedia Commons — Egg on white background.jpg",
+      "author": "Paolo Neo",
+      "license": "Public domain (PD-author)",
+      "licenseUrl": "https://commons.wikimedia.org/wiki/File:Egg_on_white_background.jpg#Licensing",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Egg_on_white_background.jpg",
+      "precomputed": {
+        "url": "/library/photos/egg/precomputed.json"
+      }
+    }
+  ]
+}
