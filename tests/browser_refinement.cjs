@@ -17,7 +17,7 @@ try{
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'page overflow '+width);
   assert.ok(await page.locator('#silhouette-library').evaluate(e=>e.scrollWidth<=e.clientWidth),'modal overflow '+width);
   await page.screenshot({path:`/private/tmp/prismosaic-library-${width}.png`});await page.keyboard.press('Escape');
-  if(width<=900)await page.locator('#properties-close').click();
+  if(width<=900&&await page.locator('#properties-close').isVisible())await page.locator('#properties-close').click();
  }
  await page.setViewportSize({width:1440,height:1000});
  const image=process.env.TEST_IMAGE;if(!image)throw new Error('TEST_IMAGE required: use synthetic fixture for production');
