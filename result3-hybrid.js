@@ -37,7 +37,11 @@ function target(plan,context){
     const points=input.map(([x,y])=>[31+x*(w-62),31+y*(h-62)]);
     return {...r,role:r.role==='outer'?'outer':r.role==='characteristic'?'characteristic':'skeleton',points};});
 }
-function physical(layout){return T.validate(layout,{continuity:false});}
+function physical(layout){
+  const checked=T.validate(layout),errors=[...checked.errors];
+  for(const [routeId,coverage]of Object.entries(layout.routeCoverage||{}))if((coverage.gapsOver2mm||0)>0)errors.push('ROUTE_GAP:'+routeId);
+  return {valid:errors.length===0,errors:[...new Set(errors)]};
+}
 function follow(routes,canvas,budget=150,fixed=[]){return T.followMixed(routes,canvas,budget,fixed);}
 function repair(layout,qa,budget){
   const affected=new Set(qa.repairs.map(r=>r.routeId));
@@ -49,11 +53,11 @@ function repair(layout,qa,budget){
 function exportSVG(layout){return T.exportSVG(layout);}
 async function run({context,images,request,fallback}){
   const started=Date.now();let plan,layout;
-  try{const p=await request('plan',{context,images});plan=validatePlan(p.value,context);const targetStart=Date.now(),routes=target(plan,context),targetMs=Date.now()-targetStart;layout=follow(routes,context.canvas,plan.complexityBudget);const initial=JSON.parse(JSON.stringify(layout)),planCalls=p.planning_attempts||1,base={initial,plan,planning_attempts:planCalls,contract:p.contract,validationHistory:p.validationHistory};
+  try{const p=await request('plan',{context,images});plan=validatePlan(p.value,context);const targetStart=Date.now(),routes=target(plan,context),targetMs=Date.now()-targetStart;layout=follow(routes,context.canvas,plan.complexityBudget);if(!physical(layout).valid)throw Object.assign(Error('AI_GEOMETRY_INVALID'),{code:'AI_GEOMETRY_INVALID'});const initial=JSON.parse(JSON.stringify(layout)),planCalls=p.planning_attempts||1,base={initial,plan,planning_attempts:planCalls,contract:p.contract,validationHistory:p.validationHistory};
     const qaStart=Date.now();let q,qa;
     try{const review=await images.review(layout);q=await request('qa',{context,plan,inventoryUsage:((u)=>({largeUsed:u.largeUsed,smallUsed:u.smallUsed,totalUsed:u.totalUsed}))(T.inventory(layout.tiles)),images:{source:images.source,result2:images.result2,review}});qa=validateQA(q.value,plan);}
     catch(error){layout.visualStatus='AI_QA_INVALID';return {layout,...base,qa:null,calls:2,providerCalls:planCalls+1,repairs:0,errorCode:error.code||error.message,contractFailure:error.contractFailure||{code:error.code||error.message,issues:error.issues,diagnostics:error.diagnostics},timings:{...initial.timings,targetMs,planningMs:p.durationMs,qaMs:Date.now()-qaStart,totalMs:Date.now()-started}};}
-    layout.visualStatus=qa.accept?'AI_ACCEPTED':'AI_REJECTED';const repairStart=Date.now();if(!qa.accept&&qa.repairs.length)layout=repair(layout,qa,plan.complexityBudget);
+    layout.visualStatus=qa.accept?'AI_ACCEPTED':'AI_REJECTED';const repairStart=Date.now();if(!qa.accept&&qa.repairs.length)layout=repair(layout,qa,plan.complexityBudget);if(!physical(layout).valid)throw Object.assign(Error('AI_REPAIR_INVALID'),{code:'AI_REPAIR_INVALID'});
     return {layout,...base,qa,calls:2,providerCalls:planCalls+(q.planning_attempts||1),repairs:!qa.accept&&qa.repairs.length?1:0,timings:{...initial.timings,targetMs,repairMs:Date.now()-repairStart,planningMs:p.durationMs,qaMs:q.durationMs,totalMs:Date.now()-started}};
   }catch(error){const safe=await fallback();if(!physical(safe).valid||safe.status!=='ok')throw Error('FALLBACK_FAILED');return {layout:{...safe,mode:'DETERMINISTIC_FALLBACK',visualStatus:'UNREVIEWED'},errorCode:error.code||error.message,contractFailure:error.contractFailure,timings:{totalMs:Date.now()-started}};}
 }
