@@ -8,13 +8,14 @@ function render(paths,canvas,layout,labels=false){
 }
 self.onmessage=async({data})=>{
   const {id,source,options,sourceImage,sourceCanvas,requestId}=data,started=performance.now();
-  const fallback=()=>TileLayout.generate(source,options);
+  let optimizedSource=null;
+  const fallback=()=>TileLayout.generate(source,{...options,optimizedSource});
   try{
     let canvas=options.format==='40x40'?[400,400]:options.orientation==='landscape'?[400,300]:[300,400];
     if(options.format==='30x40'&&options.orientation==='auto'){
       const x=source.contour.map(p=>p[0]),y=source.contour.map(p=>p[1]);if(Math.max(...x)-Math.min(...x)>Math.max(...y)-Math.min(...y))canvas=[400,300];
     }
-    const optimized=OptimizedContour.generate(source,{canvas:sourceCanvas}),context=Result3Hybrid.prepare(source,optimized,canvas);
+    const optimized=OptimizedContour.generate(source,{canvas:sourceCanvas});optimizedSource=OptimizedContour.asPhysicalInput(optimized);const context=Result3Hybrid.prepare(source,optimized,canvas);
     const r2=await render(optimized.paths,sourceCanvas),map=await render(context.paths.map(p=>({...p,points:p.points.map(q=>q.map((v,i)=>v*canvas[i]))})),canvas,null,true),prepareMs=performance.now()-started;
     const request=async(phase,payload)=>{
       self.postMessage({id,progress:phase});let response;

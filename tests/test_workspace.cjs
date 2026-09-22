@@ -14,11 +14,11 @@ assert.ok(!refinement.includes('fetch(')&&!refinement.includes('new Worker('));
 assert.ok(!js.includes('fetch('),'workspace must not call processing APIs independently');
 assert.ok(!js.includes('new Worker('),'workspace must not duplicate workers');
 for(const [file,hash]of Object.entries({
- 'tile-layout.js':'1f9312aef3428dc26e7d1fe88dfa3adf9836b6768ffd72c8c443dbff82338ca7',
+ 'tile-layout.js':'7776f4fa14c7b38250b1e28f96d099b1955157f64b9b1f8a08a74fde516c13b5',
  'result3-hybrid.js':'75899ff3f068340eed92da8944236a922a7f6849bb2c7b12263ed2a2f2442a2f',
  'result3-contract.js':'8f2e6e4e4d813410b1c2101cdee10576406fe2ccbdf0035f7936417b8114e7c6',
  'server/deepseek-config.cjs':'4dd469e3e0b5a974cd9d960ef257e9447f05cb6e9d37bc41790ca2754fbb0f1e',
  'server/deepseek-client.cjs':'4d431c3ad49667fb4b0c40e71c01aa7bdb0b3c01192ad3e415c55130698bd71f',
  'server/result3-prompts.cjs':'a0cc8e534819b92dcafb1719a1985d0dec48e758ae0f8813275ead266aad253e'
-}))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),hash,file+' changed in UI-only redesign');
-console.log('PASS workspace syntax, RU/EN/ZH, no duplicate computation, frozen Result 3 solver/hybrid/DeepSeek');
+}))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),hash,file+' changed outside the authorized Result 3 guarantee');
+console.log('PASS workspace syntax, RU/EN/ZH, no duplicate computation, authorized Result 3 solver and frozen hybrid/DeepSeek');

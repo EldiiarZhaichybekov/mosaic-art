@@ -418,6 +418,418 @@
       "sourceName": "Existing Prismosaic preset"
     },
     {
+      "id": "anchor",
+      "type": "silhouette",
+      "title": {
+        "ru": "Якорь",
+        "en": "Anchor",
+        "zh": "锚"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "anchor",
+        "sea",
+        "якорь",
+        "море",
+        "锚"
+      ],
+      "sortOrder": 40,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/anchor/source.json",
+      "thumbnailUrl": "/library/silhouettes/anchor/thumb.svg"
+    },
+    {
+      "id": "bell",
+      "type": "silhouette",
+      "title": {
+        "ru": "Колокол",
+        "en": "Bell",
+        "zh": "铃铛"
+      },
+      "categoryId": "objects",
+      "tags": [
+        "bell",
+        "колокол",
+        "铃铛"
+      ],
+      "sortOrder": 41,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/bell/source.json",
+      "thumbnailUrl": "/library/silhouettes/bell/thumb.svg"
+    },
+    {
+      "id": "umbrella",
+      "type": "silhouette",
+      "title": {
+        "ru": "Зонт",
+        "en": "Umbrella",
+        "zh": "雨伞"
+      },
+      "categoryId": "objects",
+      "tags": [
+        "umbrella",
+        "rain",
+        "зонт",
+        "雨伞"
+      ],
+      "sortOrder": 42,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/umbrella/source.json",
+      "thumbnailUrl": "/library/silhouettes/umbrella/thumb.svg"
+    },
+    {
+      "id": "key",
+      "type": "silhouette",
+      "title": {
+        "ru": "Ключ",
+        "en": "Key",
+        "zh": "钥匙"
+      },
+      "categoryId": "objects",
+      "tags": [
+        "key",
+        "ключ",
+        "钥匙"
+      ],
+      "sortOrder": 43,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/key/source.json",
+      "thumbnailUrl": "/library/silhouettes/key/thumb.svg"
+    },
+    {
+      "id": "gift",
+      "type": "silhouette",
+      "title": {
+        "ru": "Подарок",
+        "en": "Gift",
+        "zh": "礼物"
+      },
+      "categoryId": "holidays",
+      "tags": [
+        "gift",
+        "present",
+        "подарок",
+        "礼物"
+      ],
+      "sortOrder": 44,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/gift/source.json",
+      "thumbnailUrl": "/library/silhouettes/gift/thumb.svg"
+    },
+    {
+      "id": "pine-tree",
+      "type": "silhouette",
+      "title": {
+        "ru": "Сосна",
+        "en": "Pine tree",
+        "zh": "松树"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "pine",
+        "tree",
+        "сосна",
+        "дерево",
+        "松树"
+      ],
+      "sortOrder": 45,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/pine-tree/source.json",
+      "thumbnailUrl": "/library/silhouettes/pine-tree/thumb.svg"
+    },
+    {
+      "id": "mushroom",
+      "type": "silhouette",
+      "title": {
+        "ru": "Гриб",
+        "en": "Mushroom",
+        "zh": "蘑菇"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "mushroom",
+        "гриб",
+        "蘑菇"
+      ],
+      "sortOrder": 46,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/mushroom/source.json",
+      "thumbnailUrl": "/library/silhouettes/mushroom/thumb.svg"
+    },
+    {
+      "id": "rabbit-head",
+      "type": "silhouette",
+      "title": {
+        "ru": "Кролик (голова)",
+        "en": "Rabbit (head)",
+        "zh": "兔子（头部）"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "rabbit",
+        "bunny",
+        "кролик",
+        "兔子"
+      ],
+      "sortOrder": 47,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/rabbit-head/source.json",
+      "thumbnailUrl": "/library/silhouettes/rabbit-head/thumb.svg"
+    },
+    {
+      "id": "fox-head",
+      "type": "silhouette",
+      "title": {
+        "ru": "Лиса (голова)",
+        "en": "Fox (head)",
+        "zh": "狐狸（头部）"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "fox",
+        "лиса",
+        "狐狸"
+      ],
+      "sortOrder": 48,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/fox-head/source.json",
+      "thumbnailUrl": "/library/silhouettes/fox-head/thumb.svg"
+    },
+    {
+      "id": "dog-head",
+      "type": "silhouette",
+      "title": {
+        "ru": "Собака (голова)",
+        "en": "Dog (head)",
+        "zh": "狗（头部）"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "dog",
+        "собака",
+        "狗"
+      ],
+      "sortOrder": 49,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/dog-head/source.json",
+      "thumbnailUrl": "/library/silhouettes/dog-head/thumb.svg"
+    },
+    {
+      "id": "turtle",
+      "type": "silhouette",
+      "title": {
+        "ru": "Черепаха",
+        "en": "Turtle",
+        "zh": "海龟"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "turtle",
+        "черепаха",
+        "海龟"
+      ],
+      "sortOrder": 50,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/turtle/source.json",
+      "thumbnailUrl": "/library/silhouettes/turtle/thumb.svg"
+    },
+    {
+      "id": "swan",
+      "type": "silhouette",
+      "title": {
+        "ru": "Лебедь",
+        "en": "Swan",
+        "zh": "天鹅"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "swan",
+        "лебедь",
+        "天鹅"
+      ],
+      "sortOrder": 51,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/swan/source.json",
+      "thumbnailUrl": "/library/silhouettes/swan/thumb.svg"
+    },
+    {
+      "id": "hummingbird",
+      "type": "silhouette",
+      "title": {
+        "ru": "Колибри",
+        "en": "Hummingbird",
+        "zh": "蜂鸟"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "hummingbird",
+        "bird",
+        "колибри",
+        "蜂鸟"
+      ],
+      "sortOrder": 52,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/hummingbird/source.json",
+      "thumbnailUrl": "/library/silhouettes/hummingbird/thumb.svg"
+    },
+    {
+      "id": "car",
+      "type": "silhouette",
+      "title": {
+        "ru": "Автомобиль",
+        "en": "Car",
+        "zh": "汽车"
+      },
+      "categoryId": "transport",
+      "tags": [
+        "car",
+        "auto",
+        "автомобиль",
+        "машина",
+        "汽车"
+      ],
+      "sortOrder": 53,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/car/source.json",
+      "thumbnailUrl": "/library/silhouettes/car/thumb.svg"
+    },
+    {
+      "id": "snowflake",
+      "type": "silhouette",
+      "title": {
+        "ru": "Снежинка",
+        "en": "Snowflake",
+        "zh": "雪花"
+      },
+      "categoryId": "holidays",
+      "tags": [
+        "snowflake",
+        "winter",
+        "снежинка",
+        "雪花"
+      ],
+      "sortOrder": 54,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/snowflake/source.json",
+      "thumbnailUrl": "/library/silhouettes/snowflake/thumb.svg"
+    },
+    {
+      "id": "maple-leaf",
+      "type": "silhouette",
+      "title": {
+        "ru": "Кленовый лист",
+        "en": "Maple leaf",
+        "zh": "枫叶"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "maple",
+        "leaf",
+        "клен",
+        "лист",
+        "枫叶"
+      ],
+      "sortOrder": 55,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/maple-leaf/source.json",
+      "thumbnailUrl": "/library/silhouettes/maple-leaf/thumb.svg"
+    },
+    {
+      "id": "dolphin",
+      "type": "silhouette",
+      "title": {
+        "ru": "Дельфин",
+        "en": "Dolphin",
+        "zh": "海豚"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "dolphin",
+        "дельфин",
+        "海豚"
+      ],
+      "sortOrder": 56,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/dolphin/source.json",
+      "thumbnailUrl": "/library/silhouettes/dolphin/thumb.svg"
+    },
+    {
+      "id": "elephant-head",
+      "type": "silhouette",
+      "title": {
+        "ru": "Слон (голова)",
+        "en": "Elephant (head)",
+        "zh": "大象（头部）"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "elephant",
+        "слон",
+        "大象"
+      ],
+      "sortOrder": 57,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/elephant-head/source.json",
+      "thumbnailUrl": "/library/silhouettes/elephant-head/thumb.svg"
+    },
+    {
+      "id": "horse-head",
+      "type": "silhouette",
+      "title": {
+        "ru": "Лошадь (голова)",
+        "en": "Horse (head)",
+        "zh": "马（头部）"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "horse",
+        "лошадь",
+        "马"
+      ],
+      "sortOrder": 58,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/horse-head/source.json",
+      "thumbnailUrl": "/library/silhouettes/horse-head/thumb.svg"
+    },
+    {
+      "id": "penguin",
+      "type": "silhouette",
+      "title": {
+        "ru": "Пингвин",
+        "en": "Penguin",
+        "zh": "企鹅"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "penguin",
+        "пингвин",
+        "企鹅"
+      ],
+      "sortOrder": 59,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/penguin/source.json",
+      "thumbnailUrl": "/library/silhouettes/penguin/thumb.svg"
+    },
+    {
+      "id": "octopus",
+      "type": "silhouette",
+      "title": {
+        "ru": "Осьминог",
+        "en": "Octopus",
+        "zh": "章鱼"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "octopus",
+        "осьминог",
+        "章鱼"
+      ],
+      "sortOrder": 60,
+      "sourceName": "Prismosaic original geometric silhouette",
+      "sourceUrl": "/library/silhouettes/octopus/source.json",
+      "thumbnailUrl": "/library/silhouettes/octopus/thumb.svg"
+    },
+    {
       "id": "circle",
       "type": "silhouette",
       "title": {

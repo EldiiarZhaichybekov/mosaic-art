@@ -916,7 +916,7 @@ const CANVAS_SIZES = {
   "30x40": [300, 400],
   "40x40": [400, 400],
 };
-// Maximum number of 30 × 2.5 mm pieces per sheet format (hard cap).
+// Maximum number of 30 × 3 mm pieces per sheet format (hard cap).
 const MAX_PIECES = { "30x40": 120, "40x40": 150 };
 function maxPiecesFor(canvasKey) {
   return MAX_PIECES[canvasKey] || 150;   // default to the 40 × 40 cm cap
@@ -2321,11 +2321,27 @@ function initUI() {
     state.resultData = null; state.variant = "detailed";
     tileUI.reset();
     $("result-controls").hidden = true;
-    state.finalPaths = null; state.internalLines = [];
+    state.finalPaths = null; state.internalLines = []; state.dashSource = "client";
     state.polys = polys;
     state.shapeName = name;
     state.rects = [];
     state.seed = (Math.random() * 0x7fffffff) | 0;   // fresh random layout per shape
+  }
+
+  function physicalSourceFromScaled(paths, cw, ch) {
+    if (!paths.length) return null;
+    const world = paths.map(path => path.map(([x, y]) => [x + cw / 2, y + ch / 2]));
+    let outerIndex = 0, outerArea = -Infinity;
+    world.forEach((path, index) => {
+      const area = Math.abs(polySignedArea(path));
+      if (area > outerArea) { outerArea = area; outerIndex = index; }
+    });
+    return {
+      contour: world[outerIndex],
+      internal_lines: world.filter((_, index) => index !== outerIndex),
+      request_id: "library-" + state.shapeName,
+      clientDiagnostics: {sourceType: "library-silhouette", assetId: state.shapeName}
+    };
   }
 
   // Keep the manual piece-count input within the current sheet's maximum.
@@ -2350,6 +2366,13 @@ function initUI() {
     }
     drawDashes(renderedPaths(), cw, ch);
     renderContourInfo(scaled, cw, ch);
+    const physicalSource = physicalSourceFromScaled(scaled, cw, ch);
+    if (physicalSource) {
+      try { tileUI.sourceChanged(physicalSource); }
+      catch(error) { console.error('library_physical_source_failure',{assetId:state.shapeName,error}); }
+      try { optimizedUI?.sourceChanged(physicalSource,[cw,ch]); }
+      catch(error) { console.error('library_optimized_source_failure',{assetId:state.shapeName,error}); }
+    }
   }
 
   // Diagnostics for contour mode: point count + outline length + sheet.

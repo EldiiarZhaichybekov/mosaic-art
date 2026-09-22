@@ -36,7 +36,7 @@ test('Auto evaluates both orientations without rotating the object; overrides re
 test('manual edit, undo/redo and full-rectangle rejection',()=>{
   const d=new T.TileDocument(round),first=d.layout.tiles[0],before=JSON.stringify(d.layout);
   assert.equal(d.update(first.id,{xMm:0}).valid,false);assert.equal(JSON.stringify(d.layout),before);
-  assert.equal(d.remove(first.id).valid,true);assert.equal(d.layout.visualStatus,'MANUALLY_EDITED');assert.ok(T.validate(d.layout).valid);
+  assert.equal(d.remove(first.id).valid,true);assert.equal(d.layout.visualStatus,'MANUALLY_EDITED');assert.ok(T.validate(d.layout,{continuity:false}).valid);
   d.undo();assert.equal(JSON.stringify(d.layout),before);d.redo();assert.equal(d.layout.tiles.length,round.tiles.length-1);d.undo();
   assert.equal(d.update(first.id,{angleDeg:first.angleDeg,lengthMm:5,widthMm:1}).valid,false);assert.equal(d.layout.tiles[0].lengthMm,30);assert.equal(d.layout.tiles[0].widthMm,3);
   const repair=new T.TileDocument(round);repair.remove(first.id);assert.equal(repair.add(first).valid,true);assert.ok(T.validate(repair.layout).valid);

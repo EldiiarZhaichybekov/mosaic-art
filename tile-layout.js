@@ -123,12 +123,14 @@
     const model=pathModel(target,true),grid=new SegmentGrid([model.points]),nominal=Math.round(model.length/31);
     let startOffset=0,travel=0,longest=0;for(let i=1;i<model.points.length;i++){const d=dist(model.points[i-1],model.points[i]);if(d>longest){longest=d;startOffset=travel+d/2;}travel+=d;}
     const stats=options.stats||{};stats.nominal=nominal;stats.emptyLayers=0;stats.closed=0;stats.bestDepth=0;stats.collisionMs=0;stats.collisionChecks=0;
-    if(nominal>153||nominal<3)return null;
+    // The closed outer contour uses rigid 30 mm pieces. Stop before searching
+    // a count that can never pass the independent 100-piece stock limit.
+    if(nominal>INVENTORY.large.available||nominal<3)return null;
     // Layered beam search: station/normal/orientation alternatives, multiple
     // counts and phases, global collision rejection, final closed-cycle check.
     // Arc sampling only proposes candidates; it never decides a placement.
     for(const countDelta of [0,1,-1,2,-2]) {
-      const n=nominal+countDelta;if(n<3||n>150)continue;
+      const n=nominal+countDelta;if(n<3||n>INVENTORY.large.available)continue;
       const period=model.length/n;
       if(period<27||period>34)continue;
       for(const phase of [0,.25,.5,.75]) {
@@ -306,32 +308,44 @@
     if(!tiles.length||!checked.valid)throw Error('GEOMETRY_FAILED');
     return layout;
   }
-  function generateMixedForCanvas(source,canvas){
-    const began=Date.now(),fitted=fit(source,canvas),structures=buildStructures(fitted.internal,fitted.contour);
-    const outer=simplifyClosed(fitted.contour,.6);outer.push(outer[0]);
-    const routes=[{id:0,role:'outer',priority:1,points:outer,piecePreference:'MIXED'},...structures.paths.map((p,i)=>({id:i+1,role:'skeleton',priority:.5,points:p.points,piecePreference:'LARGE',sourceIds:p.ids}))];
+  const FALLBACK_PROFILES=Object.freeze([
+    Object.freeze({id:'normal',scale:1,direct:Object.freeze([1,3]),regularized:Object.freeze([]),structureLimit:Infinity,minLength:45,minExtent:30}),
+    Object.freeze({id:'reduced-detail',scale:1,direct:Object.freeze([]),regularized:Object.freeze([[20,18]]),structureLimit:8,minLength:58,minExtent:38}),
+    Object.freeze({id:'major-structure',scale:1,direct:Object.freeze([]),regularized:Object.freeze([[26,18]]),structureLimit:3,minLength:75,minExtent:50}),
+    Object.freeze({id:'outer-priority',scale:.94,direct:Object.freeze([]),regularized:Object.freeze([[20,18]]),structureLimit:0,minLength:Infinity,minExtent:Infinity}),
+    Object.freeze({id:'outer-simplified',scale:.86,direct:Object.freeze([]),regularized:Object.freeze([[26,18]]),structureLimit:0,minLength:Infinity,minExtent:Infinity}),
+    Object.freeze({id:'minimal-silhouette',scale:.78,direct:Object.freeze([6,10]),regularized:Object.freeze([[20,18],[26,18]]),structureLimit:0,minLength:Infinity,minExtent:Infinity})
+  ]);
+  function generateMixedForCanvas(source,canvas,profile=FALLBACK_PROFILES[0]){
+    const began=Date.now(),fitted=fit(source,canvas,profile.scale),clean=profile.regularize?regularize(fitted.contour,profile.regularize):null,contour=clean||fitted.contour;
+    const structures=buildStructures(fitted.internal,contour,{minLength:profile.minLength,minExtent:profile.minExtent,simplification:Math.max(.6,profile.tolerance/3)});
+    const outer=simplifyClosed(contour,profile.tolerance);if(outer.length<3)throw Error('INVALID_TARGET');outer.push(outer[0]);
+    const selected=structures.paths.slice(0,profile.structureLimit);
+    const routes=[{id:0,role:'outer',priority:1,points:outer,piecePreference:'MIXED'},...selected.map((p,i)=>({id:i+1,role:'skeleton',priority:.5,points:p.points,piecePreference:'LARGE',sourceIds:p.ids}))];
     const result=followMixed(routes,canvas);
+    if((result.routeCoverage[0]?.placed||0)<3)throw Error('OUTER_NOT_REPRESENTED');
     for(const t of result.tiles)t.sourceGroupId=routes.find(r=>r.id===t.sourcePathId)?.sourceIds?.[0];
-    return {...result,mode:'DETERMINISTIC_FALLBACK',routeMode:true,structures,fitScale:fitted.scale,simplificationMm:.6,score:0,orientation:canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait',timings:{...structures.timings,...result.timings,totalMs:Date.now()-began}};
+    return {...result,mode:'DETERMINISTIC_FALLBACK',routeMode:true,structures,fitScale:fitted.scale,simplificationMm:profile.tolerance,fallbackProfile:profile.id,score:0,orientation:canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait',timings:{...structures.timings,...result.timings,totalMs:Date.now()-began}};
   }
-  function generateForCanvas(source,canvas,factor=1) {
-    const start=Date.now(),fitted=fit(source,canvas,factor),timings={};let outer=null,target=null,tolerance=0;
-    let structures;try{structures=buildStructures(fitted.internal,fitted.contour);}catch(error){console.error('optional_structure_failure',error);structures={paths:[],observed:[],rejected:[],symmetry:{confidence:0},timings:{},failure:{stage:'structural_paths',name:error.name}};}Object.assign(timings,structures.timings);
+  function generateForCanvas(source,canvas,options={}) {
+    if(typeof options==='number')options={scale:options};
+    const profile={scale:1,direct:[1,3,6,10],regularized:[[4,3],[7,3],[10,3],[10,8],[14,8],[14,12],[20,12],[20,18],[26,18]],structureLimit:Infinity,minLength:45,minExtent:30,...options};
+    const start=Date.now(),fitted=fit(source,canvas,profile.scale),timings={};let outer=null,target=null,tolerance=0;
     const optimizationStart=Date.now();let simplificationMs=0;const searches=[];
-    for(const tol of [1,3,6,10]) {const s=Date.now();target=simplifyClosed(fitted.contour,tol);simplificationMs+=Date.now()-s;const stats={tolerance:tol};searches.push(stats);outer=solveOuter(target,canvas,{wide:tol>=6,stats});if(outer){tolerance=tol;break;}}
-    if(!outer)for(const [radius,tol] of [[4,3],[7,3],[10,3],[10,8],[14,8],[14,12],[20,12],[20,18],[26,18]]){const s=Date.now(),clean=regularize(fitted.contour,radius);target=clean?simplifyClosed(clean,tol):null;simplificationMs+=Date.now()-s;if(!target)continue;const stats={radius,tolerance:tol};searches.push(stats);outer=solveOuter(target,canvas,{wide:true,stats});if(outer){tolerance=radius+tol;break;}}
+    for(const tol of profile.direct) {const s=Date.now();target=simplifyClosed(fitted.contour,tol);simplificationMs+=Date.now()-s;const stats={tolerance:tol};searches.push(stats);outer=solveOuter(target,canvas,{wide:tol>=6,stats});if(outer){tolerance=tol;break;}}
+    if(!outer)for(const [radius,tol] of profile.regularized){const s=Date.now(),clean=regularize(fitted.contour,radius);target=clean?simplifyClosed(clean,tol):null;simplificationMs+=Date.now()-s;if(!target)continue;const stats={radius,tolerance:tol};searches.push(stats);outer=solveOuter(target,canvas,{wide:true,stats});if(outer){tolerance=radius+tol;break;}}
     timings.simplificationMs=simplificationMs;
     if(!outer){
-      // A new physical scale changes corner phase and closure feasibility.
-      // Bounded, centered re-fitting never rotates or stretches the object.
-      if(factor===1)for(const smaller of [.94,.86]){const retry=generateForCanvas(source,canvas,smaller);if(retry.status==='ok'){retry.searches=[...searches,...retry.searches];retry.timings.totalMs=Date.now()-start;retry.fallbackScale=smaller;return retry;}}
       return {status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],searches,timings:{...timings,optimizationMs:Date.now()-optimizationStart-simplificationMs,totalMs:Date.now()-start}};
     }
+    let structures={paths:[],observed:[],rejected:[],symmetry:{confidence:0},timings:{}};
+    if(profile.structureLimit>0)try{structures=buildStructures(fitted.internal,fitted.contour,{minLength:profile.minLength,minExtent:profile.minExtent});}catch(error){console.error('optional_structure_failure',error);structures={paths:[],observed:[],rejected:[],symmetry:{confidence:0},timings:{},failure:{stage:'structural_paths',name:error.name}};}
+    Object.assign(timings,structures.timings);
     const tiles=outer.tiles,targetPaths=[{id:0,role:'outer',points:outer.target}];
     // Add only long reproducible portions. Local bends with no valid full tile
     // simply have no candidate. Sorted by value/cost (stable length per tile).
     const collisionRejections=[];let collisionMs=0;
-    for(const item of structures.paths){if(tiles.length>=150)break;const id=targetPaths.length,model=pathModel(item.points),grid=new SegmentGrid([item.points]);
+    for(const item of structures.paths.slice(0,profile.structureLimit)){if(inventory(tiles).largeUsed>=INVENTORY.large.available)break;const id=targetPaths.length,model=pathModel(item.points),grid=new SegmentGrid([item.points]);
       // Bounded path-level search: reward coverage and consecutive physical
       // contacts. Retain full target paths, never clip them to individual tiles.
       let best=[];let bestScore=-Infinity;
@@ -343,7 +357,7 @@
             if(!collision&&!redundant)safe.push(c);else if(collisionRejections.length<160)collisionRejections.push({tile:c.tile,reason:collision?'OVERLAP':'PARALLEL_REDUNDANCY'});
           }
           const next=beam.map(b=>({...b,score:b.score-5}));
-          for(const b of beam)for(const c of safe){if(b.tiles.length+tiles.length>=150||b.tiles.some(t=>overlap(t,c.tile)))continue;const prev=b.tiles.at(-1),g=prev?gap(prev,c.tile):0,connected=prev&&g>=0&&g<=2;
+          for(const b of beam)for(const c of safe){if(b.tiles.length+inventory(tiles).largeUsed>=INVENTORY.large.available||b.tiles.some(t=>overlap(t,c.tile)))continue;const prev=b.tiles.at(-1),g=prev?gap(prev,c.tile):0,connected=prev&&g>=0&&g<=2;
             next.push({tiles:[...b.tiles,c.tile],last:c.station,score:b.score+30-Math.min(12,c.score)+(connected?12:prev?-5:0)});
           }
           next.sort((a,b)=>b.score-a.score);const seen=new Set();beam=[];
@@ -362,10 +376,24 @@
     const checkStart=Date.now(),checked=validate(layout);timings.validationMs=Date.now()-checkStart;timings.totalMs=Date.now()-start;
     return checked.valid?layout:{status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],diagnostics:checked,timings};
   }
-  function generate(source,{format='40x40',orientation='auto'}={}) {
+  function generate(source,{format='40x40',orientation='auto',optimizedSource=null}={}) {
     if(!source?.contour||source.contour.length<3||!source.contour.every(p=>p.length===2&&p.every(Number.isFinite)))return {status:'LAYOUT_NOT_FEASIBLE',tiles:[],reason:'INVALID_TARGET'};
     const canvases=format==='40x40'?[[400,400]]:orientation==='portrait'?[[300,400]]:orientation==='landscape'?[[400,300]]:[[300,400],[400,300]];
-    const results=canvases.map(c=>{try{return generateMixedForCanvas(source,c);}catch(error){return {status:'LAYOUT_NOT_FEASIBLE',canvas:c,tiles:[],target:[],reason:error.message};}});
+    const candidates=[];if(optimizedSource?.contour?.length>=3)candidates.push({id:'result2',source:optimizedSource});candidates.push({id:'result1',source});
+    const results=canvases.map(canvas=>{
+      const attempts=[];
+      for(let level=0;level<FALLBACK_PROFILES.length;level++)for(const candidate of candidates){try{
+        const profile=FALLBACK_PROFILES[level],result=generateForCanvas(candidate.source,canvas,profile),checked=validate(result);attempts.push({source:candidate.id,profile:profile.id,status:result.status,tiles:result.tiles.length,errors:checked.errors});
+        if(result.status==='ok'&&checked.valid)return {...result,mode:'DETERMINISTIC_FALLBACK',inputSource:candidate.id,fallbackProfile:profile.id,fallbackLevel:level,simplified:level>0,attempts};
+      }catch(error){attempts.push({source:candidate.id,profile:FALLBACK_PROFILES[level].id,status:'failed',reason:error.message});}}
+      // Catastrophic geometry is still reported, but every finite contour gets
+      // one last manufacturable target: an aspect-preserving ellipse derived
+      // from its bounds. It is intentionally last because recognizability and
+      // the real external contour have priority over this emergency outline.
+      const xs=source.contour.map(p=>p[0]),ys=source.contour.map(p=>p[1]),rx=Math.max(1,(Math.max(...xs)-Math.min(...xs))/2),ry=Math.max(1,(Math.max(...ys)-Math.min(...ys))/2),cx=(Math.max(...xs)+Math.min(...xs))/2,cy=(Math.max(...ys)+Math.min(...ys))/2;
+      for(const ratio of [Math.max(.5,Math.min(2,ry/rx)),1]){const emergency={contour:Array.from({length:96},(_,i)=>[cx+rx*Math.cos(i*Math.PI/48),cy+rx*ratio*Math.sin(i*Math.PI/48)]),internal_lines:[]};try{const profile={...FALLBACK_PROFILES.at(-1),scale:.78,direct:[6,10],regularized:[[20,18],[26,18]],structureLimit:0},result=generateForCanvas(emergency,canvas,profile),checked=validate(result);attempts.push({source:'emergency-outline',profile:'minimal-silhouette',status:result.status,tiles:result.tiles.length,errors:checked.errors});if(result.status==='ok'&&checked.valid)return {...result,mode:'DETERMINISTIC_FALLBACK',inputSource:'emergency-outline',fallbackProfile:'minimal-silhouette',fallbackLevel:FALLBACK_PROFILES.length,simplified:true,emergencyFallback:true,attempts};}catch(error){attempts.push({source:'emergency-outline',profile:'minimal-silhouette',status:'failed',reason:error.message});}}
+      return {status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],reason:'CATASTROPHIC_GEOMETRY_FAILURE',attempts};
+    });
     const valid=results.filter(r=>r.status==='ok');valid.sort((a,b)=>b.fitScale-a.fitScale||a.simplificationMm-b.simplificationMm||a.score-b.score||a.tiles.length-b.tiles.length);
     const result=valid[0]||results[0];result.evaluated=results.map(r=>({canvas:r.canvas,status:r.status,tiles:r.tiles.length,scale:r.fitScale,simplificationMm:r.simplificationMm,timings:r.timings}));result.auto=orientation==='auto'&&format==='30x40';return result;
   }
@@ -408,6 +436,6 @@
     undo(){if(!this.undoStack.length)return;this.redoStack.push(this.layout);this.layout=this.undoStack.pop();}
     redo(){if(!this.redoStack.length)return;this.undoStack.push(this.layout);this.layout=this.redoStack.pop();}
   }
-  const api={version:'physical-tiles-v3',RULES,INVENTORY,inventory,migrateTile,followMixed,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,solveOuter,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
+  const api={version:'physical-tiles-v4',RULES,INVENTORY,FALLBACK_PROFILES,inventory,migrateTile,followMixed,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,generateMixedForCanvas,solveOuter,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
   if(typeof module!=='undefined')module.exports=api;root.TileLayout=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
