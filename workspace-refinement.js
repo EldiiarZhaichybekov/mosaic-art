@@ -7,6 +7,7 @@
   };
   const keys=['library','search','all','animals','birds','symbols','nature','transport','other','uploaded','cancel','select','none','errorTitle','ok','image','optimize','layout','plan','qa','wait','uploadFirst'];
   for(const [lang,values]of Object.entries(vocabulary))keys.forEach((k,i)=>root.WorkspaceMessages[lang]['ux.'+k]=values[i]);
+  for(const [lang,value]of Object.entries({ru:'Назад',en:'Back',zh:'返回'}))root.WorkspaceMessages[lang]['ux.back']=value;
   function create({t,onLibraryAsset}){
     const $=id=>document.getElementById(id),tr=k=>t('ux.'+k);
     const make=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=text;return n;};
@@ -29,12 +30,12 @@
     // Replace visible selects, dispatching precisely the same change events as before.
     const groups=[];
     for(const id of ['canvas-format','tile-format']){const select=$(id);if(!select)continue;select.hidden=true;const group=make('div','size-buttons');group.setAttribute('role','group');group.setAttribute('aria-label',t('tile.canvas'));for(const value of ['40x40','30x40']){const b=button('',()=>{select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));syncControls();});b.dataset.value=value;group.append(b);}select.after(group);select.addEventListener('change',syncControls);groups.push({select,group});}
-    const select=$('preset');select.hidden=true;select.tabIndex=-1;const field=button('',()=>openLibrary());field.id='silhouette-picker';field.setAttribute('aria-haspopup','dialog');field.setAttribute('aria-controls',library.id);select.after(field);select.previousElementSibling?.setAttribute('for',field.id);
-    const shared=root.AssetLibraryUI.create({dialog:library,t,select,onSelect:async asset=>{await onLibraryAsset(asset);syncControls();},uploadedPreview(canvas){if(!uploaded)return;const ctx=canvas.getContext('2d'),s=Math.min(220/uploaded.naturalWidth,130/uploaded.naturalHeight);ctx.drawImage(uploaded,(240-uploaded.naturalWidth*s)/2,(150-uploaded.naturalHeight*s)/2,uploaded.naturalWidth*s,uploaded.naturalHeight*s);}});
+    const select=$('preset');select.hidden=true;select.tabIndex=-1;select.closest('.ctrl')?.classList.add('legacy-source-picker');
+    const field=button('',()=>openLibrary());field.id='silhouette-picker';field.hidden=true;field.setAttribute('aria-haspopup','dialog');field.setAttribute('aria-controls',library.id);select.after(field);
+    const shared=root.AssetLibraryUI.create({dialog:library,t,onSelect:async asset=>{root.dispatchEvent(new CustomEvent('prismosaic:source-meta',{detail:{type:asset.type,name:root.AssetLibrary.localized(asset.title,document.documentElement.lang)}}));try{await onLibraryAsset(asset);syncControls();}catch(error){root.dispatchEvent(new CustomEvent('prismosaic:source-meta',{detail:null}));throw error;}},onCancel:detail=>root.dispatchEvent(new CustomEvent('prismosaic:library-cancel',{detail}))});
     const search=shared.search;
     // Search inputs may consume Escape just to clear text. The library must close.
     library.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();library.close();}});
-    for(const [id,parent]of [['start-photos',$('start-presets').parentElement],['properties-photo',$('sec-shape')]]){const b=button(t('lib.choosePhoto'),()=>openLibrary('photo'));b.id=id;b.dataset.i18n='lib.choosePhoto';b.setAttribute('aria-haspopup','dialog');b.setAttribute('aria-controls',library.id);parent.append(b);}
     // Presentation lifecycle only: iOS keyboard changes the visual, not layout, viewport.
     const mobileLibrary=matchMedia('(max-width:600px)'),libraryTitle=library.querySelector('h2');
     libraryTitle.tabIndex=-1;
@@ -51,14 +52,14 @@
     function queueViewport(){if(!viewportFrame)viewportFrame=requestAnimationFrame(syncLibraryViewport);}
     function stopLibraryViewport(){if(library.open)return;cancelAnimationFrame(viewportFrame);viewportFrame=0;window.visualViewport?.removeEventListener('resize',queueViewport);window.visualViewport?.removeEventListener('scroll',queueViewport);window.removeEventListener('resize',queueViewport);syncLibraryViewport();}
     library.addEventListener('close',stopLibraryViewport);
-    function openLibrary(mode='silhouette'){shared.open(mode);
+    function openLibrary(mode='silhouette',options={}){shared.open(mode,{origin:options.origin||'home',cancelKey:options.origin==='change'?'cancel':'back'});
       // Focus the heading on phones: opening the library must not summon a keyboard.
       libraryTitle.toggleAttribute('autofocus',mobileLibrary.matches);library.showModal();syncLibraryViewport();
       window.visualViewport?.addEventListener('resize',queueViewport);window.visualViewport?.addEventListener('scroll',queueViewport);window.addEventListener('resize',queueViewport);
       (mobileLibrary.matches?libraryTitle:search).focus({preventScroll:true});
     }
     function syncControls(){for(const {select,group}of groups){group.setAttribute('aria-label',t('tile.canvas'));for(const b of group.children){b.textContent=t(b.dataset.value==='40x40'?'tile.size40':'tile.size30');b.setAttribute('aria-pressed',String(select.value===b.dataset.value));b.disabled=select.disabled;}}field.textContent=(select.selectedOptions[0]?.textContent||tr('select'))+' ›';}
-    $('start-presets').addEventListener('click',()=>field.click());
+    root.addEventListener('prismosaic:library-open',event=>openLibrary(event.detail?.type||'silhouette',event.detail||{}));
     select.addEventListener('change',syncControls);
     new MutationObserver(syncControls).observe(select,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['disabled','selected']});
     $('lang').addEventListener('change',()=>{shared.refresh();error.querySelector('h2').textContent=tr('errorTitle');errorOK.textContent=tr('ok');wait.textContent=tr('wait');syncBusy();syncControls();});

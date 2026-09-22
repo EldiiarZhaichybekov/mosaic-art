@@ -2,7 +2,7 @@
 const {chromium,webkit}=require('playwright'),assert=require('node:assert/strict');
 (async()=>{const engine=process.env.ENGINE==='webkit'?webkit:chromium;const browser=await engine.launch({headless:true,...(engine===chromium?{executablePath:process.env.BROWSER_PATH}:{})});try{
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto((process.env.BASE_URL||'http://127.0.0.1:8091')+'/?lang=ru');await page.locator('#start-presets').click();await page.waitForFunction(()=>document.querySelectorAll('.silhouette-card').length===15);
+ await page.goto((process.env.BASE_URL||'http://127.0.0.1:8091')+'/?lang=ru');await page.locator('#start-presets').click();await page.waitForFunction(()=>document.querySelectorAll('.silhouette-card').length===24);
  for(const [width,height]of [[390,844],[430,932],[375,812],[360,800],[390,650],[390,844],[1440,1000]]){
   await page.setViewportSize({width,height});
   if(width<=600)await page.waitForFunction(()=>Math.abs(document.querySelector('#silhouette-library').getBoundingClientRect().height-visualViewport.height)<2);

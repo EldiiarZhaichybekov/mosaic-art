@@ -100,6 +100,72 @@
   ],
   "assets": [
     {
+      "id": "apple",
+      "type": "photo",
+      "title": {
+        "en": "Red apple",
+        "ru": "Красное яблоко",
+        "zh": "红苹果"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "apple",
+        "fruit",
+        "яблоко",
+        "фрукт",
+        "苹果",
+        "水果"
+      ],
+      "thumbnailUrl": "/library/photos/apple/thumb.webp",
+      "sourceUrl": "/library/photos/apple/source.jpg",
+      "featured": false,
+      "sortOrder": 0,
+      "recommendedCanvas": "40x40",
+      "difficulty": "hard",
+      "conversionQuality": "difficult",
+      "sourceName": "Wikimedia Commons — Red apple on white background.jpg",
+      "author": "Sprinno",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Red_apple_on_white_background.jpg",
+      "precomputed": {
+        "url": "/library/photos/apple/precomputed.json"
+      }
+    },
+    {
+      "id": "egg",
+      "type": "photo",
+      "title": {
+        "ru": "Яйцо на белом фоне",
+        "en": "Egg on white",
+        "zh": "白色背景上的鸡蛋"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "egg",
+        "object",
+        "яйцо",
+        "предмет",
+        "鸡蛋",
+        "物体"
+      ],
+      "thumbnailUrl": "/library/photos/egg/thumb.webp",
+      "sourceUrl": "/library/photos/egg/source.jpg",
+      "featured": true,
+      "sortOrder": 0,
+      "recommendedCanvas": "40x40",
+      "difficulty": "medium",
+      "conversionQuality": "difficult",
+      "sourceName": "Wikimedia Commons — Egg on white background.jpg",
+      "author": "Paolo Neo",
+      "license": "Public domain (PD-author)",
+      "licenseUrl": "https://commons.wikimedia.org/wiki/File:Egg_on_white_background.jpg#Licensing",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Egg_on_white_background.jpg",
+      "precomputed": {
+        "url": "/library/photos/egg/precomputed.json"
+      }
+    },
+    {
       "id": "butterfly",
       "type": "silhouette",
       "presetId": "butterfly",
@@ -352,70 +418,482 @@
       "sourceName": "Existing Prismosaic preset"
     },
     {
-      "id": "apple",
-      "type": "photo",
+      "id": "circle",
+      "type": "silhouette",
       "title": {
-        "en": "Red apple",
-        "ru": "Красное яблоко",
-        "zh": "红苹果"
+        "ru": "Круг",
+        "en": "Circle",
+        "zh": "圆形"
       },
-      "categoryId": "nature",
+      "categoryId": "symbols",
       "tags": [
-        "apple",
-        "fruit",
-        "яблоко",
-        "фрукт",
-        "苹果",
-        "水果"
+        "circle",
+        "round",
+        "круг",
+        "圆"
       ],
-      "thumbnailUrl": "/library/photos/apple/thumb.webp",
-      "sourceUrl": "/library/photos/apple/source.jpg",
-      "featured": false,
-      "sortOrder": 0,
-      "recommendedCanvas": "40x40",
-      "difficulty": "hard",
-      "conversionQuality": "difficult",
-      "sourceName": "Wikimedia Commons — Red apple on white background.jpg",
-      "author": "Sprinno",
-      "license": "CC0 1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "sourcePage": "https://commons.wikimedia.org/wiki/File:Red_apple_on_white_background.jpg",
-      "precomputed": {
-        "url": "/library/photos/apple/precomputed.json"
-      }
+      "sortOrder": 100,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/circle/source.json",
+      "thumbnailUrl": "/library/silhouettes/circle/thumb.svg"
     },
     {
-      "id": "egg",
-      "type": "photo",
+      "id": "triangle",
+      "type": "silhouette",
       "title": {
-        "ru": "Яйцо на белом фоне",
-        "en": "Egg on white",
-        "zh": "白色背景上的鸡蛋"
+        "ru": "Треугольник",
+        "en": "Triangle",
+        "zh": "三角形"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "triangle",
+        "треугольник",
+        "三角"
+      ],
+      "sortOrder": 101,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/triangle/source.json",
+      "thumbnailUrl": "/library/silhouettes/triangle/thumb.svg"
+    },
+    {
+      "id": "diamond",
+      "type": "silhouette",
+      "title": {
+        "ru": "Ромб",
+        "en": "Diamond",
+        "zh": "菱形"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "diamond",
+        "rhombus",
+        "ромб",
+        "菱形"
+      ],
+      "sortOrder": 102,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/diamond/source.json",
+      "thumbnailUrl": "/library/silhouettes/diamond/thumb.svg"
+    },
+    {
+      "id": "hexagon",
+      "type": "silhouette",
+      "title": {
+        "ru": "Шестиугольник",
+        "en": "Hexagon",
+        "zh": "六边形"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "hexagon",
+        "шестиугольник",
+        "六边形"
+      ],
+      "sortOrder": 103,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/hexagon/source.json",
+      "thumbnailUrl": "/library/silhouettes/hexagon/thumb.svg"
+    },
+    {
+      "id": "cross",
+      "type": "silhouette",
+      "title": {
+        "ru": "Крест",
+        "en": "Cross",
+        "zh": "十字"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "cross",
+        "plus",
+        "крест",
+        "十字"
+      ],
+      "sortOrder": 104,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/cross/source.json",
+      "thumbnailUrl": "/library/silhouettes/cross/thumb.svg"
+    },
+    {
+      "id": "shield",
+      "type": "silhouette",
+      "title": {
+        "ru": "Щит",
+        "en": "Shield",
+        "zh": "盾牌"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "shield",
+        "badge",
+        "щит",
+        "盾牌"
+      ],
+      "sortOrder": 105,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/shield/source.json",
+      "thumbnailUrl": "/library/silhouettes/shield/thumb.svg"
+    },
+    {
+      "id": "lightning",
+      "type": "silhouette",
+      "title": {
+        "ru": "Молния",
+        "en": "Lightning",
+        "zh": "闪电"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "lightning",
+        "bolt",
+        "молния",
+        "闪电"
+      ],
+      "sortOrder": 106,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/lightning/source.json",
+      "thumbnailUrl": "/library/silhouettes/lightning/thumb.svg"
+    },
+    {
+      "id": "droplet",
+      "type": "silhouette",
+      "title": {
+        "ru": "Капля",
+        "en": "Droplet",
+        "zh": "水滴"
+      },
+      "categoryId": "symbols",
+      "tags": [
+        "drop",
+        "water",
+        "капля",
+        "水滴"
+      ],
+      "sortOrder": 107,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/droplet/source.json",
+      "thumbnailUrl": "/library/silhouettes/droplet/thumb.svg"
+    },
+    {
+      "id": "sun",
+      "type": "silhouette",
+      "title": {
+        "ru": "Солнце",
+        "en": "Sun",
+        "zh": "太阳"
       },
       "categoryId": "nature",
       "tags": [
-        "egg",
-        "object",
-        "яйцо",
-        "предмет",
-        "鸡蛋",
-        "物体"
+        "sun",
+        "solar",
+        "солнце",
+        "太阳"
       ],
-      "thumbnailUrl": "/library/photos/egg/thumb.webp",
-      "sourceUrl": "/library/photos/egg/source.jpg",
-      "featured": true,
-      "sortOrder": 0,
-      "recommendedCanvas": "40x40",
-      "difficulty": "medium",
-      "conversionQuality": "difficult",
-      "sourceName": "Wikimedia Commons — Egg on white background.jpg",
-      "author": "Paolo Neo",
-      "license": "Public domain (PD-author)",
-      "licenseUrl": "https://commons.wikimedia.org/wiki/File:Egg_on_white_background.jpg#Licensing",
-      "sourcePage": "https://commons.wikimedia.org/wiki/File:Egg_on_white_background.jpg",
-      "precomputed": {
-        "url": "/library/photos/egg/precomputed.json"
-      }
+      "sortOrder": 108,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/sun/source.json",
+      "thumbnailUrl": "/library/silhouettes/sun/thumb.svg"
+    },
+    {
+      "id": "leaf",
+      "type": "silhouette",
+      "title": {
+        "ru": "Лист",
+        "en": "Leaf",
+        "zh": "叶子"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "leaf",
+        "plant",
+        "лист",
+        "叶子"
+      ],
+      "sortOrder": 109,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/leaf/source.json",
+      "thumbnailUrl": "/library/silhouettes/leaf/thumb.svg"
+    },
+    {
+      "id": "mountains",
+      "type": "silhouette",
+      "title": {
+        "ru": "Горы",
+        "en": "Mountains",
+        "zh": "山脉"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "mountain",
+        "landscape",
+        "горы",
+        "山"
+      ],
+      "sortOrder": 110,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/mountains/source.json",
+      "thumbnailUrl": "/library/silhouettes/mountains/thumb.svg"
+    },
+    {
+      "id": "cloud",
+      "type": "silhouette",
+      "title": {
+        "ru": "Облако",
+        "en": "Cloud",
+        "zh": "云朵"
+      },
+      "categoryId": "nature",
+      "tags": [
+        "cloud",
+        "sky",
+        "облако",
+        "云"
+      ],
+      "sortOrder": 111,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/cloud/source.json",
+      "thumbnailUrl": "/library/silhouettes/cloud/thumb.svg"
+    },
+    {
+      "id": "tulip",
+      "type": "silhouette",
+      "title": {
+        "ru": "Тюльпан",
+        "en": "Tulip",
+        "zh": "郁金香"
+      },
+      "categoryId": "flowers",
+      "tags": [
+        "tulip",
+        "flower",
+        "тюльпан",
+        "郁金香"
+      ],
+      "sortOrder": 112,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/tulip/source.json",
+      "thumbnailUrl": "/library/silhouettes/tulip/thumb.svg"
+    },
+    {
+      "id": "cactus",
+      "type": "silhouette",
+      "title": {
+        "ru": "Кактус",
+        "en": "Cactus",
+        "zh": "仙人掌"
+      },
+      "categoryId": "flowers",
+      "tags": [
+        "cactus",
+        "plant",
+        "кактус",
+        "仙人掌"
+      ],
+      "sortOrder": 113,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/cactus/source.json",
+      "thumbnailUrl": "/library/silhouettes/cactus/thumb.svg"
+    },
+    {
+      "id": "sailboat",
+      "type": "silhouette",
+      "title": {
+        "ru": "Парусник",
+        "en": "Sailboat",
+        "zh": "帆船"
+      },
+      "categoryId": "transport",
+      "tags": [
+        "boat",
+        "sail",
+        "парусник",
+        "帆船"
+      ],
+      "sortOrder": 114,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/sailboat/source.json",
+      "thumbnailUrl": "/library/silhouettes/sailboat/thumb.svg"
+    },
+    {
+      "id": "airplane",
+      "type": "silhouette",
+      "title": {
+        "ru": "Самолёт",
+        "en": "Airplane",
+        "zh": "飞机"
+      },
+      "categoryId": "transport",
+      "tags": [
+        "airplane",
+        "plane",
+        "самолёт",
+        "飞机"
+      ],
+      "sortOrder": 115,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/airplane/source.json",
+      "thumbnailUrl": "/library/silhouettes/airplane/thumb.svg"
+    },
+    {
+      "id": "castle",
+      "type": "silhouette",
+      "title": {
+        "ru": "Замок",
+        "en": "Castle",
+        "zh": "城堡"
+      },
+      "categoryId": "architecture",
+      "tags": [
+        "castle",
+        "building",
+        "замок",
+        "城堡"
+      ],
+      "sortOrder": 116,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/castle/source.json",
+      "thumbnailUrl": "/library/silhouettes/castle/thumb.svg"
+    },
+    {
+      "id": "lighthouse",
+      "type": "silhouette",
+      "title": {
+        "ru": "Маяк",
+        "en": "Lighthouse",
+        "zh": "灯塔"
+      },
+      "categoryId": "architecture",
+      "tags": [
+        "lighthouse",
+        "tower",
+        "маяк",
+        "灯塔"
+      ],
+      "sortOrder": 117,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/lighthouse/source.json",
+      "thumbnailUrl": "/library/silhouettes/lighthouse/thumb.svg"
+    },
+    {
+      "id": "camera",
+      "type": "silhouette",
+      "title": {
+        "ru": "Фотоаппарат",
+        "en": "Camera",
+        "zh": "相机"
+      },
+      "categoryId": "objects",
+      "tags": [
+        "camera",
+        "photo",
+        "фотоаппарат",
+        "相机"
+      ],
+      "sortOrder": 118,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/camera/source.json",
+      "thumbnailUrl": "/library/silhouettes/camera/thumb.svg"
+    },
+    {
+      "id": "cup",
+      "type": "silhouette",
+      "title": {
+        "ru": "Чашка",
+        "en": "Cup",
+        "zh": "杯子"
+      },
+      "categoryId": "objects",
+      "tags": [
+        "cup",
+        "mug",
+        "чашка",
+        "杯子"
+      ],
+      "sortOrder": 119,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/cup/source.json",
+      "thumbnailUrl": "/library/silhouettes/cup/thumb.svg"
+    },
+    {
+      "id": "bear-head",
+      "type": "silhouette",
+      "title": {
+        "ru": "Медведь (голова)",
+        "en": "Bear (head)",
+        "zh": "熊头"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "bear",
+        "animal",
+        "медведь",
+        "熊"
+      ],
+      "sortOrder": 120,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/bear-head/source.json",
+      "thumbnailUrl": "/library/silhouettes/bear-head/thumb.svg"
+    },
+    {
+      "id": "whale",
+      "type": "silhouette",
+      "title": {
+        "ru": "Кит",
+        "en": "Whale",
+        "zh": "鲸鱼"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "whale",
+        "ocean",
+        "кит",
+        "鲸鱼"
+      ],
+      "sortOrder": 121,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/whale/source.json",
+      "thumbnailUrl": "/library/silhouettes/whale/thumb.svg"
+    },
+    {
+      "id": "owl",
+      "type": "silhouette",
+      "title": {
+        "ru": "Сова",
+        "en": "Owl",
+        "zh": "猫头鹰"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "owl",
+        "bird",
+        "сова",
+        "猫头鹰"
+      ],
+      "sortOrder": 122,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/owl/source.json",
+      "thumbnailUrl": "/library/silhouettes/owl/thumb.svg"
+    },
+    {
+      "id": "bee",
+      "type": "silhouette",
+      "title": {
+        "ru": "Пчела",
+        "en": "Bee",
+        "zh": "蜜蜂"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "bee",
+        "insect",
+        "пчела",
+        "蜜蜂"
+      ],
+      "sortOrder": 123,
+      "sourceName": "Prismosaic original geometry",
+      "sourceUrl": "/library/silhouettes/bee/source.json",
+      "thumbnailUrl": "/library/silhouettes/bee/thumb.svg"
     }
   ]
 }

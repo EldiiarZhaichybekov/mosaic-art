@@ -5,15 +5,15 @@ try{
  await page.goto((process.env.BASE_URL||'http://127.0.0.1:8091')+'/?lang=ru');
  await page.locator('#silhouette-picker').waitFor({state:'attached'});assert.equal(await page.title(),'Prismosaic');
  assert.equal(await page.locator('#nav-editor').isVisible(),false);assert.equal(await page.locator('#nav-export').isVisible(),false);
- await page.locator('#start-presets').click();await page.waitForFunction(()=>document.querySelectorAll('.silhouette-card').length===15);await page.locator('#silhouette-library').waitFor({state:'visible'});
- assert.equal(await page.locator('.silhouette-card').count(),15);
+ await page.locator('#start-presets').click();await page.waitForFunction(()=>document.querySelectorAll('.silhouette-card').length===24);await page.locator('#silhouette-library').waitFor({state:'visible'});
+ assert.equal(await page.locator('.silhouette-card').count(),24);
  await page.locator('#silhouette-search').fill('Волк');await page.waitForFunction(()=>document.querySelectorAll('.silhouette-card').length===1);assert.equal(await page.locator('.silhouette-card').count(),1);
  await page.locator('.silhouette-card').click();await page.locator('#silhouette-library footer button').last().click();
  assert.equal(await page.locator('#preset').inputValue(),'wolf');
  for(const width of [1440,1280,1024,768,430,390]){
   await page.setViewportSize({width,height:width<600?844:1000});
   if(width<=900&&await page.locator('#mobile-properties').getAttribute('aria-expanded')!=='true')await page.locator('#mobile-properties').click();
-  await page.locator('#silhouette-picker').click();
+  await page.locator('#properties-replace').click();await page.locator('#start-presets').click();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'page overflow '+width);
   assert.ok(await page.locator('#silhouette-library').evaluate(e=>e.scrollWidth<=e.clientWidth),'modal overflow '+width);
   await page.screenshot({path:`/private/tmp/prismosaic-library-${width}.png`});await page.keyboard.press('Escape');
@@ -34,7 +34,7 @@ try{
  await page.locator('#tile-view-plan').click();await page.locator('#tile-plan-info summary').click();
  for(const id of ['btn-svg','btn-jpg','tile-csv']){const [d]=await Promise.all([page.waitForEvent('download'),page.locator('#'+id).click()]);assert.ok(await d.path());}
  await page.locator('#tile-view-layout').click();
- for(const lang of ['en','zh','ru']){await page.locator('#lang').selectOption(lang);await page.locator('#silhouette-picker').click();assert.ok(!(await page.locator('#silhouette-library').innerText()).includes('ux.'));await page.keyboard.press('Escape');}
+ for(const lang of ['en','zh','ru']){await page.locator('#lang').selectOption(lang);await page.locator('#properties-replace').click();await page.locator('#start-presets').click();assert.ok(!(await page.locator('#silhouette-library').innerText()).includes('ux.'));await page.keyboard.press('Escape');}
  await page.screenshot({path:'/private/tmp/prismosaic-refined-desktop.png'});
  for(const width of [1440,1280,1024,768,430,390]){await page.setViewportSize({width,height:width<600?844:1000});if(width<=900&&await page.locator('#mobile-properties').getAttribute('aria-expanded')!=='true')await page.locator('#mobile-properties').click();await page.screenshot({path:`/private/tmp/prismosaic-properties-${width}.png`});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));if(width<=900)await page.locator('#properties-close').click();}
  await page.setViewportSize({width:1440,height:1000});

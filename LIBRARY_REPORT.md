@@ -1,69 +1,78 @@
-# Content library implementation report — 2026-09-21
+# Project flow and content library report — 2026-09-22
 
-1. **Architecture:** one versioned public content library, separate from processing.
-2. **Shared implementation:** one `AssetLibraryUI`, one existing modal shell; no
-   duplicate photo/silhouette dialogs.
-3. **Repository:** `createRepository`, `getAssets`, `getCategories`, `getAsset`;
-   static JSON loader can be replaced without rebuilding cards.
-4. **Start:** upload, ready silhouettes, choose photo. Existing upload unchanged.
-5. **Migration:** original metadata and polygon sources are in `library/`; all
-   14 geometries compare exactly with legacy PRESETS. Legacy fast path preserved.
-6. **Photos:** become normal decoded source images; same source event, contour
-   endpoint, optimized worker and physical-layout handoff as ordinary uploads.
-7. **Silhouettes available:** 14, not 150 artificial placeholders.
-8. **Photos available:** 2 licensed samples. Both visibly marked challenging;
-   these are not claims of commercial-grade conversion quality.
-9. **Categories:** 12 reusable localized categories; only nonempty categories
-   shown for each mode. Uploaded source remains available in silhouette mode.
-10. **Search:** localized titles, tags, category label; normalized substring,
-    debounce, no AI or expensive fuzzy search.
-11. **Mobile:** viewport-bounded sheet, 16px search/no autofocus, two-column grid,
-    horizontal category rail, bottom safe-area footer, page-scroll restoration.
-    Tested in WebKit and Chromium; real iPhone keyboard testing still recommended.
-12. **Prepared outputs:** real R1 and R2 caches for both samples at 400×400 mm.
-    R2 may be absent. Different canvas → ordinary processing, not stretched cache.
-13. **Cache:** schema + algorithm fingerprint + source SHA-256 + asset + canvas
-    + shape validation. Missing/invalid/stale artifacts fail back to normal upload.
-14. **Provenance:** author/source/license/rights URL stored for both photos;
-    Sprinno CC0 apple; Paolo Neo public-domain egg. No private uploaded images used.
-15. **Import:** documented in `LIBRARY.md`. Source + thumbnail + manifest metadata;
-    prepared results optional. No UI code edits required for a new silhouette.
-16. **Performance:** 24 assets/page, lazy thumbnails, originals only on selection.
-    A local 500-record/100-search run measured 18 ms; browser search including
-    100ms debounce measured 122 ms. These are local measurements, not phone SLAs.
-17. **Localization:** RU/EN/ZH new strings, titles and categories; documented
-    deterministic fallback for future incomplete translations.
-18. **Result 1:** server/refinement/renderer/export source checks unchanged.
-19. **Result 2:** algorithm and worker hashes unchanged. Only a cache-loading UI
-    method was added; the frozen UI test strips exactly this hook before hashing.
-20. **Result 3:** solver/hybrid/DeepSeek source unchanged, existing handoff verified.
-    No real model inference measurements are claimed by this task.
-21. **Verification:** npm test; typecheck (library contract scope); ESLint (new
-    library/tooling scope); static production-input build validation; 18 Python
-    tests. Browser coverage: upload, preset, photo, R1/R2/R3, prepared/fallback,
-    categories/search, localization, source error, mobile viewport/footer,
-    existing exports, sizes/orientations, timeout and retry. Cache/catalog failures
-    in tests are intentionally injected; ordinary processing calls the real API.
-22. **Files:** `asset-library.js`, `asset-library-ui.js`, `asset-library.d.ts`,
-    `library/**`, `scripts/{library-version,prepare-library-photo,check-static}.cjs`,
-    `LIBRARY.md`, this report, package/lock/ESLint config; integration edits in
-    `index.html`, `optimized-ui.js`, `workspace-refinement.js/.css`; library unit,
-    type and browser tests; async waits in three existing browser tests; local
-    test-server asset routes; frozen-hook check; ignore node_modules.
-23. **Commit:** local commit containing this report (hash supplied in handoff).
-    Unrelated `.DS_Store` files excluded.
-24. **Deployment:** this change has NOT been pushed or deployed. Existing
-    production is https://prismosaic.com; no production serverless build or
-    production smoke test is claimed here. `npm run build` validates the static
-    application's production inputs, not Vercel's Python/Node packaging.
-25. **Remaining content:** more curated/licensed photographs and approved
-    silhouettes are needed. The frozen photo processing still detects texture;
-    samples are honestly marked difficult. A deployment/content review and a
-    physical-iPhone acceptance check remain before broad customer rollout.
+## Project/source UX
 
-## Scope boundary
+1. The empty state now has exactly three equal first-class choices: upload an
+   image, ready silhouettes, and Prismosaic photos.
+2. The working sidebar and properties panel are hidden until a project exists.
+   The old center/right duplicate source controls are hidden compatibility
+   adapters, not customer-facing actions.
+3. An active project shows its source name, source type, and one **Change source**
+   action. It opens the same three-choice flow from Result 1, 2, or 3.
+4. A library card only selects an item. The source is committed after **Select**.
+   **Back** returns from a first-time library visit to Home; **Cancel** returns
+   from replacement to the unchanged current project.
+5. The logo is an accessible Home button. Home navigation preserves the current
+   in-memory project and exposes **Continue current project**.
+6. Canvas size, 30×40 orientation, language, and existing UI state are not reset
+   by Home navigation, source-choice cancellation, or source replacement.
+7. Every new customer-facing string is present in RU, EN, and ZH.
 
-The reusable infrastructure is implemented and locally verified. A large curated
-customer collection and universally clean photo conversion are not delivered by
-this change. Neither fabricated content nor algorithm modifications were used to
-hide that limitation.
+## Shared library and scaling
+
+1. One `AssetLibraryUI` and one modal/sheet serve silhouette and photo modes.
+   Search, populated categories, cards, confirmation, lazy thumbnails, and the
+   24-card page size are shared.
+2. Upload is a source type, not an `Uploaded` silhouette category.
+3. The catalog contains **38 silhouettes** and **2 photos** (40 selectable
+   assets total). No placeholder count is reported as customer content.
+4. Silhouette counts by category: insects 3, animals 3, symbols 11, birds 2,
+   marine 2, nature 6, transport 3, flowers 3, architecture 3, objects 2.
+5. Photo counts by category: nature 2.
+6. The 24 new silhouettes are original company-owned geometric shapes. The two
+   photos retain explicit provenance: Sprinno / CC0 1.0 and Paolo Neo / public
+   domain. No random web images or user uploads were added.
+7. `scripts/import-library-batch.cjs` imports a versioned JSON batch, creates
+   silhouette source/thumbnail files or copies approved photo files, validates
+   and merges metadata, and updates the manifest. The example batch is
+   `library/batches/prismosaic-owned-shapes.json`.
+8. To reach the approximate 100 + 100 target, **62 silhouettes** and **98
+   licensed/owned photos** remain. The content target did not block the UX and
+   scalable import infrastructure.
+
+## Processing boundaries
+
+1. All 14 original preset geometries still compare exactly with the legacy
+   presets. Imported silhouettes use the existing preset-compatible UI path.
+2. Curated photos use the existing decoded-image, contour endpoint, optimized
+   worker, and physical-layout handoff. Optional prepared Result 1/2 data remains
+   supported; missing or incompatible data falls back to normal processing.
+3. Result 1 server/refinement/renderer/export checks are unchanged.
+4. Result 2 algorithms and worker are unchanged.
+5. Result 3, DeepSeek, physical inventory, solver, collision rules, canvas
+   physics, mounting plan, and exports are unchanged.
+
+## Verification
+
+- `npm test`: 18/18 test files passed, including frozen processing fingerprints.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- Chromium project-flow test passed: three sources, both library Back paths,
+  confirm, Home/Continue, Change source/Cancel, 30×40 preservation, RU/EN/ZH,
+  and desktop/mobile layouts.
+- Chromium mobile-library test passed at 390, 430, 375, and 360 px widths plus a
+  short viewport and desktop transition; no covered final cards or page overflow.
+- A test-only 500-record catalog continues to validate pagination/search without
+  loading full source files into the grid.
+
+Production deployment and its smoke-test URL are recorded in the final handoff
+for the commit containing this report. Unrelated `.DS_Store` files are excluded.
+
+## Known limitations
+
+- The content catalog has not yet reached 100 silhouettes and 100 photos.
+- The two licensed photos are intentionally marked challenging and are not a
+  claim that every arbitrary photograph produces a perfect contour.
+- A physical iPhone acceptance pass remains recommended even though the mobile
+  viewport behavior is covered by Chromium/WebKit-oriented browser tests.

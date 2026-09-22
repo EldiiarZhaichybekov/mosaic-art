@@ -1,0 +1,38 @@
+/* Bulk library importer. One JSON batch can add silhouettes and licensed photos. */
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),library=require('../asset-library');
+const root=path.resolve(__dirname,'..');
+const slug=/^[a-z0-9][a-z0-9-]*$/;
+const point=p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite);
+function svg(polys){
+ const points=polys.flat(),xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),minX=Math.min(...xs),minY=Math.min(...ys),maxX=Math.max(...xs),maxY=Math.max(...ys),pad=Math.max(maxX-minX,maxY-minY)*.08||1;
+ const body=polys.map(p=>`<polygon points="${p.map(q=>q.join(',')).join(' ')}"/>`).join('');
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX-pad} ${minY-pad} ${maxX-minX+2*pad} ${maxY-minY+2*pad}"><rect width="100%" height="100%" fill="#fafafa"/><g fill="#151515">${body}</g></svg>\n`;
+}
+function importBatch(batchPath,{replace=false}={}){
+ const absolute=path.resolve(batchPath),batch=JSON.parse(fs.readFileSync(absolute,'utf8')),base=path.dirname(absolute);
+ if(batch?.schemaVersion!==1||!Array.isArray(batch.assets)||!batch.assets.length)throw Error('INVALID_BATCH');
+ const manifestPath=path.join(root,'library/manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8')),incoming=new Set();
+ for(const entry of batch.assets){
+  if(!slug.test(entry.id)||incoming.has(entry.id)||!['silhouette','photo'].includes(entry.type))throw Error('INVALID_BATCH_ASSET_'+entry.id);incoming.add(entry.id);
+  const existing=manifest.assets.find(a=>a.id===entry.id);if(existing&&!replace)throw Error('ASSET_EXISTS_'+entry.id);
+  const folder=path.join(root,'library',entry.type==='photo'?'photos':'silhouettes',entry.id);fs.mkdirSync(folder,{recursive:true});
+  let sourceUrl,thumbnailUrl;
+  if(entry.type==='silhouette'){
+   if(!Array.isArray(entry.polys)||!entry.polys.length||!entry.polys.every(p=>Array.isArray(p)&&p.length>=3&&p.every(point)))throw Error('INVALID_SILHOUETTE_'+entry.id);
+   fs.writeFileSync(path.join(folder,'source.json'),JSON.stringify({schemaVersion:1,polys:entry.polys})+'\n');fs.writeFileSync(path.join(folder,'thumb.svg'),svg(entry.polys));
+   sourceUrl=`/library/silhouettes/${entry.id}/source.json`;thumbnailUrl=`/library/silhouettes/${entry.id}/thumb.svg`;
+  }else{
+   for(const key of ['sourceFile','thumbnailFile','sourceName','author','license','licenseUrl'])if(!entry[key])throw Error('PHOTO_FIELD_'+key+'_'+entry.id);
+   const source=path.resolve(base,entry.sourceFile),thumbnail=path.resolve(base,entry.thumbnailFile);if(!fs.statSync(source).isFile()||!fs.statSync(thumbnail).isFile())throw Error('PHOTO_FILE_'+entry.id);
+   const sourceExt=path.extname(source).toLowerCase(),thumbExt=path.extname(thumbnail).toLowerCase();if(!['.jpg','.jpeg','.png','.webp'].includes(sourceExt)||!['.jpg','.jpeg','.png','.webp'].includes(thumbExt))throw Error('PHOTO_FORMAT_'+entry.id);
+   fs.copyFileSync(source,path.join(folder,'source'+sourceExt));fs.copyFileSync(thumbnail,path.join(folder,'thumb'+thumbExt));sourceUrl=`/library/photos/${entry.id}/source${sourceExt}`;thumbnailUrl=`/library/photos/${entry.id}/thumb${thumbExt}`;
+  }
+  const clean={...entry,sourceUrl,thumbnailUrl};delete clean.polys;delete clean.sourceFile;delete clean.thumbnailFile;
+  manifest.assets=manifest.assets.filter(a=>a.id!==entry.id);manifest.assets.push(clean);
+ }
+ library.validateManifest(manifest);manifest.assets.sort((a,b)=>a.type.localeCompare(b.type)||(a.sortOrder||0)-(b.sortOrder||0)||a.id.localeCompare(b.id));fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
+ return {imported:batch.assets.length,total:manifest.assets.length};
+}
+if(require.main===module){const file=process.argv[2];if(!file)throw Error('Usage: node scripts/import-library-batch.cjs <batch.json> [--replace]');console.log(importBatch(file,{replace:process.argv.includes('--replace')}));}
+module.exports={importBatch};

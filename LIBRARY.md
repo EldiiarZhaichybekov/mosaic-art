@@ -9,9 +9,10 @@ the card UI must not import the manifest. `asset-library.d.ts` defines the publi
 metadata contract. `asset-library-ui.js` implements BOTH modes in the existing
 modal created by `workspace-refinement.js`.
 
-Upload / silhouette / photo are available from the start screen. The properties
-panel can replace the image or open either library mode. Native preset selection
-remains hidden as a compatibility adapter, not a customer-facing dropdown.
+Upload / silhouette / photo are the three equal first-class choices on the start
+screen. An active project shows one Change source action, which opens that same
+three-way chooser. Native preset selection remains hidden as a compatibility
+adapter, not a customer-facing dropdown or an Uploaded library category.
 
 No R1/R2 processing algorithms, R3/DeepSeek, physical constraints, inventory or
 exports changed. The only processing integration hooks are optional prepared
@@ -21,7 +22,8 @@ It does not use a new photo-specific solver.
 
 ## Content in this revision
 
-- 14 existing silhouettes, exact original coordinates; geometry equality tested.
+- 38 selectable silhouettes: 14 exact original presets plus 24 company-owned
+  original geometric silhouettes imported as one batch.
 - 2 openly licensed PHOTO SAMPLES, not a finished curated commercial collection.
 - No generated/fake 150-item customer catalog. Large catalogs exist only in tests.
 - All titles and 12 category definitions have RU/EN/ZH values. Only populated
@@ -38,9 +40,27 @@ It does not use a new photo-specific solver.
   and a localized challenging-sample label. Neither is rated excellent. A first,
   more textured apple candidate by Amada44 was rejected and is not shipped.
 
-**Additional curated/licensed photo assets are still required.** The same is true
-of the 66–136 additional silhouette designs needed to reach an 80–150 collection.
+**Additional curated/licensed photo assets are still required.** Another 62
+silhouettes and 98 photos are needed to reach the current ~100 + ~100 target.
 Do not change algorithms or silently hand-edit cached geometry to improve a sample.
+
+## Bulk import
+
+Add 20–100 assets with one structured JSON file and one command:
+
+```
+node scripts/import-library-batch.cjs path/to/batch.json
+```
+
+The format is demonstrated by
+`library/batches/prismosaic-owned-shapes.json`. A silhouette record carries its
+localized metadata and `polys`; the importer creates `source.json`, a monochrome
+SVG thumbnail and the manifest entry. A photo record instead supplies
+`sourceFile`, `thumbnailFile`, author/source/license/licenseUrl and localized
+metadata; the importer copies the approved files and records provenance. IDs are
+collision-safe by default; use `--replace` only for an intentional reviewed update.
+The completed manifest is validated before it is saved. No UI component changes
+are needed when a batch is imported.
 
 ## Add a silhouette (no UI code edits)
 
@@ -106,7 +126,8 @@ diagnostics contain asset ID/reason only. No source pixels/base64 or secrets log
 
 ## Performance and mobile
 
-24 catalog cards per page plus optional uploaded-image card. Search is NFKC/case
+24 catalog cards per page. Upload is its own source type, never a library category.
+Search is NFKC/case
 normalized substring matching across translated titles, tags and category label;
 100ms input debounce. `Show more` is explicit; double requests are blocked. Only
 lazy thumbnails load in the grid; originals/precomputed data load on selection.

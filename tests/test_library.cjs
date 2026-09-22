@@ -7,7 +7,7 @@ test('R1 server and refinement source frozen',()=>{
 });
 test('catalog, provenance and all 14 original preset geometries preserved',async()=>{
  const context={module:{exports:{}},console};vm.runInNewContext(fs.readFileSync('index.html','utf8').match(/<script>([\s\S]*)<\/script>/)[1],context);
- const presets=context.module.exports.PRESETS;assert.equal(catalog.assets.filter(a=>a.type==='silhouette').length,Object.keys(presets).length);
+ const presets=context.module.exports.PRESETS;assert.ok(catalog.assets.filter(a=>a.type==='silhouette').length>=Object.keys(presets).length);
  for(const [id,p]of Object.entries(presets)){const a=await repo.getAsset(id);assert.ok(a);assert.equal(JSON.stringify(JSON.parse(fs.readFileSync('.'+a.sourceUrl)).polys),JSON.stringify(p.polys));}
  for(const asset of catalog.assets){for(const lang of ['ru','en','zh'])assert.ok(asset.title[lang]);for(const url of [asset.sourceUrl,asset.thumbnailUrl])assert.ok(fs.statSync('.'+url).size>0);if(asset.type==='photo')for(const key of ['sourceName','author','license','licenseUrl'])assert.ok(asset[key]);}
  assert.equal(await repo.getAsset('unknown'),null);assert.deepEqual((await repo.getCategories('photo')).map(c=>c.id),['nature']);
@@ -15,13 +15,13 @@ test('catalog, provenance and all 14 original preset geometries preserved',async
  assert.equal((await repo.getAssets({category:'not-a-category'})).total,0);assert.equal(L.localized({en:'Fallback'},'zh'),'Fallback');
 });
 test('500 metadata assets: pagination/search and empty categories',async()=>{
- const data=structuredClone(catalog);data.assets=Array.from({length:500},(_,i)=>({...data.assets[0],id:'sample-'+i,title:{en:'Sample '+i},tags:['tag'+i]}));const large=L.createRepository({load:()=>data}),start=performance.now();
+ const data=structuredClone(catalog),sample=data.assets.find(a=>a.type==='silhouette');data.assets=Array.from({length:500},(_,i)=>({...sample,id:'sample-'+i,title:{en:'Sample '+i},tags:['tag'+i]}));const large=L.createRepository({load:()=>data}),start=performance.now();
  for(let i=0;i<100;i++)assert.equal((await large.getAssets({search:'tag499'})).total,1);
  const first=await large.getAssets(),second=await large.getAssets({page:2});assert.equal(first.items.length,24);assert.equal(second.items.length,24);assert.ok(first.hasMore);assert.ok(!second.items.some(a=>first.items.some(b=>a.id===b.id)));assert.equal((await large.getCategories('photo')).length,0);
  console.log('500 assets / 100 searches ms:',Math.round(performance.now()-start));
 });
 test('manifest fails safely and repository retries a failed load',async()=>{
- for(const change of [d=>d.assets.push(d.assets[0]),d=>d.assets[0].sourceUrl='/library/../secret',d=>d.assets.at(-1).license='',d=>d.schemaVersion=99]){const d=structuredClone(catalog);change(d);assert.throws(()=>L.validateManifest(d));}
+ for(const change of [d=>d.assets.push(d.assets[0]),d=>d.assets[0].sourceUrl='/library/../secret',d=>d.assets.find(a=>a.type==='photo').license='',d=>d.schemaVersion=99]){const d=structuredClone(catalog);change(d);assert.throws(()=>L.validateManifest(d));}
  let calls=0;const r=L.createRepository({load:()=>{if(!calls++)throw Error('offline');return catalog;}});await assert.rejects(r.getAsset('wolf'));assert.ok(await r.getAsset('wolf'));
 });
 test('prepared results validate version, source, asset, canvas and geometry',()=>{
