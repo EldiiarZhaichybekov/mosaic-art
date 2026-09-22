@@ -2,8 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "name": "mosaic-art",
   "framework": null,
-  "buildCommand": null,
+  "installCommand": "npm install --omit=dev",
+  "buildCommand": "node scripts/check-static.cjs",
   "outputDirectory": ".",
   "cleanUrls": true,
-  "functions": { "api/result3.js": { "maxDuration": 50 } }
+  "functions": {
+    "api/contour.py": {
+      "excludeFiles": "{node_modules/**,tests/**,library/**,assets/**,scripts/**,server/**,**/*.js,**/*.css,**/*.html,**/*.md,**/*.png,**/*.jpg,**/*.jpeg,**/*.webp,**/*.svg,package.json,package-lock.json,eslint.config.cjs}"
+    },
+    "api/result3.js": { "maxDuration": 50 }
+  }
 }
