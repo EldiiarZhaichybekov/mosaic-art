@@ -1,0 +1,126 @@
+[
+  {
+    "name": "butterfly",
+    "before": {
+      "inventory": {
+        "largeUsed": 71,
+        "smallUsed": 0,
+        "totalUsed": 71,
+        "largeRemaining": 29,
+        "smallRemaining": 50,
+        "totalRemaining": 79,
+        "valid": true,
+        "errors": []
+      },
+      "meanTileDeviationMm": 0.217,
+      "maxTileDeviationMm": 2.675,
+      "valid": true,
+      "mixedDiagnostics": {
+        "largeCandidatesGenerated": 2984,
+        "smallCandidatesGenerated": 0,
+        "largeSelected": 71,
+        "smallSelected": 0,
+        "smallRejectedReasons": {
+          "DISABLED": 36
+        }
+      }
+    },
+    "after": {
+      "inventory": {
+        "largeUsed": 70,
+        "smallUsed": 3,
+        "totalUsed": 73,
+        "largeRemaining": 30,
+        "smallRemaining": 47,
+        "totalRemaining": 77,
+        "valid": true,
+        "errors": []
+      },
+      "meanTileDeviationMm": 0.192,
+      "maxTileDeviationMm": 2.675,
+      "valid": true,
+      "mixedDiagnostics": {
+        "largeCandidatesGenerated": 2984,
+        "smallCandidatesGenerated": 11016,
+        "largeSelected": 70,
+        "smallSelected": 3,
+        "smallRejectedReasons": {
+          "CONNECTIVITY_OR_COLLISION": 10,
+          "NO_VISUAL_IMPROVEMENT": 23,
+          "ADJACENT_REPLACEMENT": 2
+        },
+        "smallSelections": [
+          {
+            "sourceIndex": 16,
+            "curvatureDeg": 23.43,
+            "meanImprovementMm": 0.88,
+            "maxDeviationMm": 1.243,
+            "reason": "LOCAL_CURVATURE"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "bat",
+    "before": {
+      "inventory": {
+        "largeUsed": 31,
+        "smallUsed": 0,
+        "totalUsed": 31,
+        "largeRemaining": 69,
+        "smallRemaining": 50,
+        "totalRemaining": 119,
+        "valid": true,
+        "errors": []
+      },
+      "meanTileDeviationMm": 0.553,
+      "maxTileDeviationMm": 2.735,
+      "valid": true,
+      "mixedDiagnostics": {
+        "largeCandidatesGenerated": 1909,
+        "smallCandidatesGenerated": 0,
+        "largeSelected": 31,
+        "smallSelected": 0,
+        "smallRejectedReasons": {
+          "DISABLED": 21
+        }
+      }
+    },
+    "after": {
+      "inventory": {
+        "largeUsed": 30,
+        "smallUsed": 3,
+        "totalUsed": 33,
+        "largeRemaining": 70,
+        "smallRemaining": 47,
+        "totalRemaining": 117,
+        "valid": true,
+        "errors": []
+      },
+      "meanTileDeviationMm": 0.498,
+      "maxTileDeviationMm": 2.735,
+      "valid": true,
+      "mixedDiagnostics": {
+        "largeCandidatesGenerated": 1909,
+        "smallCandidatesGenerated": 6156,
+        "largeSelected": 30,
+        "smallSelected": 3,
+        "smallRejectedReasons": {
+          "CONNECTIVITY_OR_COLLISION": 7,
+          "NO_VISUAL_IMPROVEMENT": 11,
+          "ADJACENT_REPLACEMENT": 2
+        },
+        "smallSelections": [
+          {
+            "sourceIndex": 4,
+            "curvatureDeg": 5.55,
+            "meanImprovementMm": 1.163,
+            "maxDeviationMm": 1.202,
+            "reason": "DEVIATION_CORRECTION"
+          }
+        ]
+      }
+    }
+  }
+]

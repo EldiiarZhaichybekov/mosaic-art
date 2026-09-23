@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-22T13:51:35.033Z",
-  "solverVersion": "physical-tiles-v4",
+  "generatedAt": "2026-09-23T01:32:57.924Z",
+  "solverVersion": "physical-tiles-v5",
   "manifestSha256": "3891f91b53fa6af6cafb8638994db581c64ee963680a3ceb7ba2fd46984538d1",
   "summary": {
     "assets": 61,
@@ -19,7 +19,7 @@
       "title": "Red apple",
       "type": "photo",
       "status": "pass",
-      "durationMs": 11515,
+      "durationMs": 16766,
       "canvases": [
         {
           "format": "40x40",
@@ -28,10 +28,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 51,
-          "largeTiles": 51,
-          "smallTiles": 0,
-          "durationMs": 9731,
+          "tiles": 53,
+          "largeTiles": 50,
+          "smallTiles": 3,
+          "durationMs": 13308,
           "errors": []
         },
         {
@@ -41,10 +41,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 65,
-          "largeTiles": 65,
-          "smallTiles": 0,
-          "durationMs": 956,
+          "tiles": 79,
+          "largeTiles": 58,
+          "smallTiles": 21,
+          "durationMs": 1901,
           "errors": []
         },
         {
@@ -54,10 +54,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 59,
-          "largeTiles": 59,
-          "smallTiles": 0,
-          "durationMs": 828,
+          "tiles": 65,
+          "largeTiles": 56,
+          "smallTiles": 9,
+          "durationMs": 1557,
           "errors": []
         }
       ]
@@ -67,7 +67,7 @@
       "title": "Egg on white",
       "type": "photo",
       "status": "pass",
-      "durationMs": 430,
+      "durationMs": 3227,
       "canvases": [
         {
           "format": "40x40",
@@ -76,10 +76,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 34,
-          "largeTiles": 34,
-          "smallTiles": 0,
-          "durationMs": 183,
+          "tiles": 38,
+          "largeTiles": 32,
+          "smallTiles": 6,
+          "durationMs": 1244,
           "errors": []
         },
         {
@@ -89,10 +89,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 23,
-          "largeTiles": 23,
-          "smallTiles": 0,
-          "durationMs": 67,
+          "tiles": 27,
+          "largeTiles": 21,
+          "smallTiles": 6,
+          "durationMs": 751,
           "errors": []
         },
         {
@@ -102,10 +102,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 34,
-          "largeTiles": 34,
-          "smallTiles": 0,
-          "durationMs": 180,
+          "tiles": 38,
+          "largeTiles": 32,
+          "smallTiles": 6,
+          "durationMs": 1232,
           "errors": []
         }
       ]
@@ -115,7 +115,7 @@
       "title": "Butterfly (sharp wings)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 8867,
+      "durationMs": 11147,
       "canvases": [
         {
           "format": "40x40",
@@ -124,10 +124,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 43,
-          "largeTiles": 43,
-          "smallTiles": 0,
-          "durationMs": 3971,
+          "tiles": 49,
+          "largeTiles": 40,
+          "smallTiles": 9,
+          "durationMs": 5018,
           "errors": []
         },
         {
@@ -140,7 +140,7 @@
           "tiles": 25,
           "largeTiles": 25,
           "smallTiles": 0,
-          "durationMs": 2385,
+          "durationMs": 2897,
           "errors": []
         },
         {
@@ -150,10 +150,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 33,
-          "largeTiles": 33,
-          "smallTiles": 0,
-          "durationMs": 2511,
+          "tiles": 37,
+          "largeTiles": 31,
+          "smallTiles": 6,
+          "durationMs": 3232,
           "errors": []
         }
       ]
@@ -163,7 +163,55 @@
       "title": "Wolf (profile)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 7450,
+      "durationMs": 8961,
+      "canvases": [
+        {
+          "format": "40x40",
+          "status": "pass",
+          "initialStatus": "fail",
+          "fallbackProfile": "reduced-detail",
+          "inputSource": "result2",
+          "emergencyFallback": false,
+          "tiles": 35,
+          "largeTiles": 32,
+          "smallTiles": 3,
+          "durationMs": 3805,
+          "errors": []
+        },
+        {
+          "format": "30x40-portrait",
+          "status": "pass",
+          "initialStatus": "fail",
+          "fallbackProfile": "reduced-detail",
+          "inputSource": "result2",
+          "emergencyFallback": false,
+          "tiles": 24,
+          "largeTiles": 21,
+          "smallTiles": 3,
+          "durationMs": 2187,
+          "errors": []
+        },
+        {
+          "format": "30x40-landscape",
+          "status": "pass",
+          "initialStatus": "fail",
+          "fallbackProfile": "reduced-detail",
+          "inputSource": "result2",
+          "emergencyFallback": false,
+          "tiles": 30,
+          "largeTiles": 27,
+          "smallTiles": 3,
+          "durationMs": 2969,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "id": "star",
+      "title": "Star",
+      "type": "silhouette",
+      "status": "pass",
+      "durationMs": 9536,
       "canvases": [
         {
           "format": "40x40",
@@ -175,7 +223,7 @@
           "tiles": 33,
           "largeTiles": 33,
           "smallTiles": 0,
-          "durationMs": 3101,
+          "durationMs": 4276,
           "errors": []
         },
         {
@@ -186,9 +234,9 @@
           "inputSource": "result2",
           "emergencyFallback": false,
           "tiles": 22,
-          "largeTiles": 22,
-          "smallTiles": 0,
-          "durationMs": 1871,
+          "largeTiles": 19,
+          "smallTiles": 3,
+          "durationMs": 2484,
           "errors": []
         },
         {
@@ -198,20 +246,68 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 2478,
+          "tiles": 24,
+          "largeTiles": 21,
+          "smallTiles": 3,
+          "durationMs": 2776,
           "errors": []
         }
       ]
     },
     {
-      "id": "star",
-      "title": "Star",
+      "id": "heart",
+      "title": "Heart",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 7250,
+      "durationMs": 10288,
+      "canvases": [
+        {
+          "format": "40x40",
+          "status": "pass",
+          "initialStatus": "pass",
+          "fallbackProfile": "normal",
+          "inputSource": "result2",
+          "emergencyFallback": false,
+          "tiles": 38,
+          "largeTiles": 35,
+          "smallTiles": 3,
+          "durationMs": 6363,
+          "errors": []
+        },
+        {
+          "format": "30x40-portrait",
+          "status": "pass",
+          "initialStatus": "pass",
+          "fallbackProfile": "normal",
+          "inputSource": "result2",
+          "emergencyFallback": false,
+          "tiles": 30,
+          "largeTiles": 24,
+          "smallTiles": 6,
+          "durationMs": 2917,
+          "errors": []
+        },
+        {
+          "format": "30x40-landscape",
+          "status": "pass",
+          "initialStatus": "pass",
+          "fallbackProfile": "normal",
+          "inputSource": "result2",
+          "emergencyFallback": false,
+          "tiles": 34,
+          "largeTiles": 28,
+          "smallTiles": 6,
+          "durationMs": 1008,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "id": "bird",
+      "title": "Bird (flying)",
+      "type": "silhouette",
+      "status": "pass",
+      "durationMs": 7259,
       "canvases": [
         {
           "format": "40x40",
@@ -220,10 +316,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 33,
-          "largeTiles": 33,
+          "tiles": 27,
+          "largeTiles": 27,
           "smallTiles": 0,
-          "durationMs": 3000,
+          "durationMs": 2785,
           "errors": []
         },
         {
@@ -234,105 +330,9 @@
           "inputSource": "result2",
           "emergencyFallback": false,
           "tiles": 20,
-          "largeTiles": 20,
-          "smallTiles": 0,
-          "durationMs": 1995,
-          "errors": []
-        },
-        {
-          "format": "30x40-landscape",
-          "status": "pass",
-          "initialStatus": "fail",
-          "fallbackProfile": "reduced-detail",
-          "inputSource": "result2",
-          "emergencyFallback": false,
-          "tiles": 22,
-          "largeTiles": 22,
-          "smallTiles": 0,
-          "durationMs": 2255,
-          "errors": []
-        }
-      ]
-    },
-    {
-      "id": "heart",
-      "title": "Heart",
-      "type": "silhouette",
-      "status": "pass",
-      "durationMs": 941,
-      "canvases": [
-        {
-          "format": "40x40",
-          "status": "pass",
-          "initialStatus": "pass",
-          "fallbackProfile": "normal",
-          "inputSource": "result2",
-          "emergencyFallback": false,
-          "tiles": 36,
-          "largeTiles": 36,
-          "smallTiles": 0,
-          "durationMs": 548,
-          "errors": []
-        },
-        {
-          "format": "30x40-portrait",
-          "status": "pass",
-          "initialStatus": "pass",
-          "fallbackProfile": "normal",
-          "inputSource": "result2",
-          "emergencyFallback": false,
-          "tiles": 26,
-          "largeTiles": 26,
-          "smallTiles": 0,
-          "durationMs": 280,
-          "errors": []
-        },
-        {
-          "format": "30x40-landscape",
-          "status": "pass",
-          "initialStatus": "pass",
-          "fallbackProfile": "normal",
-          "inputSource": "result2",
-          "emergencyFallback": false,
-          "tiles": 30,
-          "largeTiles": 30,
-          "smallTiles": 0,
-          "durationMs": 113,
-          "errors": []
-        }
-      ]
-    },
-    {
-      "id": "bird",
-      "title": "Bird (flying)",
-      "type": "silhouette",
-      "status": "pass",
-      "durationMs": 4839,
-      "canvases": [
-        {
-          "format": "40x40",
-          "status": "pass",
-          "initialStatus": "fail",
-          "fallbackProfile": "reduced-detail",
-          "inputSource": "result2",
-          "emergencyFallback": false,
-          "tiles": 27,
-          "largeTiles": 27,
-          "smallTiles": 0,
-          "durationMs": 1916,
-          "errors": []
-        },
-        {
-          "format": "30x40-portrait",
-          "status": "pass",
-          "initialStatus": "fail",
-          "fallbackProfile": "reduced-detail",
-          "inputSource": "result2",
-          "emergencyFallback": false,
-          "tiles": 18,
-          "largeTiles": 18,
-          "smallTiles": 0,
-          "durationMs": 1032,
+          "largeTiles": 17,
+          "smallTiles": 3,
+          "durationMs": 1680,
           "errors": []
         },
         {
@@ -345,7 +345,7 @@
           "tiles": 27,
           "largeTiles": 27,
           "smallTiles": 0,
-          "durationMs": 1891,
+          "durationMs": 2794,
           "errors": []
         }
       ]
@@ -355,7 +355,7 @@
       "title": "Cat (head)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5906,
+      "durationMs": 8355,
       "canvases": [
         {
           "format": "40x40",
@@ -364,10 +364,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 32,
-          "largeTiles": 32,
-          "smallTiles": 0,
-          "durationMs": 2072,
+          "tiles": 34,
+          "largeTiles": 31,
+          "smallTiles": 3,
+          "durationMs": 3285,
           "errors": []
         },
         {
@@ -380,7 +380,7 @@
           "tiles": 24,
           "largeTiles": 24,
           "smallTiles": 0,
-          "durationMs": 1722,
+          "durationMs": 2059,
           "errors": []
         },
         {
@@ -390,10 +390,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 31,
-          "largeTiles": 31,
-          "smallTiles": 0,
-          "durationMs": 2112,
+          "tiles": 33,
+          "largeTiles": 30,
+          "smallTiles": 3,
+          "durationMs": 3011,
           "errors": []
         }
       ]
@@ -403,7 +403,7 @@
       "title": "Fish",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 2073,
+      "durationMs": 7938,
       "canvases": [
         {
           "format": "40x40",
@@ -412,10 +412,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 294,
+          "tiles": 32,
+          "largeTiles": 26,
+          "smallTiles": 6,
+          "durationMs": 3152,
           "errors": []
         },
         {
@@ -428,7 +428,7 @@
           "tiles": 19,
           "largeTiles": 19,
           "smallTiles": 0,
-          "durationMs": 1486,
+          "durationMs": 1682,
           "errors": []
         },
         {
@@ -438,10 +438,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 293,
+          "tiles": 32,
+          "largeTiles": 26,
+          "smallTiles": 6,
+          "durationMs": 3104,
           "errors": []
         }
       ]
@@ -451,7 +451,7 @@
       "title": "Spruce tree",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 6124,
+      "durationMs": 8073,
       "canvases": [
         {
           "format": "40x40",
@@ -463,7 +463,7 @@
           "tiles": 31,
           "largeTiles": 31,
           "smallTiles": 0,
-          "durationMs": 2273,
+          "durationMs": 3240,
           "errors": []
         },
         {
@@ -473,10 +473,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 23,
-          "largeTiles": 23,
-          "smallTiles": 0,
-          "durationMs": 2227,
+          "tiles": 27,
+          "largeTiles": 21,
+          "smallTiles": 6,
+          "durationMs": 2730,
           "errors": []
         },
         {
@@ -486,10 +486,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 20,
-          "largeTiles": 20,
-          "smallTiles": 0,
-          "durationMs": 1624,
+          "tiles": 22,
+          "largeTiles": 19,
+          "smallTiles": 3,
+          "durationMs": 2103,
           "errors": []
         }
       ]
@@ -499,7 +499,7 @@
       "title": "Rocket",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5381,
+      "durationMs": 7271,
       "canvases": [
         {
           "format": "40x40",
@@ -508,10 +508,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 24,
-          "largeTiles": 24,
-          "smallTiles": 0,
-          "durationMs": 2055,
+          "tiles": 28,
+          "largeTiles": 22,
+          "smallTiles": 6,
+          "durationMs": 2916,
           "errors": []
         },
         {
@@ -521,10 +521,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 24,
-          "largeTiles": 24,
-          "smallTiles": 0,
-          "durationMs": 2032,
+          "tiles": 28,
+          "largeTiles": 22,
+          "smallTiles": 6,
+          "durationMs": 2846,
           "errors": []
         },
         {
@@ -537,7 +537,7 @@
           "tiles": 18,
           "largeTiles": 18,
           "smallTiles": 0,
-          "durationMs": 1294,
+          "durationMs": 1509,
           "errors": []
         }
       ]
@@ -547,7 +547,7 @@
       "title": "Crown",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 3441,
+      "durationMs": 7405,
       "canvases": [
         {
           "format": "40x40",
@@ -559,7 +559,7 @@
           "tiles": 51,
           "largeTiles": 51,
           "smallTiles": 0,
-          "durationMs": 597,
+          "durationMs": 2416,
           "errors": []
         },
         {
@@ -569,10 +569,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 24,
-          "largeTiles": 24,
-          "smallTiles": 0,
-          "durationMs": 2259,
+          "tiles": 26,
+          "largeTiles": 23,
+          "smallTiles": 3,
+          "durationMs": 2620,
           "errors": []
         },
         {
@@ -585,7 +585,7 @@
           "tiles": 51,
           "largeTiles": 51,
           "smallTiles": 0,
-          "durationMs": 585,
+          "durationMs": 2369,
           "errors": []
         }
       ]
@@ -595,7 +595,7 @@
       "title": "Crescent moon",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 169,
+      "durationMs": 4184,
       "canvases": [
         {
           "format": "40x40",
@@ -604,10 +604,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 30,
-          "largeTiles": 30,
-          "smallTiles": 0,
-          "durationMs": 55,
+          "tiles": 36,
+          "largeTiles": 27,
+          "smallTiles": 9,
+          "durationMs": 1783,
           "errors": []
         },
         {
@@ -617,10 +617,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 30,
-          "largeTiles": 30,
-          "smallTiles": 0,
-          "durationMs": 54,
+          "tiles": 36,
+          "largeTiles": 27,
+          "smallTiles": 9,
+          "durationMs": 1772,
           "errors": []
         },
         {
@@ -630,10 +630,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 22,
-          "largeTiles": 22,
-          "smallTiles": 0,
-          "durationMs": 60,
+          "tiles": 26,
+          "largeTiles": 20,
+          "smallTiles": 6,
+          "durationMs": 628,
           "errors": []
         }
       ]
@@ -643,7 +643,7 @@
       "title": "Flower",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 10094,
+      "durationMs": 23052,
       "canvases": [
         {
           "format": "40x40",
@@ -655,7 +655,7 @@
           "tiles": 48,
           "largeTiles": 48,
           "smallTiles": 0,
-          "durationMs": 535,
+          "durationMs": 9985,
           "errors": []
         },
         {
@@ -665,10 +665,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 22,
-          "largeTiles": 22,
-          "smallTiles": 0,
-          "durationMs": 9485,
+          "tiles": 30,
+          "largeTiles": 18,
+          "smallTiles": 12,
+          "durationMs": 9516,
           "errors": []
         },
         {
@@ -681,7 +681,7 @@
           "tiles": 36,
           "largeTiles": 36,
           "smallTiles": 0,
-          "durationMs": 74,
+          "durationMs": 3551,
           "errors": []
         }
       ]
@@ -691,7 +691,7 @@
       "title": "House",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 2098,
+      "durationMs": 5711,
       "canvases": [
         {
           "format": "40x40",
@@ -703,7 +703,7 @@
           "tiles": 38,
           "largeTiles": 38,
           "smallTiles": 0,
-          "durationMs": 238,
+          "durationMs": 1060,
           "errors": []
         },
         {
@@ -716,7 +716,7 @@
           "tiles": 29,
           "largeTiles": 29,
           "smallTiles": 0,
-          "durationMs": 298,
+          "durationMs": 1459,
           "errors": []
         },
         {
@@ -729,7 +729,7 @@
           "tiles": 29,
           "largeTiles": 29,
           "smallTiles": 0,
-          "durationMs": 1562,
+          "durationMs": 3192,
           "errors": []
         }
       ]
@@ -739,7 +739,7 @@
       "title": "Dragonfly",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 9940,
+      "durationMs": 11865,
       "canvases": [
         {
           "format": "40x40",
@@ -751,7 +751,7 @@
           "tiles": 29,
           "largeTiles": 29,
           "smallTiles": 0,
-          "durationMs": 2504,
+          "durationMs": 3450,
           "errors": []
         },
         {
@@ -764,7 +764,7 @@
           "tiles": 19,
           "largeTiles": 19,
           "smallTiles": 0,
-          "durationMs": 5124,
+          "durationMs": 5558,
           "errors": []
         },
         {
@@ -777,7 +777,7 @@
           "tiles": 23,
           "largeTiles": 23,
           "smallTiles": 0,
-          "durationMs": 2312,
+          "durationMs": 2857,
           "errors": []
         }
       ]
@@ -787,7 +787,7 @@
       "title": "Anchor",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 12876,
+      "durationMs": 14913,
       "canvases": [
         {
           "format": "40x40",
@@ -796,10 +796,10 @@
           "fallbackProfile": "outer-priority",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 33,
-          "largeTiles": 33,
-          "smallTiles": 0,
-          "durationMs": 8687,
+          "tiles": 39,
+          "largeTiles": 30,
+          "smallTiles": 9,
+          "durationMs": 9344,
           "errors": []
         },
         {
@@ -809,10 +809,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 33,
-          "largeTiles": 33,
-          "smallTiles": 0,
-          "durationMs": 2556,
+          "tiles": 35,
+          "largeTiles": 32,
+          "smallTiles": 3,
+          "durationMs": 3410,
           "errors": []
         },
         {
@@ -822,10 +822,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 22,
-          "largeTiles": 22,
-          "smallTiles": 0,
-          "durationMs": 1633,
+          "tiles": 24,
+          "largeTiles": 21,
+          "smallTiles": 3,
+          "durationMs": 2159,
           "errors": []
         }
       ]
@@ -835,7 +835,7 @@
       "title": "Bell",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 6840,
+      "durationMs": 8898,
       "canvases": [
         {
           "format": "40x40",
@@ -847,7 +847,7 @@
           "tiles": 37,
           "largeTiles": 37,
           "smallTiles": 0,
-          "durationMs": 3160,
+          "durationMs": 4062,
           "errors": []
         },
         {
@@ -857,10 +857,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 31,
-          "largeTiles": 31,
-          "smallTiles": 0,
-          "durationMs": 1657,
+          "tiles": 35,
+          "largeTiles": 29,
+          "smallTiles": 6,
+          "durationMs": 2197,
           "errors": []
         },
         {
@@ -873,7 +873,7 @@
           "tiles": 26,
           "largeTiles": 26,
           "smallTiles": 0,
-          "durationMs": 2023,
+          "durationMs": 2639,
           "errors": []
         }
       ]
@@ -883,7 +883,7 @@
       "title": "Umbrella",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 4988,
+      "durationMs": 6543,
       "canvases": [
         {
           "format": "40x40",
@@ -892,10 +892,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 1956,
+          "tiles": 33,
+          "largeTiles": 27,
+          "smallTiles": 6,
+          "durationMs": 2504,
           "errors": []
         },
         {
@@ -905,10 +905,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 22,
-          "largeTiles": 22,
-          "smallTiles": 0,
-          "durationMs": 1090,
+          "tiles": 26,
+          "largeTiles": 20,
+          "smallTiles": 6,
+          "durationMs": 1583,
           "errors": []
         },
         {
@@ -918,10 +918,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 27,
-          "largeTiles": 27,
-          "smallTiles": 0,
-          "durationMs": 1942,
+          "tiles": 32,
+          "largeTiles": 26,
+          "smallTiles": 6,
+          "durationMs": 2456,
           "errors": []
         }
       ]
@@ -931,7 +931,7 @@
       "title": "Key",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 25555,
+      "durationMs": 27064,
       "canvases": [
         {
           "format": "40x40",
@@ -940,10 +940,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 25,
-          "largeTiles": 25,
-          "smallTiles": 0,
-          "durationMs": 10037,
+          "tiles": 35,
+          "largeTiles": 20,
+          "smallTiles": 15,
+          "durationMs": 10913,
           "errors": []
         },
         {
@@ -953,10 +953,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 18,
-          "largeTiles": 18,
-          "smallTiles": 0,
-          "durationMs": 5764,
+          "tiles": 26,
+          "largeTiles": 14,
+          "smallTiles": 12,
+          "durationMs": 6189,
           "errors": []
         },
         {
@@ -966,10 +966,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 24,
-          "largeTiles": 24,
-          "smallTiles": 0,
-          "durationMs": 9754,
+          "tiles": 30,
+          "largeTiles": 21,
+          "smallTiles": 9,
+          "durationMs": 9962,
           "errors": []
         }
       ]
@@ -979,7 +979,7 @@
       "title": "Gift",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 7275,
+      "durationMs": 10586,
       "canvases": [
         {
           "format": "40x40",
@@ -991,7 +991,7 @@
           "tiles": 52,
           "largeTiles": 52,
           "smallTiles": 0,
-          "durationMs": 2731,
+          "durationMs": 4608,
           "errors": []
         },
         {
@@ -1001,10 +1001,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 34,
-          "largeTiles": 34,
-          "smallTiles": 0,
-          "durationMs": 1496,
+          "tiles": 36,
+          "largeTiles": 33,
+          "smallTiles": 3,
+          "durationMs": 2267,
           "errors": []
         },
         {
@@ -1017,7 +1017,7 @@
           "tiles": 39,
           "largeTiles": 39,
           "smallTiles": 0,
-          "durationMs": 3048,
+          "durationMs": 3711,
           "errors": []
         }
       ]
@@ -1027,7 +1027,7 @@
       "title": "Pine tree",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 6096,
+      "durationMs": 8464,
       "canvases": [
         {
           "format": "40x40",
@@ -1039,7 +1039,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 2510,
+          "durationMs": 3563,
           "errors": []
         },
         {
@@ -1049,10 +1049,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 27,
-          "largeTiles": 27,
-          "smallTiles": 0,
-          "durationMs": 1887,
+          "tiles": 33,
+          "largeTiles": 24,
+          "smallTiles": 9,
+          "durationMs": 2598,
           "errors": []
         },
         {
@@ -1065,7 +1065,7 @@
           "tiles": 20,
           "largeTiles": 20,
           "smallTiles": 0,
-          "durationMs": 1699,
+          "durationMs": 2303,
           "errors": []
         }
       ]
@@ -1075,7 +1075,7 @@
       "title": "Mushroom",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 4397,
+      "durationMs": 6810,
       "canvases": [
         {
           "format": "40x40",
@@ -1084,10 +1084,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 39,
-          "largeTiles": 39,
-          "smallTiles": 0,
-          "durationMs": 183,
+          "tiles": 41,
+          "largeTiles": 38,
+          "smallTiles": 3,
+          "durationMs": 1531,
           "errors": []
         },
         {
@@ -1100,7 +1100,7 @@
           "tiles": 27,
           "largeTiles": 27,
           "smallTiles": 0,
-          "durationMs": 2102,
+          "durationMs": 2583,
           "errors": []
         },
         {
@@ -1113,7 +1113,7 @@
           "tiles": 28,
           "largeTiles": 28,
           "smallTiles": 0,
-          "durationMs": 2112,
+          "durationMs": 2696,
           "errors": []
         }
       ]
@@ -1123,7 +1123,7 @@
       "title": "Rabbit (head)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 14155,
+      "durationMs": 17026,
       "canvases": [
         {
           "format": "40x40",
@@ -1132,10 +1132,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 40,
-          "largeTiles": 40,
-          "smallTiles": 0,
-          "durationMs": 4034,
+          "tiles": 42,
+          "largeTiles": 39,
+          "smallTiles": 3,
+          "durationMs": 5184,
           "errors": []
         },
         {
@@ -1145,10 +1145,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 40,
-          "largeTiles": 40,
-          "smallTiles": 0,
-          "durationMs": 4047,
+          "tiles": 42,
+          "largeTiles": 39,
+          "smallTiles": 3,
+          "durationMs": 5118,
           "errors": []
         },
         {
@@ -1161,7 +1161,7 @@
           "tiles": 23,
           "largeTiles": 23,
           "smallTiles": 0,
-          "durationMs": 6074,
+          "durationMs": 6724,
           "errors": []
         }
       ]
@@ -1171,7 +1171,7 @@
       "title": "Fox (head)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 351,
+      "durationMs": 5430,
       "canvases": [
         {
           "format": "40x40",
@@ -1183,7 +1183,7 @@
           "tiles": 39,
           "largeTiles": 39,
           "smallTiles": 0,
-          "durationMs": 207,
+          "durationMs": 1245,
           "errors": []
         },
         {
@@ -1193,10 +1193,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 27,
-          "largeTiles": 27,
-          "smallTiles": 0,
-          "durationMs": 45,
+          "tiles": 33,
+          "largeTiles": 24,
+          "smallTiles": 9,
+          "durationMs": 2240,
           "errors": []
         },
         {
@@ -1206,10 +1206,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 30,
-          "largeTiles": 30,
-          "smallTiles": 0,
-          "durationMs": 99,
+          "tiles": 36,
+          "largeTiles": 27,
+          "smallTiles": 9,
+          "durationMs": 1945,
           "errors": []
         }
       ]
@@ -1219,7 +1219,7 @@
       "title": "Dog (head)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 7507,
+      "durationMs": 10483,
       "canvases": [
         {
           "format": "40x40",
@@ -1228,10 +1228,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 39,
-          "largeTiles": 39,
-          "smallTiles": 0,
-          "durationMs": 2947,
+          "tiles": 41,
+          "largeTiles": 38,
+          "smallTiles": 3,
+          "durationMs": 4844,
           "errors": []
         },
         {
@@ -1241,10 +1241,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 2072,
+          "tiles": 30,
+          "largeTiles": 27,
+          "smallTiles": 3,
+          "durationMs": 2698,
           "errors": []
         },
         {
@@ -1257,7 +1257,7 @@
           "tiles": 29,
           "largeTiles": 29,
           "smallTiles": 0,
-          "durationMs": 2488,
+          "durationMs": 2941,
           "errors": []
         }
       ]
@@ -1267,7 +1267,7 @@
       "title": "Turtle",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 4928,
+      "durationMs": 7373,
       "canvases": [
         {
           "format": "40x40",
@@ -1279,7 +1279,7 @@
           "tiles": 34,
           "largeTiles": 34,
           "smallTiles": 0,
-          "durationMs": 1790,
+          "durationMs": 2743,
           "errors": []
         },
         {
@@ -1289,10 +1289,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 21,
-          "largeTiles": 21,
-          "smallTiles": 0,
-          "durationMs": 1375,
+          "tiles": 23,
+          "largeTiles": 20,
+          "smallTiles": 3,
+          "durationMs": 1925,
           "errors": []
         },
         {
@@ -1305,7 +1305,7 @@
           "tiles": 34,
           "largeTiles": 34,
           "smallTiles": 0,
-          "durationMs": 1763,
+          "durationMs": 2705,
           "errors": []
         }
       ]
@@ -1315,7 +1315,7 @@
       "title": "Swan",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 6304,
+      "durationMs": 7651,
       "canvases": [
         {
           "format": "40x40",
@@ -1324,10 +1324,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 2687,
+          "tiles": 31,
+          "largeTiles": 28,
+          "smallTiles": 3,
+          "durationMs": 3313,
           "errors": []
         },
         {
@@ -1340,7 +1340,7 @@
           "tiles": 21,
           "largeTiles": 21,
           "smallTiles": 0,
-          "durationMs": 1802,
+          "durationMs": 2164,
           "errors": []
         },
         {
@@ -1353,7 +1353,7 @@
           "tiles": 21,
           "largeTiles": 21,
           "smallTiles": 0,
-          "durationMs": 1815,
+          "durationMs": 2174,
           "errors": []
         }
       ]
@@ -1363,7 +1363,7 @@
       "title": "Hummingbird",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 8803,
+      "durationMs": 10679,
       "canvases": [
         {
           "format": "40x40",
@@ -1375,7 +1375,7 @@
           "tiles": 29,
           "largeTiles": 29,
           "smallTiles": 0,
-          "durationMs": 2397,
+          "durationMs": 3566,
           "errors": []
         },
         {
@@ -1385,10 +1385,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 19,
-          "largeTiles": 19,
-          "smallTiles": 0,
-          "durationMs": 4515,
+          "tiles": 25,
+          "largeTiles": 16,
+          "smallTiles": 9,
+          "durationMs": 4946,
           "errors": []
         },
         {
@@ -1401,7 +1401,7 @@
           "tiles": 21,
           "largeTiles": 21,
           "smallTiles": 0,
-          "durationMs": 1891,
+          "durationMs": 2167,
           "errors": []
         }
       ]
@@ -1411,7 +1411,7 @@
       "title": "Car",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 4949,
+      "durationMs": 6647,
       "canvases": [
         {
           "format": "40x40",
@@ -1423,7 +1423,7 @@
           "tiles": 30,
           "largeTiles": 30,
           "smallTiles": 0,
-          "durationMs": 1975,
+          "durationMs": 2622,
           "errors": []
         },
         {
@@ -1433,10 +1433,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 22,
-          "largeTiles": 22,
-          "smallTiles": 0,
-          "durationMs": 993,
+          "tiles": 26,
+          "largeTiles": 20,
+          "smallTiles": 6,
+          "durationMs": 1407,
           "errors": []
         },
         {
@@ -1449,7 +1449,7 @@
           "tiles": 30,
           "largeTiles": 30,
           "smallTiles": 0,
-          "durationMs": 1981,
+          "durationMs": 2618,
           "errors": []
         }
       ]
@@ -1459,7 +1459,7 @@
       "title": "Snowflake",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 31559,
+      "durationMs": 32769,
       "canvases": [
         {
           "format": "40x40",
@@ -1468,10 +1468,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 13465,
+          "tiles": 36,
+          "largeTiles": 24,
+          "smallTiles": 12,
+          "durationMs": 13768,
           "errors": []
         },
         {
@@ -1481,10 +1481,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 21,
-          "largeTiles": 21,
-          "smallTiles": 0,
-          "durationMs": 9255,
+          "tiles": 31,
+          "largeTiles": 16,
+          "smallTiles": 15,
+          "durationMs": 9761,
           "errors": []
         },
         {
@@ -1494,10 +1494,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 20,
-          "largeTiles": 20,
-          "smallTiles": 0,
-          "durationMs": 8839,
+          "tiles": 28,
+          "largeTiles": 16,
+          "smallTiles": 12,
+          "durationMs": 9240,
           "errors": []
         }
       ]
@@ -1507,7 +1507,7 @@
       "title": "Maple leaf",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 19493,
+      "durationMs": 21298,
       "canvases": [
         {
           "format": "40x40",
@@ -1516,10 +1516,10 @@
           "fallbackProfile": "outer-priority",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 30,
-          "largeTiles": 30,
-          "smallTiles": 0,
-          "durationMs": 6160,
+          "tiles": 32,
+          "largeTiles": 29,
+          "smallTiles": 3,
+          "durationMs": 6799,
           "errors": []
         },
         {
@@ -1529,10 +1529,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 21,
-          "largeTiles": 21,
-          "smallTiles": 0,
-          "durationMs": 7463,
+          "tiles": 29,
+          "largeTiles": 17,
+          "smallTiles": 12,
+          "durationMs": 8195,
           "errors": []
         },
         {
@@ -1545,7 +1545,7 @@
           "tiles": 20,
           "largeTiles": 20,
           "smallTiles": 0,
-          "durationMs": 5870,
+          "durationMs": 6304,
           "errors": []
         }
       ]
@@ -1555,7 +1555,7 @@
       "title": "Dolphin",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 4407,
+      "durationMs": 6299,
       "canvases": [
         {
           "format": "40x40",
@@ -1567,7 +1567,7 @@
           "tiles": 24,
           "largeTiles": 24,
           "smallTiles": 0,
-          "durationMs": 1663,
+          "durationMs": 2382,
           "errors": []
         },
         {
@@ -1580,7 +1580,7 @@
           "tiles": 17,
           "largeTiles": 17,
           "smallTiles": 0,
-          "durationMs": 1076,
+          "durationMs": 1525,
           "errors": []
         },
         {
@@ -1593,7 +1593,7 @@
           "tiles": 24,
           "largeTiles": 24,
           "smallTiles": 0,
-          "durationMs": 1668,
+          "durationMs": 2392,
           "errors": []
         }
       ]
@@ -1603,7 +1603,7 @@
       "title": "Elephant (head)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 6132,
+      "durationMs": 8850,
       "canvases": [
         {
           "format": "40x40",
@@ -1612,10 +1612,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 39,
-          "largeTiles": 39,
-          "smallTiles": 0,
-          "durationMs": 2627,
+          "tiles": 43,
+          "largeTiles": 37,
+          "smallTiles": 6,
+          "durationMs": 4164,
           "errors": []
         },
         {
@@ -1625,10 +1625,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 27,
-          "largeTiles": 27,
-          "smallTiles": 0,
-          "durationMs": 1646,
+          "tiles": 29,
+          "largeTiles": 26,
+          "smallTiles": 3,
+          "durationMs": 2293,
           "errors": []
         },
         {
@@ -1638,10 +1638,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 1859,
+          "tiles": 34,
+          "largeTiles": 25,
+          "smallTiles": 9,
+          "durationMs": 2393,
           "errors": []
         }
       ]
@@ -1651,7 +1651,7 @@
       "title": "Horse (head)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5857,
+      "durationMs": 9069,
       "canvases": [
         {
           "format": "40x40",
@@ -1660,10 +1660,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 32,
-          "largeTiles": 32,
-          "smallTiles": 0,
-          "durationMs": 1991,
+          "tiles": 34,
+          "largeTiles": 31,
+          "smallTiles": 3,
+          "durationMs": 3658,
           "errors": []
         },
         {
@@ -1676,7 +1676,7 @@
           "tiles": 31,
           "largeTiles": 31,
           "smallTiles": 0,
-          "durationMs": 2578,
+          "durationMs": 3455,
           "errors": []
         },
         {
@@ -1689,7 +1689,7 @@
           "tiles": 23,
           "largeTiles": 23,
           "smallTiles": 0,
-          "durationMs": 1288,
+          "durationMs": 1956,
           "errors": []
         }
       ]
@@ -1699,7 +1699,7 @@
       "title": "Penguin",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5530,
+      "durationMs": 7018,
       "canvases": [
         {
           "format": "40x40",
@@ -1711,7 +1711,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 1880,
+          "durationMs": 2703,
           "errors": []
         },
         {
@@ -1724,7 +1724,7 @@
           "tiles": 28,
           "largeTiles": 28,
           "smallTiles": 0,
-          "durationMs": 1834,
+          "durationMs": 2165,
           "errors": []
         },
         {
@@ -1737,7 +1737,7 @@
           "tiles": 24,
           "largeTiles": 24,
           "smallTiles": 0,
-          "durationMs": 1816,
+          "durationMs": 2150,
           "errors": []
         }
       ]
@@ -1747,7 +1747,7 @@
       "title": "Octopus",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 7997,
+      "durationMs": 10613,
       "canvases": [
         {
           "format": "40x40",
@@ -1756,10 +1756,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 35,
-          "largeTiles": 35,
-          "smallTiles": 0,
-          "durationMs": 3579,
+          "tiles": 37,
+          "largeTiles": 34,
+          "smallTiles": 3,
+          "durationMs": 4631,
           "errors": []
         },
         {
@@ -1769,10 +1769,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 30,
-          "largeTiles": 30,
-          "smallTiles": 0,
-          "durationMs": 2389,
+          "tiles": 32,
+          "largeTiles": 29,
+          "smallTiles": 3,
+          "durationMs": 3195,
           "errors": []
         },
         {
@@ -1785,7 +1785,7 @@
           "tiles": 24,
           "largeTiles": 24,
           "smallTiles": 0,
-          "durationMs": 2029,
+          "durationMs": 2787,
           "errors": []
         }
       ]
@@ -1795,7 +1795,7 @@
       "title": "Circle",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 152,
+      "durationMs": 6139,
       "canvases": [
         {
           "format": "40x40",
@@ -1804,10 +1804,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 37,
-          "largeTiles": 37,
-          "smallTiles": 0,
-          "durationMs": 66,
+          "tiles": 47,
+          "largeTiles": 32,
+          "smallTiles": 15,
+          "durationMs": 865,
           "errors": []
         },
         {
@@ -1817,10 +1817,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 26,
-          "largeTiles": 26,
-          "smallTiles": 0,
-          "durationMs": 43,
+          "tiles": 30,
+          "largeTiles": 24,
+          "smallTiles": 6,
+          "durationMs": 2623,
           "errors": []
         },
         {
@@ -1830,10 +1830,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 26,
-          "largeTiles": 26,
-          "smallTiles": 0,
-          "durationMs": 43,
+          "tiles": 30,
+          "largeTiles": 24,
+          "smallTiles": 6,
+          "durationMs": 2651,
           "errors": []
         }
       ]
@@ -1843,7 +1843,7 @@
       "title": "Triangle",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 2474,
+      "durationMs": 7270,
       "canvases": [
         {
           "format": "40x40",
@@ -1855,7 +1855,7 @@
           "tiles": 38,
           "largeTiles": 38,
           "smallTiles": 0,
-          "durationMs": 213,
+          "durationMs": 1079,
           "errors": []
         },
         {
@@ -1868,7 +1868,7 @@
           "tiles": 26,
           "largeTiles": 26,
           "smallTiles": 0,
-          "durationMs": 244,
+          "durationMs": 3191,
           "errors": []
         },
         {
@@ -1881,7 +1881,7 @@
           "tiles": 25,
           "largeTiles": 25,
           "smallTiles": 0,
-          "durationMs": 2017,
+          "durationMs": 3000,
           "errors": []
         }
       ]
@@ -1891,7 +1891,7 @@
       "title": "Diamond",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 462,
+      "durationMs": 8358,
       "canvases": [
         {
           "format": "40x40",
@@ -1903,7 +1903,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 339,
+          "durationMs": 5372,
           "errors": []
         },
         {
@@ -1913,10 +1913,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 24,
-          "largeTiles": 24,
-          "smallTiles": 0,
-          "durationMs": 62,
+          "tiles": 26,
+          "largeTiles": 23,
+          "smallTiles": 3,
+          "durationMs": 1472,
           "errors": []
         },
         {
@@ -1926,10 +1926,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 24,
-          "largeTiles": 24,
-          "smallTiles": 0,
-          "durationMs": 61,
+          "tiles": 26,
+          "largeTiles": 23,
+          "smallTiles": 3,
+          "durationMs": 1514,
           "errors": []
         }
       ]
@@ -1939,7 +1939,7 @@
       "title": "Hexagon",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 4157,
+      "durationMs": 10324,
       "canvases": [
         {
           "format": "40x40",
@@ -1951,7 +1951,7 @@
           "tiles": 36,
           "largeTiles": 36,
           "smallTiles": 0,
-          "durationMs": 340,
+          "durationMs": 5188,
           "errors": []
         },
         {
@@ -1961,10 +1961,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 26,
-          "largeTiles": 26,
-          "smallTiles": 0,
-          "durationMs": 1409,
+          "tiles": 30,
+          "largeTiles": 24,
+          "smallTiles": 6,
+          "durationMs": 2261,
           "errors": []
         },
         {
@@ -1977,7 +1977,7 @@
           "tiles": 30,
           "largeTiles": 30,
           "smallTiles": 0,
-          "durationMs": 2408,
+          "durationMs": 2875,
           "errors": []
         }
       ]
@@ -1987,7 +1987,7 @@
       "title": "Cross",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 806,
+      "durationMs": 6569,
       "canvases": [
         {
           "format": "40x40",
@@ -1999,7 +1999,7 @@
           "tiles": 48,
           "largeTiles": 48,
           "smallTiles": 0,
-          "durationMs": 243,
+          "durationMs": 2416,
           "errors": []
         },
         {
@@ -2012,7 +2012,7 @@
           "tiles": 36,
           "largeTiles": 36,
           "smallTiles": 0,
-          "durationMs": 282,
+          "durationMs": 2072,
           "errors": []
         },
         {
@@ -2025,7 +2025,7 @@
           "tiles": 36,
           "largeTiles": 36,
           "smallTiles": 0,
-          "durationMs": 281,
+          "durationMs": 2081,
           "errors": []
         }
       ]
@@ -2035,7 +2035,7 @@
       "title": "Shield",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 1887,
+      "durationMs": 4777,
       "canvases": [
         {
           "format": "40x40",
@@ -2047,7 +2047,7 @@
           "tiles": 35,
           "largeTiles": 35,
           "smallTiles": 0,
-          "durationMs": 93,
+          "durationMs": 1667,
           "errors": []
         },
         {
@@ -2057,10 +2057,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 49,
+          "tiles": 35,
+          "largeTiles": 26,
+          "smallTiles": 9,
+          "durationMs": 916,
           "errors": []
         },
         {
@@ -2073,7 +2073,7 @@
           "tiles": 25,
           "largeTiles": 25,
           "smallTiles": 0,
-          "durationMs": 1745,
+          "durationMs": 2194,
           "errors": []
         }
       ]
@@ -2083,7 +2083,7 @@
       "title": "Lightning",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 7685,
+      "durationMs": 8744,
       "canvases": [
         {
           "format": "40x40",
@@ -2095,7 +2095,7 @@
           "tiles": 25,
           "largeTiles": 25,
           "smallTiles": 0,
-          "durationMs": 2949,
+          "durationMs": 3355,
           "errors": []
         },
         {
@@ -2108,7 +2108,7 @@
           "tiles": 25,
           "largeTiles": 25,
           "smallTiles": 0,
-          "durationMs": 2958,
+          "durationMs": 3361,
           "errors": []
         },
         {
@@ -2121,7 +2121,7 @@
           "tiles": 16,
           "largeTiles": 16,
           "smallTiles": 0,
-          "durationMs": 1778,
+          "durationMs": 2028,
           "errors": []
         }
       ]
@@ -2131,7 +2131,7 @@
       "title": "Droplet",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 181,
+      "durationMs": 4332,
       "canvases": [
         {
           "format": "40x40",
@@ -2143,7 +2143,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 74,
+          "durationMs": 974,
           "errors": []
         },
         {
@@ -2153,10 +2153,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 48,
+          "tiles": 39,
+          "largeTiles": 24,
+          "smallTiles": 15,
+          "durationMs": 2840,
           "errors": []
         },
         {
@@ -2166,10 +2166,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 23,
-          "largeTiles": 23,
-          "smallTiles": 0,
-          "durationMs": 59,
+          "tiles": 29,
+          "largeTiles": 20,
+          "smallTiles": 9,
+          "durationMs": 518,
           "errors": []
         }
       ]
@@ -2179,7 +2179,7 @@
       "title": "Sun",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 18419,
+      "durationMs": 20727,
       "canvases": [
         {
           "format": "40x40",
@@ -2191,7 +2191,7 @@
           "tiles": 29,
           "largeTiles": 29,
           "smallTiles": 0,
-          "durationMs": 3614,
+          "durationMs": 4773,
           "errors": []
         },
         {
@@ -2201,10 +2201,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 20,
-          "largeTiles": 20,
-          "smallTiles": 0,
-          "durationMs": 7191,
+          "tiles": 28,
+          "largeTiles": 16,
+          "smallTiles": 12,
+          "durationMs": 7872,
           "errors": []
         },
         {
@@ -2217,7 +2217,7 @@
           "tiles": 21,
           "largeTiles": 21,
           "smallTiles": 0,
-          "durationMs": 7614,
+          "durationMs": 8082,
           "errors": []
         }
       ]
@@ -2227,7 +2227,7 @@
       "title": "Leaf",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 9855,
+      "durationMs": 13308,
       "canvases": [
         {
           "format": "40x40",
@@ -2236,10 +2236,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 36,
-          "largeTiles": 36,
-          "smallTiles": 0,
-          "durationMs": 4173,
+          "tiles": 40,
+          "largeTiles": 34,
+          "smallTiles": 6,
+          "durationMs": 5710,
           "errors": []
         },
         {
@@ -2249,10 +2249,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 26,
-          "largeTiles": 26,
-          "smallTiles": 0,
-          "durationMs": 2870,
+          "tiles": 32,
+          "largeTiles": 23,
+          "smallTiles": 9,
+          "durationMs": 3519,
           "errors": []
         },
         {
@@ -2265,7 +2265,7 @@
           "tiles": 27,
           "largeTiles": 27,
           "smallTiles": 0,
-          "durationMs": 2812,
+          "durationMs": 4079,
           "errors": []
         }
       ]
@@ -2275,7 +2275,7 @@
       "title": "Mountains",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5647,
+      "durationMs": 11619,
       "canvases": [
         {
           "format": "40x40",
@@ -2287,7 +2287,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 2816,
+          "durationMs": 4535,
           "errors": []
         },
         {
@@ -2300,7 +2300,7 @@
           "tiles": 26,
           "largeTiles": 26,
           "smallTiles": 0,
-          "durationMs": 88,
+          "durationMs": 2836,
           "errors": []
         },
         {
@@ -2313,7 +2313,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 2743,
+          "durationMs": 4248,
           "errors": []
         }
       ]
@@ -2323,7 +2323,7 @@
       "title": "Cloud",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5971,
+      "durationMs": 8483,
       "canvases": [
         {
           "format": "40x40",
@@ -2335,7 +2335,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 2394,
+          "durationMs": 3272,
           "errors": []
         },
         {
@@ -2348,7 +2348,7 @@
           "tiles": 23,
           "largeTiles": 23,
           "smallTiles": 0,
-          "durationMs": 1154,
+          "durationMs": 1890,
           "errors": []
         },
         {
@@ -2361,7 +2361,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 2423,
+          "durationMs": 3321,
           "errors": []
         }
       ]
@@ -2371,7 +2371,7 @@
       "title": "Tulip",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 8370,
+      "durationMs": 10628,
       "canvases": [
         {
           "format": "40x40",
@@ -2380,10 +2380,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 2097,
+          "tiles": 31,
+          "largeTiles": 28,
+          "smallTiles": 3,
+          "durationMs": 2968,
           "errors": []
         },
         {
@@ -2393,10 +2393,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 2071,
+          "tiles": 31,
+          "largeTiles": 28,
+          "smallTiles": 3,
+          "durationMs": 2892,
           "errors": []
         },
         {
@@ -2406,10 +2406,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 17,
-          "largeTiles": 17,
-          "smallTiles": 0,
-          "durationMs": 4202,
+          "tiles": 27,
+          "largeTiles": 12,
+          "smallTiles": 15,
+          "durationMs": 4768,
           "errors": []
         }
       ]
@@ -2419,7 +2419,7 @@
       "title": "Cactus",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 9176,
+      "durationMs": 12479,
       "canvases": [
         {
           "format": "40x40",
@@ -2428,10 +2428,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 41,
-          "largeTiles": 41,
-          "smallTiles": 0,
-          "durationMs": 3052,
+          "tiles": 45,
+          "largeTiles": 39,
+          "smallTiles": 6,
+          "durationMs": 4392,
           "errors": []
         },
         {
@@ -2441,10 +2441,10 @@
           "fallbackProfile": "outer-priority",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 25,
-          "largeTiles": 25,
-          "smallTiles": 0,
-          "durationMs": 4728,
+          "tiles": 29,
+          "largeTiles": 23,
+          "smallTiles": 6,
+          "durationMs": 6119,
           "errors": []
         },
         {
@@ -2457,7 +2457,7 @@
           "tiles": 22,
           "largeTiles": 22,
           "smallTiles": 0,
-          "durationMs": 1396,
+          "durationMs": 1968,
           "errors": []
         }
       ]
@@ -2467,7 +2467,7 @@
       "title": "Sailboat",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 690,
+      "durationMs": 4140,
       "canvases": [
         {
           "format": "40x40",
@@ -2476,10 +2476,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 42,
-          "largeTiles": 42,
-          "smallTiles": 0,
-          "durationMs": 268,
+          "tiles": 46,
+          "largeTiles": 40,
+          "smallTiles": 6,
+          "durationMs": 1626,
           "errors": []
         },
         {
@@ -2492,7 +2492,7 @@
           "tiles": 33,
           "largeTiles": 33,
           "smallTiles": 0,
-          "durationMs": 197,
+          "durationMs": 855,
           "errors": []
         },
         {
@@ -2502,10 +2502,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 40,
-          "largeTiles": 40,
-          "smallTiles": 0,
-          "durationMs": 225,
+          "tiles": 44,
+          "largeTiles": 38,
+          "smallTiles": 6,
+          "durationMs": 1659,
           "errors": []
         }
       ]
@@ -2515,7 +2515,7 @@
       "title": "Airplane",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 14353,
+      "durationMs": 17760,
       "canvases": [
         {
           "format": "40x40",
@@ -2527,7 +2527,7 @@
           "tiles": 33,
           "largeTiles": 33,
           "smallTiles": 0,
-          "durationMs": 2939,
+          "durationMs": 4209,
           "errors": []
         },
         {
@@ -2540,7 +2540,7 @@
           "tiles": 20,
           "largeTiles": 20,
           "smallTiles": 0,
-          "durationMs": 5458,
+          "durationMs": 6073,
           "errors": []
         },
         {
@@ -2550,10 +2550,10 @@
           "fallbackProfile": "minimal-silhouette",
           "inputSource": "emergency-outline",
           "emergencyFallback": true,
-          "tiles": 21,
-          "largeTiles": 21,
-          "smallTiles": 0,
-          "durationMs": 5956,
+          "tiles": 29,
+          "largeTiles": 17,
+          "smallTiles": 12,
+          "durationMs": 7478,
           "errors": []
         }
       ]
@@ -2563,7 +2563,7 @@
       "title": "Castle",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 25918,
+      "durationMs": 32897,
       "canvases": [
         {
           "format": "40x40",
@@ -2575,7 +2575,7 @@
           "tiles": 50,
           "largeTiles": 50,
           "smallTiles": 0,
-          "durationMs": 10560,
+          "durationMs": 13609,
           "errors": []
         },
         {
@@ -2588,7 +2588,7 @@
           "tiles": 32,
           "largeTiles": 32,
           "smallTiles": 0,
-          "durationMs": 4825,
+          "durationMs": 6679,
           "errors": []
         },
         {
@@ -2601,7 +2601,7 @@
           "tiles": 29,
           "largeTiles": 29,
           "smallTiles": 0,
-          "durationMs": 10533,
+          "durationMs": 12609,
           "errors": []
         }
       ]
@@ -2611,7 +2611,7 @@
       "title": "Lighthouse",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 2065,
+      "durationMs": 6216,
       "canvases": [
         {
           "format": "40x40",
@@ -2623,7 +2623,7 @@
           "tiles": 35,
           "largeTiles": 35,
           "smallTiles": 0,
-          "durationMs": 114,
+          "durationMs": 1607,
           "errors": []
         },
         {
@@ -2636,7 +2636,7 @@
           "tiles": 35,
           "largeTiles": 35,
           "smallTiles": 0,
-          "durationMs": 116,
+          "durationMs": 1709,
           "errors": []
         },
         {
@@ -2649,7 +2649,7 @@
           "tiles": 24,
           "largeTiles": 24,
           "smallTiles": 0,
-          "durationMs": 1835,
+          "durationMs": 2900,
           "errors": []
         }
       ]
@@ -2659,7 +2659,7 @@
       "title": "Camera",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 4910,
+      "durationMs": 9287,
       "canvases": [
         {
           "format": "40x40",
@@ -2671,7 +2671,7 @@
           "tiles": 54,
           "largeTiles": 54,
           "smallTiles": 0,
-          "durationMs": 1695,
+          "durationMs": 3014,
           "errors": []
         },
         {
@@ -2681,10 +2681,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 38,
-          "largeTiles": 38,
-          "smallTiles": 0,
-          "durationMs": 1536,
+          "tiles": 40,
+          "largeTiles": 37,
+          "smallTiles": 3,
+          "durationMs": 2677,
           "errors": []
         },
         {
@@ -2697,7 +2697,7 @@
           "tiles": 54,
           "largeTiles": 54,
           "smallTiles": 0,
-          "durationMs": 1679,
+          "durationMs": 3596,
           "errors": []
         }
       ]
@@ -2707,7 +2707,7 @@
       "title": "Cup",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5337,
+      "durationMs": 11406,
       "canvases": [
         {
           "format": "40x40",
@@ -2716,10 +2716,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 42,
-          "largeTiles": 42,
-          "smallTiles": 0,
-          "durationMs": 2170,
+          "tiles": 44,
+          "largeTiles": 41,
+          "smallTiles": 3,
+          "durationMs": 4288,
           "errors": []
         },
         {
@@ -2729,10 +2729,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 1196,
+          "tiles": 31,
+          "largeTiles": 28,
+          "smallTiles": 3,
+          "durationMs": 2460,
           "errors": []
         },
         {
@@ -2745,7 +2745,7 @@
           "tiles": 40,
           "largeTiles": 40,
           "smallTiles": 0,
-          "durationMs": 1971,
+          "durationMs": 4658,
           "errors": []
         }
       ]
@@ -2755,7 +2755,7 @@
       "title": "Bear (head)",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 5863,
+      "durationMs": 11582,
       "canvases": [
         {
           "format": "40x40",
@@ -2767,7 +2767,7 @@
           "tiles": 39,
           "largeTiles": 39,
           "smallTiles": 0,
-          "durationMs": 2605,
+          "durationMs": 4803,
           "errors": []
         },
         {
@@ -2777,10 +2777,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 30,
-          "largeTiles": 30,
-          "smallTiles": 0,
-          "durationMs": 1564,
+          "tiles": 34,
+          "largeTiles": 28,
+          "smallTiles": 6,
+          "durationMs": 3426,
           "errors": []
         },
         {
@@ -2790,10 +2790,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 1694,
+          "tiles": 30,
+          "largeTiles": 27,
+          "smallTiles": 3,
+          "durationMs": 3353,
           "errors": []
         }
       ]
@@ -2803,7 +2803,7 @@
       "title": "Whale",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 6110,
+      "durationMs": 12899,
       "canvases": [
         {
           "format": "40x40",
@@ -2815,7 +2815,7 @@
           "tiles": 28,
           "largeTiles": 28,
           "smallTiles": 0,
-          "durationMs": 2991,
+          "durationMs": 5491,
           "errors": []
         },
         {
@@ -2825,10 +2825,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 23,
-          "largeTiles": 23,
-          "smallTiles": 0,
-          "durationMs": 153,
+          "tiles": 27,
+          "largeTiles": 21,
+          "smallTiles": 6,
+          "durationMs": 1186,
           "errors": []
         },
         {
@@ -2841,7 +2841,7 @@
           "tiles": 28,
           "largeTiles": 28,
           "smallTiles": 0,
-          "durationMs": 2966,
+          "durationMs": 6222,
           "errors": []
         }
       ]
@@ -2851,7 +2851,7 @@
       "title": "Owl",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 6094,
+      "durationMs": 14744,
       "canvases": [
         {
           "format": "40x40",
@@ -2860,10 +2860,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 36,
-          "largeTiles": 36,
-          "smallTiles": 0,
-          "durationMs": 2529,
+          "tiles": 40,
+          "largeTiles": 34,
+          "smallTiles": 6,
+          "durationMs": 5824,
           "errors": []
         },
         {
@@ -2873,10 +2873,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 28,
-          "largeTiles": 28,
-          "smallTiles": 0,
-          "durationMs": 1844,
+          "tiles": 32,
+          "largeTiles": 26,
+          "smallTiles": 6,
+          "durationMs": 4991,
           "errors": []
         },
         {
@@ -2886,10 +2886,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 25,
-          "largeTiles": 25,
-          "smallTiles": 0,
-          "durationMs": 1721,
+          "tiles": 29,
+          "largeTiles": 23,
+          "smallTiles": 6,
+          "durationMs": 3929,
           "errors": []
         }
       ]
@@ -2899,7 +2899,7 @@
       "title": "Bee",
       "type": "silhouette",
       "status": "pass",
-      "durationMs": 12863,
+      "durationMs": 24205,
       "canvases": [
         {
           "format": "40x40",
@@ -2908,10 +2908,10 @@
           "fallbackProfile": "reduced-detail",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 41,
-          "largeTiles": 41,
-          "smallTiles": 0,
-          "durationMs": 3595,
+          "tiles": 47,
+          "largeTiles": 38,
+          "smallTiles": 9,
+          "durationMs": 7073,
           "errors": []
         },
         {
@@ -2921,10 +2921,10 @@
           "fallbackProfile": "normal",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 29,
-          "largeTiles": 29,
-          "smallTiles": 0,
-          "durationMs": 268,
+          "tiles": 33,
+          "largeTiles": 27,
+          "smallTiles": 6,
+          "durationMs": 4840,
           "errors": []
         },
         {
@@ -2934,10 +2934,10 @@
           "fallbackProfile": "outer-priority",
           "inputSource": "result2",
           "emergencyFallback": false,
-          "tiles": 27,
-          "largeTiles": 27,
-          "smallTiles": 0,
-          "durationMs": 9000,
+          "tiles": 29,
+          "largeTiles": 26,
+          "smallTiles": 3,
+          "durationMs": 12292,
           "errors": []
         }
       ]

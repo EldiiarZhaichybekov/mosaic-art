@@ -98,15 +98,16 @@
     while(edges.size){const first=edges.keys().next().value,start=first.split(',').map(Number);let p=start,path=[],guard=0;do{path.push([p[0]+ox,p[1]+oy]);const k=key(...p),options=edges.get(k);if(!options)break;p=options.pop();if(!options.length)edges.delete(k);}while(key(...p)!==first&&guard++<w*h);path.push(path[0]);let a=0;for(let i=1;i<path.length;i++)a+=path[i-1][0]*path[i][1]-path[i][0]*path[i-1][1];if(Math.abs(a)>bestArea){bestArea=Math.abs(a);best=path;}}
     return best.length>=4&&bestArea/2>=originalArea*.8?best:null;
   }
-  function candidates(model,grid,station,canvas,role='outer',path=0,wide=false) {
+  function candidates(model,grid,station,canvas,role='outer',path=0,wide=false,type='large') {
     const result=[];
-    const shifts=wide?Array.from({length:21},(_,i)=>(i-10)*1.5):[0,-3,3,-6,6];
+    const length=INVENTORY[type].lengthMm,half=length/2;
+    const shifts=wide?Array.from({length:type==='small'?17:21},(_,i)=>(i-(type==='small'?8:10))*(type==='small'?.75:1.5)):[0,-3,3,-6,6];
     for(const shift of shifts) {
-      const s=station+shift,p=model.at(s),a=model.at(s-15),b=model.at(s+15),base=Math.atan2(b[1]-a[1],b[0]-a[0])/rad;
-      const local=sub(model.at(s+1),model.at(s-1)),before=sub(model.at(s-12),model.at(s-14)),after=sub(model.at(s+14),model.at(s+12));
+      const s=station+shift,p=model.at(s),a=model.at(s-half),b=model.at(s+half),base=Math.atan2(b[1]-a[1],b[0]-a[0])/rad;
+      const local=sub(model.at(s+1),model.at(s-1)),before=sub(model.at(s-Math.max(2,half-1)),model.at(s-half)),after=sub(model.at(s+half),model.at(s+Math.max(2,half-1)));
       const angles=[...new Set([base,base-7,base+7,...(wide?[local,before,after].map(v=>Math.atan2(v[1],v[0])/rad):[])].map(a=>Math.round(a*10)/10))];
       for(const angle of angles)for(const normal of [0,-1.5,1.5]) {
-        const angleOffset=((angle-base+540)%360)-180,t=makeTile(p[0]-Math.sin(angle*rad)*normal,p[1]+Math.cos(angle*rad)*normal,angle,role,path);
+        const angleOffset=((angle-base+540)%360)-180,t=makeTile(p[0]-Math.sin(angle*rad)*normal,p[1]+Math.cos(angle*rad)*normal,angle,role,path,type);
         if(!inside(t,canvas))continue;
         const d=deviation(t,grid,1);if(d.max>3)continue;
         result.push({tile:t,score:d.mean*d.mean+.006*shift*shift+.01*angleOffset*angleOffset+.04*normal*normal,station:s});
@@ -135,6 +136,7 @@
       if(period<27||period>34)continue;
       for(const phase of [0,.25,.5,.75]) {
         const layers=Array.from({length:n},(_,i)=>candidates(model,grid,startOffset+(i+phase)*period,canvas,'outer',0,!!options.wide));
+        stats.largeCandidatesGenerated=(stats.largeCandidatesGenerated||0)+layers.reduce((sum,layer)=>sum+layer.length,0);
         if(layers.some(p=>!p.length)){stats.emptyLayers++;continue;}
         for(const first of layers[0].slice(0,5)) {
           let beam=[{tiles:[first.tile],score:first.score,last:first.station}];
@@ -161,6 +163,34 @@
       }
     }
     return null;
+  }
+  function refineOuterWithSmall(outer,target,canvas,options={}) {
+    const model=pathModel(target,true),grid=new SegmentGrid([model.points]),tiles=outer.slice(),maxReplacements=Math.min(16,Math.floor(INVENTORY.small.available/3));
+    const diagnostics={largeCandidatesGenerated:options.largeCandidatesGenerated||0,smallCandidatesGenerated:0,largeSelected:tiles.length,smallSelected:0,smallRejectedReasons:{},smallSelections:[]};
+    const reject=reason=>{diagnostics.smallRejectedReasons[reason]=(diagnostics.smallRejectedReasons[reason]||0)+1;};
+    const angleDelta=(a,b)=>Math.abs(((a-b+540)%360)-180);
+    const ranked=outer.map((tile,index)=>{const station=nearestOnPath([tile.xMm,tile.yMm],model.points).station,a=model.at(station-12),b=model.at(station),c=model.at(station+12),before=Math.atan2(b[1]-a[1],b[0]-a[0])/rad,after=Math.atan2(c[1]-b[1],c[0]-b[0])/rad,d=deviation(tile,grid);return {tile,index,station,curvature:angleDelta(before,after),oldMean:d.mean,oldMax:d.max};}).sort((a,b)=>b.curvature-a.curvature||b.oldMean-a.oldMean);
+    const replaced=new Set();
+    for(const item of ranked){
+      if(diagnostics.smallSelected+3>INVENTORY.small.available||replaced.size>=maxReplacements){reject('SMALL_INVENTORY_RESERVED');break;}
+      if(replaced.has((item.index-1+outer.length)%outer.length)||replaced.has((item.index+1)%outer.length)){reject('ADJACENT_REPLACEMENT');continue;}
+      const currentIndex=tiles.indexOf(item.tile);if(currentIndex<0){reject('SOURCE_ALREADY_REPLACED');continue;}
+      const prev=tiles[(currentIndex-1+tiles.length)%tiles.length],next=tiles[(currentIndex+1)%tiles.length],fixed=tiles.filter(t=>t!==item.tile),solutions=[];
+      for(const spacing of [10,10.5,11]){
+        const pools=[item.station-spacing,item.station,item.station+spacing].map(s=>candidates(model,grid,s,canvas,'outer',0,true,'small').slice(0,36));diagnostics.smallCandidatesGenerated+=pools.reduce((sum,p)=>sum+p.length,0);
+        if(pools.some(p=>!p.length)){reject('NO_SMALL_CANDIDATE');continue;}
+        let beam=[{tiles:[],score:0}];
+        for(const pool of pools){const nextBeam=[];for(const state of beam)for(const candidate of pool){const tile=candidate.tile,last=state.tiles.at(-1)||prev,g=gap(last,tile);if(g<0||g>RULES.maxGap+EPS)continue;if(fixed.some(t=>overlap(tile,t))||state.tiles.some(t=>overlap(tile,t)))continue;nextBeam.push({tiles:[...state.tiles,tile],score:state.score+candidate.score+.35*(g-1)**2});}nextBeam.sort((a,b)=>a.score-b.score);beam=nextBeam.slice(0,24);if(!beam.length)break;}
+        for(const state of beam){const close=gap(state.tiles.at(-1),next);if(close<0||close>RULES.maxGap+EPS)continue;const trial=[...tiles.slice(0,currentIndex),...state.tiles,...tiles.slice(currentIndex+1)];if(contourCovered(model.points,trial)>RULES.maxDeviation+EPS)continue;const means=state.tiles.map(t=>deviation(t,grid).mean),max=Math.max(...state.tiles.map(t=>deviation(t,grid).max)),mean=means.reduce((a,b)=>a+b,0)/means.length,improvement=item.oldMean-mean;solutions.push({...state,mean,max,improvement,score:state.score+.25*close*close});}
+      }
+      if(!solutions.length){reject('CONNECTIVITY_OR_COLLISION');continue;}
+      solutions.sort((a,b)=>b.improvement-a.improvement||a.max-b.max||a.score-b.score);const best=solutions[0];
+      const materiallyBetter=item.curvature>=12&&best.improvement>=.08&&best.max<=item.oldMax+.05||best.improvement>=1;
+      if(!materiallyBetter){reject('NO_VISUAL_IMPROVEMENT');continue;}
+      tiles.splice(currentIndex,1,...best.tiles);replaced.add(item.index);diagnostics.smallSelected+=3;diagnostics.largeSelected--;diagnostics.smallSelections.push({sourceIndex:item.index,curvatureDeg:Number(item.curvature.toFixed(2)),meanImprovementMm:Number(best.improvement.toFixed(3)),maxDeviationMm:Number(best.max.toFixed(3)),reason:item.curvature>=12?'LOCAL_CURVATURE':'DEVIATION_CORRECTION'});
+    }
+    tiles.forEach((tile,index)=>{tile.id=index+1;tile.sequenceIndex=index;});
+    return {tiles,diagnostics};
   }
   function validate(layout,{continuity=true}={}) {
     const errors=[],tiles=layout.tiles||[],canvas=layout.canvas;
@@ -251,7 +281,8 @@
   }
   function skeletonPaths(internal) {return buildStructures(internal).paths.map(p=>p.points);}
   function followMixed(routes,canvas,budget=RULES.maxTiles,fixed=[],options={}) {
-    const began=Date.now(),tiles=fixed.map(migrateTile),routeCoverage={},stats={collisionRejections:0,skippedStations:0};
+    const began=Date.now(),tiles=fixed.map(migrateTile),routeCoverage={},stats={collisionRejections:0,skippedStations:0,largeCandidatesGenerated:0,smallCandidatesGenerated:0,smallRejectedReasons:{}};
+    const rejectSmall=reason=>{stats.smallRejectedReasons[reason]=(stats.smallRejectedReasons[reason]||0)+1;};
     const rank=r=>r.role==='outer'?0:r.role==='characteristic'?1:2;
     for(const route of routes.slice().sort((a,b)=>rank(a)-rank(b)||(b.priority||0)-(a.priority||0))){
       // Remove sub-millimeter noise only in the physical target executor.
@@ -261,16 +292,18 @@
         const used=inventory([...tiles,...state.newTiles]),pool=[];
         for(const type of options.largeOnly?['large']:['large','small']){
           const length=INVENTORY[type].lengthMm;
-          if(used[type+'Remaining']<1||used.totalUsed>=Math.min(budget,INVENTORY.totalMaximum))continue;
+          if(used[type+'Remaining']<1||used.totalUsed>=Math.min(budget,INVENTORY.totalMaximum)){if(type==='small')rejectSmall('INVENTORY_OR_BUDGET');continue;}
           for(const shift of [0,.8,1.6,2.4]){
-            const s=state.station+shift;if(s+length>model.length+.1)continue;
+            const s=state.station+shift;if(s+length>model.length+.1){if(type==='small')rejectSmall('ROUTE_END');continue;}
+            stats[type+'CandidatesGenerated']++;
             const a=model.at(s),b=model.at(s+length),angle=Math.atan2(b[1]-a[1],b[0]-a[0])/rad;
             // Center the exact rectangle on its chord; never stretch to arc length.
             const tile=makeTile((a[0]+b[0])/2,(a[1]+b[1])/2,angle,route.role,route.id,type);
             let max=0,squared=0;const end=ends(tile);
             for(let j=0;j<=12;j++){const p=model.at(s+length*j/12),q=[end[0][0]+(end[1][0]-end[0][0])*j/12,end[0][1]+(end[1][1]-end[0][1])*j/12],d=dist(p,q);max=Math.max(max,d);squared+=d*d/13;}
-            if(max>RULES.maxDeviation-.25||!inside(tile,canvas))continue;
-            if([...tiles,...state.newTiles].some(t=>overlap(t,tile))){stats.collisionRejections++;if(type==='large'&&!state.newTiles.length)largeBlockedByCollision=true;continue;}
+            if(max>RULES.maxDeviation-.25){if(type==='small')rejectSmall('MAX_DEVIATION');continue;}
+            if(!inside(tile,canvas)){if(type==='small')rejectSmall('SAFE_AREA');continue;}
+            if([...tiles,...state.newTiles].some(t=>overlap(t,tile))){stats.collisionRejections++;if(type==='small')rejectSmall('COLLISION');if(type==='large'&&!state.newTiles.length)largeBlockedByCollision=true;continue;}
             const scarcity=1+(INVENTORY.small.available-used.smallRemaining)/INVENTORY.small.available;
             const smallCost=type==='small'?(route.piecePreference==='LARGE'?.4:.16)*scarcity:0;
             const hint=type==='small'&&route.piecePreference==='SMALL_FOR_TURN'?.08:0;
@@ -303,7 +336,9 @@
       routeCoverage[route.id]={placed:placed.length,length:model.length,largeUsed:count.largeUsed,smallUsed:count.smallUsed,total:count.totalUsed,reasons:placed.reduce((r,t)=>(r[t.decisionReason]=(r[t.decisionReason]||0)+1,r),{}),remaining:inventory(tiles),coveredMm:placed.reduce((n,t)=>n+t.lengthMm,0),maxGapMm:Math.max(0,...gaps),gapsOver2mm:gaps.filter(g=>g>RULES.maxGap).length};
     }
     tiles.forEach((t,i)=>{t.id=i+1;t.sequenceIndex=i;});
-    const layout={schemaVersion:3,status:'ok',mode:'AI_HYBRID',canvas,tiles,target:routes,routeCoverage,inventory:inventory(tiles),stats,timings:{followerMs:Date.now()-began},visualStatus:'UNREVIEWED'};
+    const finalInventory=inventory(tiles);stats.smallRejectedReasons.NOT_SELECTED=Math.max(0,stats.smallCandidatesGenerated-finalInventory.smallUsed-Object.values(stats.smallRejectedReasons).reduce((a,b)=>a+b,0));
+    const mixedDiagnostics={largeCandidatesGenerated:stats.largeCandidatesGenerated,smallCandidatesGenerated:stats.smallCandidatesGenerated,largeSelected:finalInventory.largeUsed,smallSelected:finalInventory.smallUsed,smallRejectedReasons:stats.smallRejectedReasons,selectionReasons:Object.fromEntries(Object.values(routeCoverage).flatMap(r=>Object.entries(r.reasons)).reduce((map,[key,value])=>map.set(key,(map.get(key)||0)+value),new Map()))};
+    const layout={schemaVersion:3,status:'ok',mode:'AI_HYBRID',canvas,tiles,target:routes,routeCoverage,inventory:finalInventory,stats,mixedDiagnostics,timings:{followerMs:Date.now()-began},visualStatus:'UNREVIEWED'};
     const validationStart=Date.now(),checked=validate(layout,{continuity:false});layout.timings.validationMs=Date.now()-validationStart;
     if(!tiles.length||!checked.valid)throw Error('GEOMETRY_FAILED');
     return layout;
@@ -341,7 +376,8 @@
     let structures={paths:[],observed:[],rejected:[],symmetry:{confidence:0},timings:{}};
     if(profile.structureLimit>0)try{structures=buildStructures(fitted.internal,fitted.contour,{minLength:profile.minLength,minExtent:profile.minExtent});}catch(error){console.error('optional_structure_failure',error);structures={paths:[],observed:[],rejected:[],symmetry:{confidence:0},timings:{},failure:{stage:'structural_paths',name:error.name}};}
     Object.assign(timings,structures.timings);
-    const tiles=outer.tiles,targetPaths=[{id:0,role:'outer',points:outer.target}];
+    const refinement=profile.enableSmallRefinement===false?{tiles:outer.tiles,diagnostics:{largeCandidatesGenerated:searches.reduce((n,s)=>n+(s.largeCandidatesGenerated||0),0),smallCandidatesGenerated:0,largeSelected:outer.tiles.length,smallSelected:0,smallRejectedReasons:{DISABLED:outer.tiles.length}}}:refineOuterWithSmall(outer.tiles,outer.target,canvas,{largeCandidatesGenerated:searches.reduce((n,s)=>n+(s.largeCandidatesGenerated||0),0)});
+    const tiles=refinement.tiles,targetPaths=[{id:0,role:'outer',points:outer.target}];
     // Add only long reproducible portions. Local bends with no valid full tile
     // simply have no candidate. Sorted by value/cost (stable length per tile).
     const collisionRejections=[];let collisionMs=0;
@@ -372,7 +408,8 @@
     }
     timings.collisionMs=collisionMs+searches.reduce((s,p)=>s+(p.collisionMs||0),0);
     tiles.forEach((t,i)=>{t.id=i+1;t.sequenceIndex=i;});timings.optimizationMs=Date.now()-optimizationStart-simplificationMs;
-    const layout={status:'ok',canvas,tiles,target:targetPaths,structures,collisionRejections,searches,orientation:canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait',simplificationMm:tolerance,fitScale:fitted.scale,score:outer.score,timings};
+    const finalInventory=inventory(tiles);refinement.diagnostics.largeSelected=finalInventory.largeUsed;refinement.diagnostics.smallSelected=finalInventory.smallUsed;
+    const layout={status:'ok',canvas,tiles,target:targetPaths,structures,collisionRejections,searches,mixedDiagnostics:refinement.diagnostics,orientation:canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait',simplificationMm:tolerance,fitScale:fitted.scale,score:outer.score,timings};
     const checkStart=Date.now(),checked=validate(layout);timings.validationMs=Date.now()-checkStart;timings.totalMs=Date.now()-start;
     return checked.valid?layout:{status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],diagnostics:checked,timings};
   }
@@ -436,6 +473,6 @@
     undo(){if(!this.undoStack.length)return;this.redoStack.push(this.layout);this.layout=this.undoStack.pop();}
     redo(){if(!this.redoStack.length)return;this.undoStack.push(this.layout);this.layout=this.redoStack.pop();}
   }
-  const api={version:'physical-tiles-v4',RULES,INVENTORY,FALLBACK_PROFILES,inventory,migrateTile,followMixed,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,generateMixedForCanvas,solveOuter,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
+  const api={version:'physical-tiles-v5',RULES,INVENTORY,FALLBACK_PROFILES,inventory,migrateTile,followMixed,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,generateMixedForCanvas,solveOuter,refineOuterWithSmall,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
   if(typeof module!=='undefined')module.exports=api;root.TileLayout=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
