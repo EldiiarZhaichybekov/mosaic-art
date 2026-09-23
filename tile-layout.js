@@ -73,8 +73,8 @@
     const xs=source.contour.map(p=>p[0]),ys=source.contour.map(p=>p[1]),lo=[Math.min(...xs),Math.min(...ys)],hi=[Math.max(...xs),Math.max(...ys)];
     // 15 mm safe area plus half-width and emergency 3 mm centerline offset.
     const s=factor*Math.min((canvas[0]-39)/(hi[0]-lo[0]),(canvas[1]-39)/(hi[1]-lo[1]));
-    const map=p=>[(p[0]-(lo[0]+hi[0])/2)*s+canvas[0]/2,(p[1]-(lo[1]+hi[1])/2)*s+canvas[1]/2];
-    return {contour:source.contour.map(map),internal:(source.internal_lines||[]).map(p=>p.map(map)),scale:s};
+    const offset=[canvas[0]/2-(lo[0]+hi[0])/2*s,canvas[1]/2-(lo[1]+hi[1])/2*s],map=p=>[p[0]*s+offset[0],p[1]*s+offset[1]];
+    return {contour:source.contour.map(map),internal:(source.internal_lines||[]).map(p=>p.map(map)),scale:s,offset};
   }
   function regularize(points,radius) {
     // Result 3 target only, 1 mm cells. Rolling-distance opening/closing removes
@@ -286,7 +286,9 @@
     const rank=r=>r.role==='outer'?0:r.role==='characteristic'?1:2;
     for(const route of routes.slice().sort((a,b)=>rank(a)-rank(b)||(b.priority||0)-(a.priority||0))){
       // Remove sub-millimeter noise only in the physical target executor.
-      const points=simplifyOpen(route.points,.6),model=pathModel(points),startCount=tiles.length;
+      // Result 2 is the immutable rail. Candidate placement follows its exact
+      // ordered points; no second simplification or geometric rewrite occurs.
+      const points=route.points.map(p=>p.slice()),model=pathModel(points),startCount=tiles.length;
       let station=0,largeBlockedByCollision=false;
       function candidatesAt(state){
         const used=inventory([...tiles,...state.newTiles]),pool=[];
@@ -413,26 +415,38 @@
     const checkStart=Date.now(),checked=validate(layout);timings.validationMs=Date.now()-checkStart;timings.totalMs=Date.now()-start;
     return checked.valid?layout:{status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],diagnostics:checked,timings};
   }
+  function result2Geometry(source) {
+    const valid=p=>Array.isArray(p)&&p.length>=2&&p.every(q=>Array.isArray(q)&&q.length===2&&q.every(Number.isFinite));
+    if(!source||typeof source!=='object')throw Error('INVALID_RESULT2');
+    const paths=Array.isArray(source.paths)?source.paths:[],outerPath=paths.find(p=>p.role==='outer'&&valid(p.points));
+    const contour=(outerPath?.points||source.contour);if(!valid(contour)||contour.length<3)throw Error('INVALID_RESULT2');
+    const internals=paths.length?paths.filter(p=>p!==outerPath&&valid(p.points)).map((p,index)=>({id:String(p.id??`internal-${index}`),points:p.points,importance:Number.isFinite(p.importance)?p.importance:null,origin:p.origin})):((source.internal_lines||[]).filter(valid).map((points,index)=>({id:`internal-${index}`,points,importance:null})));
+    return {outer:{id:String(outerPath?.id??'outer'),points:contour},internals};
+  }
+  function result2Routes(source,canvas) {
+    const geometry=result2Geometry(source),fitted=fit({contour:geometry.outer.points,internal_lines:geometry.internals.map(p=>p.points)},canvas),outer=fitted.contour.map(p=>p.slice());
+    if(dist(outer[0],outer.at(-1))>EPS)outer.push(outer[0].slice());
+    const internals=geometry.internals.map((path,index)=>{const points=fitted.internal[index].map(p=>p.slice()),length=pathModel(points).length;return {id:path.id,role:'skeleton',priority:path.importance??length,piecePreference:'MIXED',points,result2Index:index+1,origin:path.origin||'RESULT2'};});
+    const routes=[{id:geometry.outer.id,role:'outer',priority:Number.MAX_SAFE_INTEGER,piecePreference:'MIXED',points:outer,result2Index:0,origin:'RESULT2'},...internals];
+    return {routes,transform:{scale:fitted.scale,offset:fitted.offset.slice()}};
+  }
+  function railMetrics(layout) {
+    const groups={outer:{covered:0,count:0},internal:{covered:0,count:0}},perPath={};let distanceSum=0,distanceWeight=0,maxDistance=0;
+    for(const route of layout.target){const model=pathModel(route.points),n=Math.max(1,Math.ceil(model.length/2)),placed=layout.tiles.filter(t=>t.sourcePathId===route.id),segments=placed.map(ends),kind=route.role==='outer'?'outer':'internal',group=groups[kind];let covered=0,pathDistanceSum=0,pathWeight=0,pathMax=0;
+      for(let i=0;i<=n;i++){const point=model.at(model.length*i/n),distance=segments.length?Math.min(...segments.map(segment=>pointSegment(point,segment[0],segment[1]))):Infinity;covered+=+(distance<=RULES.maxDeviation+EPS);}
+      for(const tile of placed){const measured=deviation(tile,new SegmentGrid([route.points])),weight=tile.lengthMm;pathDistanceSum+=measured.mean*weight;pathWeight+=weight;pathMax=Math.max(pathMax,measured.max);}
+      const count=n+1;group.covered+=covered;group.count+=count;distanceSum+=pathDistanceSum;distanceWeight+=pathWeight;maxDistance=Math.max(maxDistance,pathMax);perPath[route.id]={role:route.role,coveragePercent:Number((100*covered/count).toFixed(2)),meanDistanceMm:pathWeight?Number((pathDistanceSum/pathWeight).toFixed(3)):null,maxDistanceMm:pathWeight?Number(pathMax.toFixed(3)):null,placed:placed.length};
+    }
+    const stock=inventory(layout.tiles);
+    return {outerCoveragePercent:Number((100*groups.outer.covered/Math.max(1,groups.outer.count)).toFixed(2)),internalCoveragePercent:Number((groups.internal.count?100*groups.internal.covered/groups.internal.count:100).toFixed(2)),meanDistanceToResult2:Number((distanceSum/Math.max(1,distanceWeight)).toFixed(3)),maxDistanceToResult2:Number(maxDistance.toFixed(3)),gapCount:Object.values(layout.routeCoverage||{}).reduce((sum,route)=>sum+(route.gapsOver2mm||0),0),largeUsed:stock.largeUsed,smallUsed:stock.smallUsed,totalUsed:stock.totalUsed,paths:perPath};
+  }
+  function generateResult2ForCanvas(source,canvas) {
+    const began=Date.now(),prepared=result2Routes(source,canvas),layout=followMixed(prepared.routes,canvas,RULES.maxTiles);
+    layout.mode='DETERMINISTIC_FALLBACK';layout.routeMode=true;layout.targetPolicy='IMMUTABLE_RESULT2';layout.visualStatus='PHYSICALLY_VALID';layout.inputSource='result2';layout.fallbackProfile='result2-rail';layout.simplified=false;layout.fitScale=prepared.transform.scale;layout.result2Transform=prepared.transform;layout.orientation=canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait';layout.metrics=railMetrics(layout);layout.timings={...layout.timings,totalMs:Date.now()-began};return layout;
+  }
   function generate(source,{format='40x40',orientation='auto',optimizedSource=null}={}) {
-    if(!source?.contour||source.contour.length<3||!source.contour.every(p=>p.length===2&&p.every(Number.isFinite)))return {status:'LAYOUT_NOT_FEASIBLE',tiles:[],reason:'INVALID_TARGET'};
-    const canvases=format==='40x40'?[[400,400]]:orientation==='portrait'?[[300,400]]:orientation==='landscape'?[[400,300]]:[[300,400],[400,300]];
-    const candidates=[];if(optimizedSource?.contour?.length>=3)candidates.push({id:'result2',source:optimizedSource});candidates.push({id:'result1',source});
-    const results=canvases.map(canvas=>{
-      const attempts=[];
-      for(let level=0;level<FALLBACK_PROFILES.length;level++)for(const candidate of candidates){try{
-        const profile=FALLBACK_PROFILES[level],result=generateForCanvas(candidate.source,canvas,profile),checked=validate(result);attempts.push({source:candidate.id,profile:profile.id,status:result.status,tiles:result.tiles.length,errors:checked.errors});
-        if(result.status==='ok'&&checked.valid)return {...result,mode:'DETERMINISTIC_FALLBACK',inputSource:candidate.id,fallbackProfile:profile.id,fallbackLevel:level,simplified:level>0,attempts};
-      }catch(error){attempts.push({source:candidate.id,profile:FALLBACK_PROFILES[level].id,status:'failed',reason:error.message});}}
-      // Catastrophic geometry is still reported, but every finite contour gets
-      // one last manufacturable target: an aspect-preserving ellipse derived
-      // from its bounds. It is intentionally last because recognizability and
-      // the real external contour have priority over this emergency outline.
-      const xs=source.contour.map(p=>p[0]),ys=source.contour.map(p=>p[1]),rx=Math.max(1,(Math.max(...xs)-Math.min(...xs))/2),ry=Math.max(1,(Math.max(...ys)-Math.min(...ys))/2),cx=(Math.max(...xs)+Math.min(...xs))/2,cy=(Math.max(...ys)+Math.min(...ys))/2;
-      for(const ratio of [Math.max(.5,Math.min(2,ry/rx)),1]){const emergency={contour:Array.from({length:96},(_,i)=>[cx+rx*Math.cos(i*Math.PI/48),cy+rx*ratio*Math.sin(i*Math.PI/48)]),internal_lines:[]};try{const profile={...FALLBACK_PROFILES.at(-1),scale:.78,direct:[6,10],regularized:[[20,18],[26,18]],structureLimit:0},result=generateForCanvas(emergency,canvas,profile),checked=validate(result);attempts.push({source:'emergency-outline',profile:'minimal-silhouette',status:result.status,tiles:result.tiles.length,errors:checked.errors});if(result.status==='ok'&&checked.valid)return {...result,mode:'DETERMINISTIC_FALLBACK',inputSource:'emergency-outline',fallbackProfile:'minimal-silhouette',fallbackLevel:FALLBACK_PROFILES.length,simplified:true,emergencyFallback:true,attempts};}catch(error){attempts.push({source:'emergency-outline',profile:'minimal-silhouette',status:'failed',reason:error.message});}}
-      return {status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],reason:'CATASTROPHIC_GEOMETRY_FAILURE',attempts};
-    });
-    const valid=results.filter(r=>r.status==='ok');valid.sort((a,b)=>b.fitScale-a.fitScale||a.simplificationMm-b.simplificationMm||a.score-b.score||a.tiles.length-b.tiles.length);
-    const result=valid[0]||results[0];result.evaluated=results.map(r=>({canvas:r.canvas,status:r.status,tiles:r.tiles.length,scale:r.fitScale,simplificationMm:r.simplificationMm,timings:r.timings}));result.auto=orientation==='auto'&&format==='30x40';return result;
+    const target=optimizedSource||source,canvases=format==='40x40'?[[400,400]]:orientation==='portrait'?[[300,400]]:orientation==='landscape'?[[400,300]]:[[300,400],[400,300]],results=canvases.map(canvas=>{try{return generateResult2ForCanvas(target,canvas);}catch(error){return {status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],reason:error.message,targetPolicy:'IMMUTABLE_RESULT2'};}}),valid=results.filter(result=>result.status==='ok');
+    valid.sort((a,b)=>b.metrics.outerCoveragePercent-a.metrics.outerCoveragePercent||a.metrics.meanDistanceToResult2-b.metrics.meanDistanceToResult2||b.metrics.internalCoveragePercent-a.metrics.internalCoveragePercent);const result=valid[0]||results[0];result.evaluated=results.map(r=>({canvas:r.canvas,status:r.status,tiles:r.tiles.length,metrics:r.metrics,timings:r.timings}));result.auto=orientation==='auto'&&format==='30x40';return result;
   }
   function exportSVG(layout,{mounting=false,labels={}}={}) {
     const checked=validate(layout);if(!checked.valid)throw new Error(checked.errors.join(', '));
@@ -473,6 +487,6 @@
     undo(){if(!this.undoStack.length)return;this.redoStack.push(this.layout);this.layout=this.undoStack.pop();}
     redo(){if(!this.redoStack.length)return;this.undoStack.push(this.layout);this.layout=this.redoStack.pop();}
   }
-  const api={version:'physical-tiles-v5',RULES,INVENTORY,FALLBACK_PROFILES,inventory,migrateTile,followMixed,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateForCanvas,generateMixedForCanvas,solveOuter,refineOuterWithSmall,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
+  const api={version:'physical-tiles-v6',RULES,INVENTORY,FALLBACK_PROFILES,inventory,migrateTile,followMixed,makeTile,ends,corners,overlap,gap,inside,pathModel,SegmentGrid,deviation,contourCovered,validate,generate,generateResult2ForCanvas,result2Routes,railMetrics,generateForCanvas,generateMixedForCanvas,solveOuter,refineOuterWithSmall,skeletonPaths,buildStructures,symmetryAxis,exportSVG,snap,TileDocument,fit,regularize,simplifyClosed,nearestOnPath};
   if(typeof module!=='undefined')module.exports=api;root.TileLayout=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

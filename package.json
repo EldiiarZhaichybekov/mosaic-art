@@ -2,7 +2,7 @@
   "name": "prismosaic",
   "private": true,
   "scripts": {
-    "test": "node --test tests/test_library.cjs tests/test_workspace.cjs tests/test_client.cjs tests/test_optimized.cjs tests/test_tiles.cjs tests/test_hybrid.cjs tests/test_result3_contract.cjs tests/test_result3_api.cjs tests/test_result3_guarantee.cjs tests/test_mixed_inventory.cjs tests/test_mixed_fallback.cjs tests/test_structures.cjs tests/check_hybrid_fixtures.cjs tests/check_optimized_fixtures.cjs",
+    "test": "node --test tests/test_library.cjs tests/test_workspace.cjs tests/test_client.cjs tests/test_optimized.cjs tests/test_tiles.cjs tests/test_hybrid.cjs tests/test_result3_contract.cjs tests/test_result3_api.cjs tests/test_result3_guarantee.cjs tests/test_result3_result2_rail.cjs tests/test_mixed_inventory.cjs tests/test_mixed_fallback.cjs tests/test_structures.cjs tests/check_hybrid_fixtures.cjs tests/check_optimized_fixtures.cjs",
     "visual:mixed": "node scripts/render-mixed-regression.cjs",
     "validate:library": "node scripts/validate-library-result3.cjs --write",
     "typecheck": "tsc --noEmit --strict --lib es2022,dom tests/library-types.ts",

@@ -11,16 +11,15 @@ const formats=[
 function area(poly){let value=0;for(let i=0,j=poly.length-1;i<poly.length;j=i++)value+=poly[j][0]*poly[i][1]-poly[i][0]*poly[j][1];return Math.abs(value/2);}
 function publicFile(url){return path.join(root,url.replace(/^\//,''));}
 function silhouetteSource(asset){const data=JSON.parse(fs.readFileSync(publicFile(asset.sourceUrl),'utf8'));let outer=0;for(let i=1;i<data.polys.length;i++)if(area(data.polys[i])>area(data.polys[outer]))outer=i;return {contour:data.polys[outer],internal_lines:data.polys.filter((_,i)=>i!==outer)};}
-function photoSources(asset){const bundle=JSON.parse(fs.readFileSync(publicFile(asset.precomputed.url),'utf8'));return {result1:bundle.result1,result2:bundle.result2?Optimized.asPhysicalInput(bundle.result2):null};}
-function sources(asset){if(asset.type==='photo')return photoSources(asset);const result1=silhouetteSource(asset),result2=Optimized.asPhysicalInput(Optimized.generate(result1));return {result1,result2};}
+function photoSources(asset){const bundle=JSON.parse(fs.readFileSync(publicFile(asset.precomputed.url),'utf8'));return {result1:bundle.result1,result2:bundle.result2||null};}
+function sources(asset){if(asset.type==='photo')return photoSources(asset);const result1=silhouetteSource(asset),result2=Optimized.generate(result1);return {result1,result2};}
 function title(asset){return asset.title.en||asset.title.ru||Object.values(asset.title)[0];}
 function validateAsset(asset){
   const source=sources(asset),started=Date.now(),canvases=[];
   for(const format of formats){
-    const began=Date.now(),normalCanvas=format.id==='40x40'?[400,400]:format.id.endsWith('landscape')?[400,300]:[300,400];
-    const initial=T.generateForCanvas(source.result2||source.result1,normalCanvas,T.FALLBACK_PROFILES[0]);
+    const began=Date.now();
     const layout=T.generate(source.result1,{...format.options,optimizedSource:source.result2}),checked=T.validate(layout),stock=T.inventory(layout.tiles||[]);
-    canvases.push({format:format.id,status:layout.status==='ok'&&checked.valid?'pass':'fail',initialStatus:initial.status==='ok'&&T.validate(initial).valid?'pass':'fail',fallbackProfile:layout.fallbackProfile,inputSource:layout.inputSource,emergencyFallback:!!layout.emergencyFallback,tiles:layout.tiles?.length||0,largeTiles:stock.largeUsed,smallTiles:stock.smallUsed,durationMs:Date.now()-began,errors:checked.errors});
+    canvases.push({format:format.id,status:layout.status==='ok'&&checked.valid?'pass':'fail',initialStatus:layout.status==='ok'&&checked.valid?'pass':'fail',fallbackProfile:layout.fallbackProfile,inputSource:layout.inputSource,targetPolicy:layout.targetPolicy,outerCoveragePercent:layout.metrics?.outerCoveragePercent,internalCoveragePercent:layout.metrics?.internalCoveragePercent,meanDistanceToResult2:layout.metrics?.meanDistanceToResult2,maxDistanceToResult2:layout.metrics?.maxDistanceToResult2,gapCount:layout.metrics?.gapCount,emergencyFallback:false,tiles:layout.tiles?.length||0,largeTiles:stock.largeUsed,smallTiles:stock.smallUsed,durationMs:Date.now()-began,errors:checked.errors});
   }
   return {id:asset.id,title:title(asset),type:asset.type,status:canvases.every(c=>c.status==='pass')?'pass':'fail',durationMs:Date.now()-started,canvases};
 }

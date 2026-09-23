@@ -14,7 +14,7 @@ assert.ok(!refinement.includes('fetch(')&&!refinement.includes('new Worker('));
 assert.ok(!js.includes('fetch('),'workspace must not call processing APIs independently');
 assert.ok(!js.includes('new Worker('),'workspace must not duplicate workers');
 for(const [file,hash]of Object.entries({
- 'tile-layout.js':'4742f42d44fd11eefd2fa2faa70d6739e354709bad13546e2ca62c3dd18f0f7a',
+ 'tile-layout.js':'20c0881447fb965e21439579e652ae3ed8d72b2ef97a84de3252508bfb8c3441',
  'result3-hybrid.js':'f0cfbd1697c48abc17f36ada0023f38e568f04d10177079e2ccfd9245be47422',
  'result3-contract.js':'8f2e6e4e4d813410b1c2101cdee10576406fe2ccbdf0035f7936417b8114e7c6',
  'server/deepseek-config.cjs':'4dd469e3e0b5a974cd9d960ef257e9447f05cb6e9d37bc41790ca2754fbb0f1e',

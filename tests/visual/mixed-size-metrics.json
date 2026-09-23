@@ -1,125 +1,716 @@
 [
   {
     "name": "butterfly",
-    "before": {
-      "inventory": {
-        "largeUsed": 71,
-        "smallUsed": 0,
-        "totalUsed": 71,
-        "largeRemaining": 29,
-        "smallRemaining": 50,
-        "totalRemaining": 79,
-        "valid": true,
-        "errors": []
-      },
-      "meanTileDeviationMm": 0.217,
-      "maxTileDeviationMm": 2.675,
+    "targetPolicy": "IMMUTABLE_RESULT2",
+    "inventory": {
+      "largeUsed": 94,
+      "smallUsed": 50,
+      "totalUsed": 144,
+      "largeRemaining": 6,
+      "smallRemaining": 0,
+      "totalRemaining": 6,
       "valid": true,
-      "mixedDiagnostics": {
-        "largeCandidatesGenerated": 2984,
-        "smallCandidatesGenerated": 0,
-        "largeSelected": 71,
-        "smallSelected": 0,
-        "smallRejectedReasons": {
-          "DISABLED": 36
-        }
-      }
+      "errors": []
     },
-    "after": {
-      "inventory": {
-        "largeUsed": 70,
-        "smallUsed": 3,
-        "totalUsed": 73,
-        "largeRemaining": 30,
-        "smallRemaining": 47,
-        "totalRemaining": 77,
-        "valid": true,
-        "errors": []
-      },
-      "meanTileDeviationMm": 0.192,
-      "maxTileDeviationMm": 2.675,
-      "valid": true,
-      "mixedDiagnostics": {
-        "largeCandidatesGenerated": 2984,
-        "smallCandidatesGenerated": 11016,
-        "largeSelected": 70,
-        "smallSelected": 3,
-        "smallRejectedReasons": {
-          "CONNECTIVITY_OR_COLLISION": 10,
-          "NO_VISUAL_IMPROVEMENT": 23,
-          "ADJACENT_REPLACEMENT": 2
+    "metrics": {
+      "outerCoveragePercent": 90.66,
+      "internalCoveragePercent": 62.83,
+      "meanDistanceToResult2": 0.578,
+      "maxDistanceToResult2": 3.002,
+      "gapCount": 23,
+      "largeUsed": 94,
+      "smallUsed": 50,
+      "totalUsed": 144,
+      "paths": {
+        "outer": {
+          "role": "outer",
+          "coveragePercent": 90.66,
+          "meanDistanceMm": 0.519,
+          "maxDistanceMm": 3.002,
+          "placed": 88
         },
-        "smallSelections": [
-          {
-            "sourceIndex": 16,
-            "curvatureDeg": 23.43,
-            "meanImprovementMm": 0.88,
-            "maxDeviationMm": 1.243,
-            "reason": "LOCAL_CURVATURE"
-          }
-        ]
+        "structure-0": {
+          "role": "skeleton",
+          "coveragePercent": 77.56,
+          "meanDistanceMm": 0.442,
+          "maxDistanceMm": 1.614,
+          "placed": 7
+        },
+        "structure-1": {
+          "role": "skeleton",
+          "coveragePercent": 83.01,
+          "meanDistanceMm": 0.638,
+          "maxDistanceMm": 2.853,
+          "placed": 7
+        },
+        "structure-2": {
+          "role": "skeleton",
+          "coveragePercent": 84.5,
+          "meanDistanceMm": 0.478,
+          "maxDistanceMm": 2.483,
+          "placed": 6
+        },
+        "structure-3": {
+          "role": "skeleton",
+          "coveragePercent": 86.27,
+          "meanDistanceMm": 0.334,
+          "maxDistanceMm": 1.575,
+          "placed": 5
+        },
+        "structure-4": {
+          "role": "skeleton",
+          "coveragePercent": 78.26,
+          "meanDistanceMm": 0.608,
+          "maxDistanceMm": 2.459,
+          "placed": 5
+        },
+        "structure-5": {
+          "role": "skeleton",
+          "coveragePercent": 79.09,
+          "meanDistanceMm": 0.676,
+          "maxDistanceMm": 2.452,
+          "placed": 5
+        },
+        "structure-6": {
+          "role": "skeleton",
+          "coveragePercent": 42.17,
+          "meanDistanceMm": 0.811,
+          "maxDistanceMm": 2.336,
+          "placed": 2
+        },
+        "structure-7": {
+          "role": "skeleton",
+          "coveragePercent": 37.63,
+          "meanDistanceMm": 0.845,
+          "maxDistanceMm": 2.387,
+          "placed": 2
+        },
+        "structure-8": {
+          "role": "skeleton",
+          "coveragePercent": 51.43,
+          "meanDistanceMm": 0.656,
+          "maxDistanceMm": 2.741,
+          "placed": 3
+        },
+        "structure-9": {
+          "role": "skeleton",
+          "coveragePercent": 58.33,
+          "meanDistanceMm": 1.016,
+          "maxDistanceMm": 2.906,
+          "placed": 2
+        },
+        "structure-10": {
+          "role": "skeleton",
+          "coveragePercent": 73.86,
+          "meanDistanceMm": 0.71,
+          "maxDistanceMm": 2.345,
+          "placed": 3
+        },
+        "structure-11": {
+          "role": "skeleton",
+          "coveragePercent": 68.6,
+          "meanDistanceMm": 0.633,
+          "maxDistanceMm": 2.076,
+          "placed": 3
+        },
+        "structure-12": {
+          "role": "skeleton",
+          "coveragePercent": 73.91,
+          "meanDistanceMm": 0.666,
+          "maxDistanceMm": 2.687,
+          "placed": 2
+        },
+        "structure-13": {
+          "role": "skeleton",
+          "coveragePercent": 67.86,
+          "meanDistanceMm": 1.04,
+          "maxDistanceMm": 2.918,
+          "placed": 2
+        },
+        "structure-14": {
+          "role": "skeleton",
+          "coveragePercent": 66.07,
+          "meanDistanceMm": 1.192,
+          "maxDistanceMm": 2.934,
+          "placed": 2
+        },
+        "structure-15": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-16": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-17": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-18": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-19": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-20": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-21": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-22": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-23": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-24": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-25": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-26": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-27": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        }
       }
     }
   },
   {
     "name": "bat",
-    "before": {
-      "inventory": {
-        "largeUsed": 31,
-        "smallUsed": 0,
-        "totalUsed": 31,
-        "largeRemaining": 69,
-        "smallRemaining": 50,
-        "totalRemaining": 119,
-        "valid": true,
-        "errors": []
-      },
-      "meanTileDeviationMm": 0.553,
-      "maxTileDeviationMm": 2.735,
+    "targetPolicy": "IMMUTABLE_RESULT2",
+    "inventory": {
+      "largeUsed": 32,
+      "smallUsed": 50,
+      "totalUsed": 82,
+      "largeRemaining": 68,
+      "smallRemaining": 0,
+      "totalRemaining": 68,
       "valid": true,
-      "mixedDiagnostics": {
-        "largeCandidatesGenerated": 1909,
-        "smallCandidatesGenerated": 0,
-        "largeSelected": 31,
-        "smallSelected": 0,
-        "smallRejectedReasons": {
-          "DISABLED": 21
+      "errors": []
+    },
+    "metrics": {
+      "outerCoveragePercent": 97.41,
+      "internalCoveragePercent": 31.86,
+      "meanDistanceToResult2": 0.432,
+      "maxDistanceToResult2": 2.909,
+      "gapCount": 4,
+      "largeUsed": 32,
+      "smallUsed": 50,
+      "totalUsed": 82,
+      "paths": {
+        "outer": {
+          "role": "outer",
+          "coveragePercent": 97.41,
+          "meanDistanceMm": 0.357,
+          "maxDistanceMm": 2.151,
+          "placed": 56
+        },
+        "structure-0": {
+          "role": "skeleton",
+          "coveragePercent": 95.18,
+          "meanDistanceMm": 0.356,
+          "maxDistanceMm": 1.41,
+          "placed": 8
+        },
+        "structure-1": {
+          "role": "skeleton",
+          "coveragePercent": 96.67,
+          "meanDistanceMm": 0.584,
+          "maxDistanceMm": 2.091,
+          "placed": 6
+        },
+        "structure-2": {
+          "role": "skeleton",
+          "coveragePercent": 46.34,
+          "meanDistanceMm": 0.118,
+          "maxDistanceMm": 0.487,
+          "placed": 1
+        },
+        "structure-3": {
+          "role": "skeleton",
+          "coveragePercent": 27.94,
+          "meanDistanceMm": 0.276,
+          "maxDistanceMm": 1.285,
+          "placed": 1
+        },
+        "structure-4": {
+          "role": "skeleton",
+          "coveragePercent": 63.16,
+          "meanDistanceMm": 0.799,
+          "maxDistanceMm": 1.805,
+          "placed": 2
+        },
+        "structure-5": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-6": {
+          "role": "skeleton",
+          "coveragePercent": 57.58,
+          "meanDistanceMm": 0.714,
+          "maxDistanceMm": 1.95,
+          "placed": 1
+        },
+        "structure-7": {
+          "role": "skeleton",
+          "coveragePercent": 53.13,
+          "meanDistanceMm": 0.36,
+          "maxDistanceMm": 0.957,
+          "placed": 1
+        },
+        "structure-8": {
+          "role": "skeleton",
+          "coveragePercent": 65.52,
+          "meanDistanceMm": 0.183,
+          "maxDistanceMm": 0.785,
+          "placed": 1
+        },
+        "structure-9": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-10": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-11": {
+          "role": "skeleton",
+          "coveragePercent": 61.11,
+          "meanDistanceMm": 1.44,
+          "maxDistanceMm": 2.909,
+          "placed": 1
+        },
+        "structure-12": {
+          "role": "skeleton",
+          "coveragePercent": 72,
+          "meanDistanceMm": 0.719,
+          "maxDistanceMm": 1.672,
+          "placed": 1
+        },
+        "structure-13": {
+          "role": "skeleton",
+          "coveragePercent": 82.61,
+          "meanDistanceMm": 0.346,
+          "maxDistanceMm": 1.009,
+          "placed": 1
+        },
+        "structure-14": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-15": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-16": {
+          "role": "skeleton",
+          "coveragePercent": 89.47,
+          "meanDistanceMm": 0.933,
+          "maxDistanceMm": 1.81,
+          "placed": 1
+        },
+        "structure-17": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-18": {
+          "role": "skeleton",
+          "coveragePercent": 100,
+          "meanDistanceMm": 0.507,
+          "maxDistanceMm": 1.665,
+          "placed": 1
+        },
+        "structure-19": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-20": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-21": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-22": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-23": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-24": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-25": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-26": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-27": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-28": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-29": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-30": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-31": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-32": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-33": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-34": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-35": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-36": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-37": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-38": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-39": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-40": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-41": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-42": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-43": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-44": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-45": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-46": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-47": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-48": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-49": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-50": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-51": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-52": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-53": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-54": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-55": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
+        },
+        "structure-56": {
+          "role": "skeleton",
+          "coveragePercent": 0,
+          "meanDistanceMm": null,
+          "maxDistanceMm": null,
+          "placed": 0
         }
       }
-    },
-    "after": {
-      "inventory": {
-        "largeUsed": 30,
-        "smallUsed": 3,
-        "totalUsed": 33,
-        "largeRemaining": 70,
-        "smallRemaining": 47,
-        "totalRemaining": 117,
-        "valid": true,
-        "errors": []
-      },
-      "meanTileDeviationMm": 0.498,
-      "maxTileDeviationMm": 2.735,
+    }
+  },
+  {
+    "name": "asymmetric",
+    "targetPolicy": "IMMUTABLE_RESULT2",
+    "inventory": {
+      "largeUsed": 48,
+      "smallUsed": 6,
+      "totalUsed": 54,
+      "largeRemaining": 52,
+      "smallRemaining": 44,
+      "totalRemaining": 96,
       "valid": true,
-      "mixedDiagnostics": {
-        "largeCandidatesGenerated": 1909,
-        "smallCandidatesGenerated": 6156,
-        "largeSelected": 30,
-        "smallSelected": 3,
-        "smallRejectedReasons": {
-          "CONNECTIVITY_OR_COLLISION": 7,
-          "NO_VISUAL_IMPROVEMENT": 11,
-          "ADJACENT_REPLACEMENT": 2
+      "errors": []
+    },
+    "metrics": {
+      "outerCoveragePercent": 100,
+      "internalCoveragePercent": 96.08,
+      "meanDistanceToResult2": 0.011,
+      "maxDistanceToResult2": 0.767,
+      "gapCount": 4,
+      "largeUsed": 48,
+      "smallUsed": 6,
+      "totalUsed": 54,
+      "paths": {
+        "outer": {
+          "role": "outer",
+          "coveragePercent": 100,
+          "meanDistanceMm": 0.013,
+          "maxDistanceMm": 0.767,
+          "placed": 37
         },
-        "smallSelections": [
-          {
-            "sourceIndex": 4,
-            "curvatureDeg": 5.55,
-            "meanImprovementMm": 1.163,
-            "maxDeviationMm": 1.202,
-            "reason": "DEVIATION_CORRECTION"
-          }
-        ]
+        "structure-0": {
+          "role": "skeleton",
+          "coveragePercent": 97.44,
+          "meanDistanceMm": 0.016,
+          "maxDistanceMm": 0.488,
+          "placed": 8
+        },
+        "structure-1": {
+          "role": "skeleton",
+          "coveragePercent": 95.45,
+          "meanDistanceMm": 0,
+          "maxDistanceMm": 0.25,
+          "placed": 6
+        },
+        "structure-2": {
+          "role": "skeleton",
+          "coveragePercent": 94,
+          "meanDistanceMm": 0,
+          "maxDistanceMm": 0.25,
+          "placed": 3
+        }
       }
     }
   }

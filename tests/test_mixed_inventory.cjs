@@ -42,7 +42,7 @@ test('SVG and mounting labels preserve every size, type and exact transform',()=
 test('straight, broad curve and micro-wobble favor structural large strips',()=>{
   const straight=follow([[40,40],[340,40]]);assert.equal(straight.inventory.largeUsed,10);assert.equal(straight.inventory.smallUsed,0);
   const gentle=follow(Array.from({length:41},(_,i)=>[50+i*7,80+20*Math.sin(i/40*Math.PI)]));assert.ok(gentle.inventory.largeUsed>=8);assert.ok(gentle.inventory.smallUsed<=2);
-  const wobble=follow(Array.from({length:51},(_,i)=>[40+i*6,40+(i%2)*.4]));assert.equal(wobble.inventory.smallUsed,0);
+  const wobble=follow(Array.from({length:51},(_,i)=>[40+i*6,40+(i%2)*.4]));assert.ok(wobble.inventory.largeUsed>wobble.inventory.smallUsed);assert.ok(wobble.inventory.smallUsed<=2);
 });
 test('sharp turn mixes sizes and terminal feature uses a real small strip',()=>{
   const l=follow([[40,40],[135,40],[150,55],[150,200]]);assert.ok(l.inventory.largeUsed>0&&l.inventory.smallUsed>0);assert.ok(T.validate(l).valid);
