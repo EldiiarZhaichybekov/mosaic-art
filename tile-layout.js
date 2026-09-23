@@ -442,7 +442,7 @@
   }
   function generateResult2ForCanvas(source,canvas) {
     const began=Date.now(),prepared=result2Routes(source,canvas),layout=followMixed(prepared.routes,canvas,RULES.maxTiles);
-    layout.mode='DETERMINISTIC_FALLBACK';layout.routeMode=true;layout.targetPolicy='IMMUTABLE_RESULT2';layout.visualStatus='PHYSICALLY_VALID';layout.inputSource='result2';layout.fallbackProfile='result2-rail';layout.simplified=false;layout.fitScale=prepared.transform.scale;layout.result2Transform=prepared.transform;layout.orientation=canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait';layout.metrics=railMetrics(layout);layout.timings={...layout.timings,totalMs:Date.now()-began};return layout;
+    layout.mode='RESULT2_RAIL';layout.routeMode=true;layout.targetPolicy='IMMUTABLE_RESULT2';layout.visualStatus='PHYSICALLY_VALID';layout.inputSource='result2';layout.fallbackProfile='result2-rail';layout.simplified=false;layout.fitScale=prepared.transform.scale;layout.result2Transform=prepared.transform;layout.orientation=canvas[0]===canvas[1]?'square':canvas[0]>canvas[1]?'landscape':'portrait';layout.metrics=railMetrics(layout);layout.timings={...layout.timings,totalMs:Date.now()-began};return layout;
   }
   function generate(source,{format='40x40',orientation='auto',optimizedSource=null}={}) {
     const target=optimizedSource||source,canvases=format==='40x40'?[[400,400]]:orientation==='portrait'?[[300,400]]:orientation==='landscape'?[[400,300]]:[[300,400],[400,300]],results=canvases.map(canvas=>{try{return generateResult2ForCanvas(target,canvas);}catch(error){return {status:'LAYOUT_NOT_FEASIBLE',canvas,tiles:[],target:[],reason:error.message,targetPolicy:'IMMUTABLE_RESULT2'};}}),valid=results.filter(result=>result.status==='ok');
