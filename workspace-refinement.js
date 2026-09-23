@@ -8,6 +8,16 @@
   const keys=['library','search','all','animals','birds','symbols','nature','transport','other','uploaded','cancel','select','none','errorTitle','ok','image','optimize','layout','plan','qa','wait','uploadFirst'];
   for(const [lang,values]of Object.entries(vocabulary))keys.forEach((k,i)=>root.WorkspaceMessages[lang]['ux.'+k]=values[i]);
   for(const [lang,value]of Object.entries({ru:'Назад',en:'Back',zh:'返回'}))root.WorkspaceMessages[lang]['ux.back']=value;
+  for(const [lang,values]of Object.entries({
+    ru:['AI-доработка не применена. Использован математический контур; раскладка будет проверена отдельно.','Не удалось подготовить все результаты. Готовые этапы сохранены. Повторите обработку на незавершённом этапе.','Подготовка контура','AI-доработка и проверка контура','Создание раскладки','Отменить обработку'],
+    en:['AI refinement was not applied. The mathematical contour is retained; the layout is checked separately.','Could not prepare all results. Completed stages are retained. Retry the unfinished stage.','Preparing contour','AI refinement and contour validation','Creating layout','Cancel processing'],
+    zh:['未应用 AI 优化。保留数学轮廓，排布将单独验证。','无法完成所有结果。已完成的步骤已保留，请重试未完成的步骤。','正在准备轮廓','AI 优化与轮廓验证','正在创建排布','取消处理']
+  }))['fallback','failed','stage1','stage2','stage3','cancel'].forEach((key,i)=>root.WorkspaceMessages[lang]['pipeline.'+key]=values[i]);
+  for(const [lang,values]of Object.entries({
+    ru:['Обработка остановлена. Можно повторить расчёт или выбрать другой источник.','Контур ещё не рассчитан. Нажмите «Пересчитать контур».','Применены проверенные AI-правки.','AI не предложил изменений: сохранён математический контур.'],
+    en:['Processing stopped. Retry or choose another source.','The contour is not ready. Select Recompute contour.','Validated AI edits applied.','AI proposed no changes; the mathematical contour is retained.'],
+    zh:['处理已停止。可重试或选择其他来源。','轮廓尚未计算。请选择重新计算轮廓。','已应用通过验证的 AI 修改。','AI 未提出修改，保留数学轮廓。']
+  }))['cancelled','notReady','accepted','unchanged'].forEach((key,i)=>root.WorkspaceMessages[lang]['pipeline.'+key]=values[i]);
   function create({t,onLibraryAsset}){
     const $=id=>document.getElementById(id),tr=k=>t('ux.'+k);
     const make=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=text;return n;};
@@ -24,9 +34,10 @@
     busy.setAttribute('aria-busy','true');busy.addEventListener('cancel',e=>e.preventDefault());
     const spinner=make('div','processing-spinner');spinner.setAttribute('aria-hidden','true');busy.prepend(spinner);
     const status=busy.querySelector('h2');status.setAttribute('role','status');status.setAttribute('aria-live','polite');const wait=make('p','',tr('wait'));busy.append(wait);
+    const cancelProcessing=button(t('pipeline.cancel'),()=>root.dispatchEvent(new Event('prismosaic:cancel-processing')));busy.append(cancelProcessing);
     const pending={};let uploaded=null;
-    function syncBusy(){const entry=Object.values(pending).find(d=>d.pending);if(entry){status.textContent=tr(entry.phase==='plan'?'plan':entry.phase==='qa'?'qa':entry.id===2?'optimize':entry.id===3?'layout':'image');if(!busy.open){resumeFocus=document.activeElement;busy.showModal();}}else if(busy.open){busy.close();if(errors.length)showError();else if(resumeFocus?.isConnected)resumeFocus.focus();}}
-    root.addEventListener('prismosaic:view',e=>{const d=e.detail;if(d.id==='source'){uploaded=d.image;for(const k of Object.keys(pending))delete pending[k];}else if(d.id==='preset'){for(const k of Object.keys(pending))delete pending[k];}else if([1,2,3,'library'].includes(d.id))pending[d.id]={...pending[d.id],...d};syncBusy();syncControls();});
+    function syncBusy(){const entry=pending.pipeline?.pending?pending.pipeline:Object.values(pending).find(d=>d.pending);if(entry){cancelProcessing.textContent=t('pipeline.cancel');status.textContent=entry.id==='pipeline'?`${entry.stage}/3 · ${t('pipeline.stage'+entry.stage)}`:tr(entry.phase==='plan'?'plan':entry.phase==='qa'?'qa':entry.id===2?'optimize':entry.id===3?'layout':'image');if(!busy.open){resumeFocus=document.activeElement;busy.showModal();}}else if(busy.open){busy.close();if(errors.length)showError();else if(resumeFocus?.isConnected)resumeFocus.focus();}}
+    root.addEventListener('prismosaic:view',e=>{const d=e.detail;if(d.id==='source'||d.id==='preset'){if(d.id==='source')uploaded=d.image;for(const k of Object.keys(pending))if(k!=='pipeline')delete pending[k];}else if([1,2,3,'library','pipeline'].includes(d.id))pending[d.id]={...pending[d.id],...d};syncBusy();syncControls();});
     // Replace visible selects, dispatching precisely the same change events as before.
     const groups=[];
     for(const id of ['canvas-format','tile-format']){const select=$(id);if(!select)continue;select.hidden=true;const group=make('div','size-buttons');group.setAttribute('role','group');group.setAttribute('aria-label',t('tile.canvas'));for(const value of ['40x40','30x40']){const b=button('',()=>{select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));syncControls();});b.dataset.value=value;group.append(b);}select.after(group);select.addEventListener('change',syncControls);groups.push({select,group});}

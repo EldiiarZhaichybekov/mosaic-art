@@ -367,6 +367,8 @@
 <div id="notifications" aria-live="polite" aria-atomic="false"></div>
 
 <script src="tile-layout.js"></script>
+<script src="result2-adaptation.js"></script>
+<script src="result-pipeline.js"></script>
 <script src="tile-i18n.js"></script>
 <script src="tile-ui.js"></script>
 <script src="optimized-contour.js"></script>
@@ -2177,8 +2179,11 @@ function initUI() {
   }
   el.threshold.closest('.ctrl').id = 'threshold-control';
   el.traceSeg.closest('.ctrl').id = 'trace-control';
-  let optimizedUI;
-  const physicalHooks = {notify,t,getFormat:()=>el.canvasFmt.value,getImage:()=>state.uploadedImg,getCanvas:()=>state.canvas,
+  let optimizedUI,autoPipeline,pipelineEnabled=false,resultsRevision=0;
+  function cancelResults(){resultsRevision++;autoPipeline?.cancel();}
+  function clearDerivedResults(){state.resultData=null;optimizedUI?.reset();tileUI.reset();for(const id of [2,3])globalThis.WorkspaceUI?.emit({id,ready:false,pending:false,failed:false});}
+  function scheduleResults(){const revision=++resultsRevision;if(!pipelineEnabled)return;queueMicrotask(()=>{if(revision===resultsRevision)autoPipeline?.start();});}
+  const physicalHooks = {notify,t,getFormat:()=>el.canvasFmt.value,getOptimized:()=>optimizedUI.ensure(),
     onPhysical:()=>{optimizedUI?.hide();state.variant='tiles';},
     onDetailed:()=>{optimizedUI?.hide();state.variant='detailed';document.title=t('app.title');if(!state.resultData)return;
       state.finalPaths=finalLineArt(state.resultData);state.internalLines=state.resultData.internal_lines;
@@ -2196,8 +2201,9 @@ function initUI() {
     }};
   }
 
-  try {optimizedUI=OptimizedUI.create({t,notify,onSelect:()=>{tileUI.deactivate?.();state.variant='optimized';}});}
+  try {optimizedUI=OptimizedUI.create({t,notify,getImage:()=>state.uploadedImg,getOptions:()=>tileUI.options(),onRecompute:()=>{tileUI.invalidate();scheduleResults();},onSelect:()=>{tileUI.deactivate?.();state.variant='optimized';}});}
   catch(error){console.error('Optimized UI unavailable',error);$('result-optimized').disabled=true;}
+  autoPipeline=ResultPipeline.create({optimize:()=>optimizedUI.ensure(),layout:()=>tileUI.ensure(),select:()=>tileUI.select(),emit:data=>globalThis.WorkspaceUI?.emit(data),cancelJobs:()=>{optimizedUI?.cancel();tileUI.cancel?.();},onError:()=>notify(t('pipeline.failed'),'error')});
 
   // Diagnostic-only overlay: screen-pixel dashes make the sampled external
   // boundary inspectable without changing the 30 mm SVG/JPG export paths.
@@ -2294,13 +2300,17 @@ function initUI() {
     try {optimizedUI?.sourceChanged(data,[cw,ch]);}
     catch(error){console.error('optional_optimized_ui_failure',{requestId:data.request_id,error});notify(t('opt.failure'),'warning');}
     globalThis.WorkspaceUI?.emit({id:1,active:true,reveal:true,pending:false,failed:false,ready:true,canvas:state.canvas,canvasElement:el.cv});
+    scheduleResults();
   }
 
   let contourGeneration = 0;
+  globalThis.addEventListener('prismosaic:cancel-processing',()=>{const stage=autoPipeline?.stage();++contourGeneration;cancelResults();for(const id of [1,2,3,'library'])globalThis.WorkspaceUI?.emit({id,pending:false,...(id===1&&stage===1?{failed:true,ready:false}:{})});notify(t('pipeline.cancelled'),'info');});
   async function requestServerContour(cw, ch, image) {
     const generation = ++contourGeneration;
+    cancelResults();autoPipeline?.begin();
+    clearDerivedResults();
     notifyKey("msg.contourWait", "info", 1800);
-    globalThis.WorkspaceUI?.emit({id:1,pending:true,failed:false});
+    globalThis.WorkspaceUI?.emit({id:1,pending:true,failed:false,ready:false});
     try {
       const data = await fetchServerDashes(state.uploadedFile, cw, ch);
       if (generation !== contourGeneration) return false;
@@ -2311,11 +2321,13 @@ function initUI() {
       if (generation !== contourGeneration) return false;
       reportContourError(err);
       globalThis.WorkspaceUI?.emit({id:1,pending:false,failed:true});
+      autoPipeline?.cancel();
       return false;
     }
   }
 
   function setShape(polys, name) {
+    cancelResults();
     optimizedUI?.reset();
     document.body.classList.remove('server-contour');
     state.resultData = null; state.variant = "detailed";
@@ -2372,6 +2384,7 @@ function initUI() {
       catch(error) { console.error('library_physical_source_failure',{assetId:state.shapeName,error}); }
       try { optimizedUI?.sourceChanged(physicalSource,[cw,ch]); }
       catch(error) { console.error('library_optimized_source_failure',{assetId:state.shapeName,error}); }
+      scheduleResults();
     }
   }
 
@@ -2517,9 +2530,11 @@ function initUI() {
   };
 
   const handleFile = (file, prepared = null) => {
-    const uploadGeneration = ++contourGeneration;
     if (!file || !/^image\/(png|jpeg|webp)$/i.test(file.type)) { notifyKey("msg.noImage", "error"); return; }
     if (file.size > MAX_CONTOUR_UPLOAD_BYTES) { notifyKey("msg.imageTooLarge", "error"); return; }
+    const uploadGeneration = ++contourGeneration;
+    cancelResults();autoPipeline?.begin();
+    clearDerivedResults();
     const url = URL.createObjectURL(file);
     const img = new Image();
     // Client-side geometric trace, used only as an offline fallback.
@@ -2557,7 +2572,7 @@ function initUI() {
         el.preset.querySelector('[value="custom"]').disabled = false;
       });
     };
-    img.onerror = () => { URL.revokeObjectURL(url); notifyKey("msg.readError", "error"); };
+    img.onerror = () => { URL.revokeObjectURL(url); if(uploadGeneration!==contourGeneration)return;autoPipeline?.cancel();notifyKey("msg.readError", "error"); };
     img.src = url;
   };
   el.drop.addEventListener("click", () => el.file.click());
@@ -2651,8 +2666,10 @@ function initUI() {
       return;
     }
     globalThis.WorkspaceUI?.emit({id:'library',pending:true});
+    const libraryGeneration=++contourGeneration;cancelResults();autoPipeline?.begin();
     try {
       const source = await globalThis.AssetLibrary.loadSource(asset, CANVAS_SIZES[el.canvasFmt.value] || [400,400]);
+      if(libraryGeneration!==contourGeneration)return;
       if (asset.type === 'photo') handleFile(source.file, source.prepared);
       else {
         ++contourGeneration; state.uploaded = false; state.uploadedImg = null;
@@ -2663,8 +2680,10 @@ function initUI() {
         el.preset.value = asset.id;
         globalThis.WorkspaceUI?.emit({id:'preset'});
       }
-    } finally { globalThis.WorkspaceUI?.emit({id:'library',pending:false}); }
+    } catch(error){if(libraryGeneration===contourGeneration)autoPipeline?.cancel();throw error;}
+    finally { globalThis.WorkspaceUI?.emit({id:'library',pending:false}); }
   }});
+  pipelineEnabled=true;
 }
 
 

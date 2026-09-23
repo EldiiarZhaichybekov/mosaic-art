@@ -1,9 +1,10 @@
 /* Result 3 experimental entry point. Result 2 is the immutable rail here too. */
 importScripts('tile-layout.js','optimized-contour.js');
 self.onmessage=({data})=>{
-  const {id,source,options,sourceCanvas,requestId}=data,started=performance.now();
+  const {id,source,options,requestId}=data,started=performance.now();
   try{
-    const optimized=OptimizedContour.generate(source,{canvas:sourceCanvas}),layout=TileLayout.generate(source,{...options,optimizedSource:optimized});
+    const optimized=data.optimizedSource;OptimizedContour.assertResult(optimized);
+    const layout=TileLayout.generate(source,{...options,optimizedSource:optimized});
     layout.hybridDiagnostics={geometryPolicy:'IMMUTABLE_RESULT2',aiGeometryPlanning:false,timings:{totalMs:performance.now()-started}};
     console.info('result3_complete',{requestId,mode:layout.mode,targetPolicy:layout.targetPolicy,tiles:layout.tiles.length,metrics:layout.metrics,timings:layout.timings});
     self.postMessage({id,result:layout});

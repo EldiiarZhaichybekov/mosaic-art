@@ -10,6 +10,7 @@
     "api/contour.py": {
       "excludeFiles": "{node_modules/**,tests/**,library/**,assets/**,scripts/**,server/**,**/*.js,**/*.css,**/*.html,**/*.md,**/*.png,**/*.jpg,**/*.jpeg,**/*.webp,**/*.svg,package.json,package-lock.json,eslint.config.cjs}"
     },
-    "api/result3.js": { "maxDuration": 50 }
+    "api/result3.js": { "maxDuration": 50 },
+    "api/result2.js": { "maxDuration": 50 }
   }
 }
