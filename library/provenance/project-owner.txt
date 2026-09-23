@@ -1,0 +1,8 @@
+Prismosaic curated collection
+
+These source images were supplied by the Prismosaic project owner for use in
+the application's built-in photo library. Original filenames and SHA-256
+fingerprints are recorded in the library manifest and import report.
+
+No external author or license was asserted during import. Rights and source
+attribution remain the responsibility of the project owner.

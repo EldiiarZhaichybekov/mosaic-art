@@ -66,6 +66,14 @@
       }
     },
     {
+      "id": "landmarks",
+      "title": {
+        "ru": "Достопримечательности",
+        "en": "Landmarks",
+        "zh": "地标"
+      }
+    },
+    {
       "id": "symbols",
       "title": {
         "ru": "Символы",
@@ -163,6 +171,3464 @@
       "sourcePage": "https://commons.wikimedia.org/wiki/File:Egg_on_white_background.jpg",
       "precomputed": {
         "url": "/library/photos/egg/precomputed.json"
+      }
+    },
+    {
+      "id": "alpaca",
+      "type": "photo",
+      "title": {
+        "en": "Alpaca",
+        "ru": "Альпака",
+        "zh": "羊驼"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "alpaca",
+        "animal",
+        "wildlife",
+        "альпака",
+        "羊驼"
+      ],
+      "thumbnailUrl": "/library/photos/alpaca/thumb.webp",
+      "sourceUrl": "/library/photos/alpaca/source.webp",
+      "originalUrl": "/library/photos/alpaca/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — alpaca.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "alpaca.png",
+      "sourceSha256": "4fb77e982958c12ba4d146cd1afa6e4cc78c2278c583bb37731e7e4d19ae76da",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "armadillo",
+      "type": "photo",
+      "title": {
+        "en": "Armadillo",
+        "ru": "Броненосец",
+        "zh": "犰狳"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "armadillo",
+        "animal",
+        "wildlife",
+        "броненосец",
+        "犰狳"
+      ],
+      "thumbnailUrl": "/library/photos/armadillo/thumb.webp",
+      "sourceUrl": "/library/photos/armadillo/source.webp",
+      "originalUrl": "/library/photos/armadillo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — armadillo.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "armadillo.png",
+      "sourceSha256": "4f2ffd8eb5e3e3bc6341fc846d6451355c945b63642da708f1f9f53b500445b2",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "bald-eagle",
+      "type": "photo",
+      "title": {
+        "en": "Bald Eagle",
+        "ru": "Белоголовый орлан",
+        "zh": "白头海雕"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "bald",
+        "eagle",
+        "bird",
+        "wildlife",
+        "bald eagle",
+        "белоголовый орлан",
+        "白头海雕"
+      ],
+      "thumbnailUrl": "/library/photos/bald-eagle/thumb.webp",
+      "sourceUrl": "/library/photos/bald-eagle/source.webp",
+      "originalUrl": "/library/photos/bald-eagle/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — bald_eagle.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "bald_eagle.png",
+      "sourceSha256": "8d2ecfdb6776ef45f67344e51ec61462807d941b88bf5af7dc557da9e9bdd8c8",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "barn-swallow",
+      "type": "photo",
+      "title": {
+        "en": "Barn Swallow",
+        "ru": "Деревенская ласточка",
+        "zh": "家燕"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "barn",
+        "swallow",
+        "bird",
+        "wildlife",
+        "barn swallow",
+        "деревенская ласточка",
+        "家燕"
+      ],
+      "thumbnailUrl": "/library/photos/barn-swallow/thumb.webp",
+      "sourceUrl": "/library/photos/barn-swallow/source.webp",
+      "originalUrl": "/library/photos/barn-swallow/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — barn_swallow.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "barn_swallow.png",
+      "sourceSha256": "d9076b5e09bec9c801ee7594f5b6c80cc2e5bfd05aa60714cfd276fa14442cfe",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "big-ben-elizabeth-tower",
+      "type": "photo",
+      "title": {
+        "en": "Big Ben — Elizabeth Tower",
+        "ru": "Биг-Бен — башня Елизаветы",
+        "zh": "大本钟（伊丽莎白塔）"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "big",
+        "ben",
+        "elizabeth",
+        "tower",
+        "landmark",
+        "architecture",
+        "big ben — elizabeth tower",
+        "биг-бен — башня елизаветы",
+        "大本钟（伊丽莎白塔）"
+      ],
+      "thumbnailUrl": "/library/photos/big-ben-elizabeth-tower/thumb.webp",
+      "sourceUrl": "/library/photos/big-ben-elizabeth-tower/source.webp",
+      "originalUrl": "/library/photos/big-ben-elizabeth-tower/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Big Ben : Elizabeth Tower.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Big Ben : Elizabeth Tower.png",
+      "sourceSha256": "c10f060a9a742f84e382b0a565e29efe1c33743182f919784d1801733780013d",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "black-panther",
+      "type": "photo",
+      "title": {
+        "en": "Black Panther",
+        "ru": "Чёрная пантера",
+        "zh": "黑豹"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "black",
+        "panther",
+        "animal",
+        "wildlife",
+        "black panther",
+        "чёрная пантера",
+        "黑豹"
+      ],
+      "thumbnailUrl": "/library/photos/black-panther/thumb.webp",
+      "sourceUrl": "/library/photos/black-panther/source.webp",
+      "originalUrl": "/library/photos/black-panther/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — black_panther.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "black_panther.png",
+      "sourceSha256": "b96be7adb2a2264369db2ccb6ecf282fc9019bbd45ebd8bae73ae372cd5712ee",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "blue-butterfly",
+      "type": "photo",
+      "title": {
+        "en": "Blue Butterfly",
+        "ru": "Голубая бабочка",
+        "zh": "蓝色蝴蝶"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "blue",
+        "butterfly",
+        "insect",
+        "wildlife",
+        "blue butterfly",
+        "голубая бабочка",
+        "蓝色蝴蝶"
+      ],
+      "thumbnailUrl": "/library/photos/blue-butterfly/thumb.webp",
+      "sourceUrl": "/library/photos/blue-butterfly/source.webp",
+      "originalUrl": "/library/photos/blue-butterfly/original.webp",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — test_butterfly.webp",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "test_butterfly.webp",
+      "sourceSha256": "ece40f52cc51c9beaf895fa6cf03711f2622e1725db1325b335148ce2a241173",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 804,
+        "height": 626
+      }
+    },
+    {
+      "id": "brown-bear",
+      "type": "photo",
+      "title": {
+        "en": "Brown Bear",
+        "ru": "Бурый медведь",
+        "zh": "棕熊"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "brown",
+        "bear",
+        "animal",
+        "wildlife",
+        "brown bear",
+        "бурый медведь",
+        "棕熊"
+      ],
+      "thumbnailUrl": "/library/photos/brown-bear/thumb.webp",
+      "sourceUrl": "/library/photos/brown-bear/source.webp",
+      "originalUrl": "/library/photos/brown-bear/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — brown_bear.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "brown_bear.png",
+      "sourceSha256": "b3b632963782bd3f61b518488c57387fc157d88c6262354af380bf9386ce142b",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "burj-khalifa",
+      "type": "photo",
+      "title": {
+        "en": "Burj Khalifa",
+        "ru": "Бурдж-Халифа",
+        "zh": "哈利法塔"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "burj",
+        "khalifa",
+        "landmark",
+        "architecture",
+        "burj khalifa",
+        "бурдж-халифа",
+        "哈利法塔"
+      ],
+      "thumbnailUrl": "/library/photos/burj-khalifa/thumb.webp",
+      "sourceUrl": "/library/photos/burj-khalifa/source.webp",
+      "originalUrl": "/library/photos/burj-khalifa/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Burj Khalifa.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Burj Khalifa.png",
+      "sourceSha256": "80ebf75505c37e336ccb3d48b0b10523b4a9f809478122b591a91a0f5d52528d",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "butterfly-photo",
+      "type": "photo",
+      "title": {
+        "en": "Butterfly",
+        "ru": "Бабочка",
+        "zh": "蝴蝶"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "butterfly",
+        "insect",
+        "wildlife",
+        "бабочка",
+        "蝴蝶"
+      ],
+      "thumbnailUrl": "/library/photos/butterfly-photo/thumb.webp",
+      "sourceUrl": "/library/photos/butterfly-photo/source.webp",
+      "originalUrl": "/library/photos/butterfly-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — butterfly.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "butterfly.png",
+      "sourceSha256": "2118d281b5283687c14a0960603aa0df53fe33627618a26458322d1b832048ed",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "camel",
+      "type": "photo",
+      "title": {
+        "en": "Camel",
+        "ru": "Верблюд",
+        "zh": "骆驼"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "camel",
+        "animal",
+        "wildlife",
+        "верблюд",
+        "骆驼"
+      ],
+      "thumbnailUrl": "/library/photos/camel/thumb.webp",
+      "sourceUrl": "/library/photos/camel/source.webp",
+      "originalUrl": "/library/photos/camel/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — camel.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "camel.png",
+      "sourceSha256": "c516916f2b1fe15402dc8764392c9594382111ed5d272b485e8b05d4f6058ff6",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "canton-tower",
+      "type": "photo",
+      "title": {
+        "en": "Canton Tower",
+        "ru": "Кантонская телебашня",
+        "zh": "广州塔"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "canton",
+        "tower",
+        "landmark",
+        "architecture",
+        "canton tower",
+        "кантонская телебашня",
+        "广州塔"
+      ],
+      "thumbnailUrl": "/library/photos/canton-tower/thumb.webp",
+      "sourceUrl": "/library/photos/canton-tower/source.webp",
+      "originalUrl": "/library/photos/canton-tower/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Canton Tower .png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Canton Tower .png",
+      "sourceSha256": "26fea4c6428b0f4fa939de8d38e1a2a01a010b91a8320f5579e503770ca48766",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "caracal",
+      "type": "photo",
+      "title": {
+        "en": "Caracal",
+        "ru": "Каракал",
+        "zh": "狞猫"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "caracal",
+        "animal",
+        "wildlife",
+        "каракал",
+        "狞猫"
+      ],
+      "thumbnailUrl": "/library/photos/caracal/thumb.webp",
+      "sourceUrl": "/library/photos/caracal/source.webp",
+      "originalUrl": "/library/photos/caracal/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — caracal.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "caracal.png",
+      "sourceSha256": "a61175a1bade09048773189eb7f2f82beea46d0831272e231f55f0fd908e66ce",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "cassowary",
+      "type": "photo",
+      "title": {
+        "en": "Cassowary",
+        "ru": "Казуар",
+        "zh": "食火鸡"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "cassowary",
+        "bird",
+        "wildlife",
+        "казуар",
+        "食火鸡"
+      ],
+      "thumbnailUrl": "/library/photos/cassowary/thumb.webp",
+      "sourceUrl": "/library/photos/cassowary/source.webp",
+      "originalUrl": "/library/photos/cassowary/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — cassowary.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "cassowary.png",
+      "sourceSha256": "50289aa2662a2d1b6f9c5d50181abfbc3026dcadbd8d5942879fa134a08d90ad",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "cat-photo",
+      "type": "photo",
+      "title": {
+        "en": "Cat",
+        "ru": "Кошка",
+        "zh": "猫"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "cat",
+        "animal",
+        "wildlife",
+        "кошка",
+        "猫"
+      ],
+      "thumbnailUrl": "/library/photos/cat-photo/thumb.webp",
+      "sourceUrl": "/library/photos/cat-photo/source.webp",
+      "originalUrl": "/library/photos/cat-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — cat.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "cat.png",
+      "sourceSha256": "92b1eedc6b7954a330bb9e92170e84a1567d8ca0338882d5084912b287d88dea",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "chameleon",
+      "type": "photo",
+      "title": {
+        "en": "Chameleon",
+        "ru": "Хамелеон",
+        "zh": "变色龙"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "chameleon",
+        "animal",
+        "wildlife",
+        "хамелеон",
+        "变色龙"
+      ],
+      "thumbnailUrl": "/library/photos/chameleon/thumb.webp",
+      "sourceUrl": "/library/photos/chameleon/source.webp",
+      "originalUrl": "/library/photos/chameleon/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — chameleon.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "chameleon.png",
+      "sourceSha256": "3cd36b7a2928cb9bd30ee229c9b8b9edb987442ee44fd57b11973cb369d34bc1",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "cheetah",
+      "type": "photo",
+      "title": {
+        "en": "Cheetah",
+        "ru": "Гепард",
+        "zh": "猎豹"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "cheetah",
+        "animal",
+        "wildlife",
+        "гепард",
+        "猎豹"
+      ],
+      "thumbnailUrl": "/library/photos/cheetah/thumb.webp",
+      "sourceUrl": "/library/photos/cheetah/source.webp",
+      "originalUrl": "/library/photos/cheetah/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — cheetah.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "cheetah.png",
+      "sourceSha256": "5a7de4720576e8f9415e86b68949d90dd9c4dbbd2cd7e41f2f054b8e9c042a81",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "chimpanzee",
+      "type": "photo",
+      "title": {
+        "en": "Chimpanzee",
+        "ru": "Шимпанзе",
+        "zh": "黑猩猩"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "chimpanzee",
+        "animal",
+        "wildlife",
+        "шимпанзе",
+        "黑猩猩"
+      ],
+      "thumbnailUrl": "/library/photos/chimpanzee/thumb.webp",
+      "sourceUrl": "/library/photos/chimpanzee/source.webp",
+      "originalUrl": "/library/photos/chimpanzee/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — chimpanzee.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "chimpanzee.png",
+      "sourceSha256": "f3bd0c024c009c7ca39dd58a923866e88cfe369c05dc6851e46b8dca617f364d",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "christ-the-redeemer",
+      "type": "photo",
+      "title": {
+        "en": "Christ the Redeemer",
+        "ru": "Статуя Христа-Искупителя",
+        "zh": "里约热内卢基督像"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "christ",
+        "the",
+        "redeemer",
+        "landmark",
+        "architecture",
+        "christ the redeemer",
+        "статуя христа-искупителя",
+        "里约热内卢基督像"
+      ],
+      "thumbnailUrl": "/library/photos/christ-the-redeemer/thumb.webp",
+      "sourceUrl": "/library/photos/christ-the-redeemer/source.webp",
+      "originalUrl": "/library/photos/christ-the-redeemer/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Christ the Redeemer.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Christ the Redeemer.png",
+      "sourceSha256": "54d84549985b94ceadcc79473deb2b588c753f7aa1ac275e04b5919b24ee3b4b",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "colosseum",
+      "type": "photo",
+      "title": {
+        "en": "Colosseum",
+        "ru": "Колизей",
+        "zh": "罗马斗兽场"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "colosseum",
+        "landmark",
+        "architecture",
+        "колизей",
+        "罗马斗兽场"
+      ],
+      "thumbnailUrl": "/library/photos/colosseum/thumb.webp",
+      "sourceUrl": "/library/photos/colosseum/source.webp",
+      "originalUrl": "/library/photos/colosseum/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Colosseum.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Colosseum.png",
+      "sourceSha256": "4f8f0dc2ae51ed60b5f4c4c911f52b40e29e8847b2113057d8f51fe51e56d1f7",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1408,
+        "height": 768
+      }
+    },
+    {
+      "id": "cow",
+      "type": "photo",
+      "title": {
+        "en": "Cow",
+        "ru": "Корова",
+        "zh": "奶牛"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "cow",
+        "animal",
+        "wildlife",
+        "корова",
+        "奶牛"
+      ],
+      "thumbnailUrl": "/library/photos/cow/thumb.webp",
+      "sourceUrl": "/library/photos/cow/source.webp",
+      "originalUrl": "/library/photos/cow/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — cow.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "cow.png",
+      "sourceSha256": "5a42f4571b464d1e4dba4cee64f9320b794ff01f1016e8551c74506d90c932dd",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "dolphin-photo",
+      "type": "photo",
+      "title": {
+        "en": "Dolphin",
+        "ru": "Дельфин",
+        "zh": "海豚"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "dolphin",
+        "marine",
+        "ocean",
+        "дельфин",
+        "海豚"
+      ],
+      "thumbnailUrl": "/library/photos/dolphin-photo/thumb.webp",
+      "sourceUrl": "/library/photos/dolphin-photo/source.webp",
+      "originalUrl": "/library/photos/dolphin-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — dolphin.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "dolphin.png",
+      "sourceSha256": "2a71ee62123951857080503aa56a4c5923ac282b04e65503109cf76ef4b33b2b",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "dragonfly-photo",
+      "type": "photo",
+      "title": {
+        "en": "Dragonfly",
+        "ru": "Стрекоза",
+        "zh": "蜻蜓"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "dragonfly",
+        "insect",
+        "wildlife",
+        "стрекоза",
+        "蜻蜓"
+      ],
+      "thumbnailUrl": "/library/photos/dragonfly-photo/thumb.webp",
+      "sourceUrl": "/library/photos/dragonfly-photo/source.webp",
+      "originalUrl": "/library/photos/dragonfly-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — dragonfly.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "dragonfly.png",
+      "sourceSha256": "a867effb4587a43d2dd58d4802bedada42c46fd992ee7db818748d6b6788f333",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "eiffel-tower",
+      "type": "photo",
+      "title": {
+        "en": "Eiffel Tower",
+        "ru": "Эйфелева башня",
+        "zh": "埃菲尔铁塔"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "eiffel",
+        "tower",
+        "landmark",
+        "architecture",
+        "eiffel tower",
+        "эйфелева башня",
+        "埃菲尔铁塔"
+      ],
+      "thumbnailUrl": "/library/photos/eiffel-tower/thumb.webp",
+      "sourceUrl": "/library/photos/eiffel-tower/source.webp",
+      "originalUrl": "/library/photos/eiffel-tower/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Eiffel Tower.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Eiffel Tower.png",
+      "sourceSha256": "02fecb91c57872f2dacfa597a35673b55a65d728419be2dd55efccba7ec23069",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "elephant",
+      "type": "photo",
+      "title": {
+        "en": "Elephant",
+        "ru": "Слон",
+        "zh": "大象"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "elephant",
+        "animal",
+        "wildlife",
+        "слон",
+        "大象"
+      ],
+      "thumbnailUrl": "/library/photos/elephant/thumb.webp",
+      "sourceUrl": "/library/photos/elephant/source.webp",
+      "originalUrl": "/library/photos/elephant/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — elephant.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "elephant.png",
+      "sourceSha256": "3b351dbce17fccf7064edc07a37453da2c7fa6803bae64c758a20c62d83ff5d3",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "emu",
+      "type": "photo",
+      "title": {
+        "en": "Emu",
+        "ru": "Эму",
+        "zh": "鸸鹋"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "emu",
+        "bird",
+        "wildlife",
+        "эму",
+        "鸸鹋"
+      ],
+      "thumbnailUrl": "/library/photos/emu/thumb.webp",
+      "sourceUrl": "/library/photos/emu/source.webp",
+      "originalUrl": "/library/photos/emu/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — emu.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "emu.png",
+      "sourceSha256": "ea6e8ed7a2939cdbae7f8efbdffbcb6b661dc3fc7affd9a8e9284120403a6d38",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "flamingo",
+      "type": "photo",
+      "title": {
+        "en": "Flamingo",
+        "ru": "Фламинго",
+        "zh": "火烈鸟"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "flamingo",
+        "bird",
+        "wildlife",
+        "фламинго",
+        "火烈鸟"
+      ],
+      "thumbnailUrl": "/library/photos/flamingo/thumb.webp",
+      "sourceUrl": "/library/photos/flamingo/source.webp",
+      "originalUrl": "/library/photos/flamingo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — flamingo.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "flamingo.png",
+      "sourceSha256": "01ff71e4102327a3015826b98c9e97db0584fa7da667bfdaf69b62650ad8d5a6",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "flying-bat",
+      "type": "photo",
+      "title": {
+        "en": "Flying Bat",
+        "ru": "Летучая мышь в полёте",
+        "zh": "飞行中的蝙蝠"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "flying",
+        "bat",
+        "animal",
+        "wildlife",
+        "flying bat",
+        "летучая мышь в полёте",
+        "飞行中的蝙蝠"
+      ],
+      "thumbnailUrl": "/library/photos/flying-bat/thumb.webp",
+      "sourceUrl": "/library/photos/flying-bat/source.webp",
+      "originalUrl": "/library/photos/flying-bat/original.webp",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — bat_source.webp",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "bat_source.webp",
+      "sourceSha256": "28b9cd5764c2852ba9a86cb795f4f6df8701ee181524b64540087eece94a2c5c",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1545,
+        "height": 830
+      }
+    },
+    {
+      "id": "german-shepherd",
+      "type": "photo",
+      "title": {
+        "en": "German Shepherd",
+        "ru": "Немецкая овчарка",
+        "zh": "德国牧羊犬"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "german",
+        "shepherd",
+        "animal",
+        "wildlife",
+        "german shepherd",
+        "немецкая овчарка",
+        "德国牧羊犬"
+      ],
+      "thumbnailUrl": "/library/photos/german-shepherd/thumb.webp",
+      "sourceUrl": "/library/photos/german-shepherd/source.webp",
+      "originalUrl": "/library/photos/german-shepherd/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — german_shepherd.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "german_shepherd.png",
+      "sourceSha256": "2408c89cf8252238e75263f14596485195cfd6a927b0570e1a453a88f99dc5d2",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "giant-anteater",
+      "type": "photo",
+      "title": {
+        "en": "Giant Anteater",
+        "ru": "Большой муравьед",
+        "zh": "大食蚁兽"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "giant",
+        "anteater",
+        "animal",
+        "wildlife",
+        "giant anteater",
+        "большой муравьед",
+        "大食蚁兽"
+      ],
+      "thumbnailUrl": "/library/photos/giant-anteater/thumb.webp",
+      "sourceUrl": "/library/photos/giant-anteater/source.webp",
+      "originalUrl": "/library/photos/giant-anteater/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — giant_anteater.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "giant_anteater.png",
+      "sourceSha256": "ad5e83c79c3e1fad7d38d985bd0dfe2439ea062d237b91eb9c498f6443bff1d0",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "giant-panda",
+      "type": "photo",
+      "title": {
+        "en": "Giant Panda",
+        "ru": "Большая панда",
+        "zh": "大熊猫"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "giant",
+        "panda",
+        "animal",
+        "wildlife",
+        "giant panda",
+        "большая панда",
+        "大熊猫"
+      ],
+      "thumbnailUrl": "/library/photos/giant-panda/thumb.webp",
+      "sourceUrl": "/library/photos/giant-panda/source.webp",
+      "originalUrl": "/library/photos/giant-panda/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — giant_panda.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "giant_panda.png",
+      "sourceSha256": "5a513d01e62e0c934848834e2533e75f626b317fe9ea3233c6989478aed02a2c",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "golden-retriever",
+      "type": "photo",
+      "title": {
+        "en": "Golden Retriever",
+        "ru": "Золотистый ретривер",
+        "zh": "金毛寻回犬"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "golden",
+        "retriever",
+        "animal",
+        "wildlife",
+        "golden retriever",
+        "золотистый ретривер",
+        "金毛寻回犬"
+      ],
+      "thumbnailUrl": "/library/photos/golden-retriever/thumb.webp",
+      "sourceUrl": "/library/photos/golden-retriever/source.webp",
+      "originalUrl": "/library/photos/golden-retriever/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — golden_retriever.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "golden_retriever.png",
+      "sourceSha256": "1352c05edd7f8b92e5a208d3d603f3cd2694c8ddc9c36c52c2095b3ec22fea37",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "goose",
+      "type": "photo",
+      "title": {
+        "en": "Goose",
+        "ru": "Гусь",
+        "zh": "鹅"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "goose",
+        "bird",
+        "wildlife",
+        "гусь",
+        "鹅"
+      ],
+      "thumbnailUrl": "/library/photos/goose/thumb.webp",
+      "sourceUrl": "/library/photos/goose/source.webp",
+      "originalUrl": "/library/photos/goose/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — goose.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "goose.png",
+      "sourceSha256": "b308d21d235183115266ebafb64c0272d70f2d5f5f4045f62e6c880173813daa",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "goose-2",
+      "type": "photo",
+      "title": {
+        "en": "Goose 2",
+        "ru": "Гусь 2",
+        "zh": "鹅 2"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "goose",
+        "bird",
+        "wildlife",
+        "goose 2",
+        "гусь 2",
+        "鹅 2"
+      ],
+      "thumbnailUrl": "/library/photos/goose-2/thumb.webp",
+      "sourceUrl": "/library/photos/goose-2/source.webp",
+      "originalUrl": "/library/photos/goose-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — goose copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "goose copy.png",
+      "sourceSha256": "8780bb6cb7b1a376f9a71c26a5ed87dc13e9f943431451f3419e8d5c26251f4e",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "gorilla",
+      "type": "photo",
+      "title": {
+        "en": "Gorilla",
+        "ru": "Горилла",
+        "zh": "大猩猩"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "gorilla",
+        "animal",
+        "wildlife",
+        "горилла",
+        "大猩猩"
+      ],
+      "thumbnailUrl": "/library/photos/gorilla/thumb.webp",
+      "sourceUrl": "/library/photos/gorilla/source.webp",
+      "originalUrl": "/library/photos/gorilla/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — gorilla.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "gorilla.png",
+      "sourceSha256": "5bc1510a959fc9e8be6c7e01ba2026c9546d9290db68b96d663a40a3c54a6e51",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "great-pyramid-of-giza",
+      "type": "photo",
+      "title": {
+        "en": "Great Pyramid of Giza",
+        "ru": "Великая пирамида Гизы",
+        "zh": "吉萨大金字塔"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "great",
+        "pyramid",
+        "of",
+        "giza",
+        "landmark",
+        "architecture",
+        "great pyramid of giza",
+        "великая пирамида гизы",
+        "吉萨大金字塔"
+      ],
+      "thumbnailUrl": "/library/photos/great-pyramid-of-giza/thumb.webp",
+      "sourceUrl": "/library/photos/great-pyramid-of-giza/source.webp",
+      "originalUrl": "/library/photos/great-pyramid-of-giza/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Great Pyramid of Giza.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Great Pyramid of Giza.png",
+      "sourceSha256": "9473aeac2e2bcfbbe3c8df5dd014f70be3519d9f15bceb263ab2c08ffb8e192c",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1264,
+        "height": 843
+      }
+    },
+    {
+      "id": "great-wall-of-china",
+      "type": "photo",
+      "title": {
+        "en": "Great Wall of China",
+        "ru": "Великая Китайская стена",
+        "zh": "中国长城"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "great",
+        "wall",
+        "of",
+        "china",
+        "landmark",
+        "architecture",
+        "great wall of china",
+        "великая китайская стена",
+        "中国长城"
+      ],
+      "thumbnailUrl": "/library/photos/great-wall-of-china/thumb.webp",
+      "sourceUrl": "/library/photos/great-wall-of-china/source.webp",
+      "originalUrl": "/library/photos/great-wall-of-china/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Great Wall of China.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Great Wall of China.png",
+      "sourceSha256": "5309ae7d83f2e2e1e7a5131b6b298119785b5f7e8268953818c0300414059458",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "hedgehog",
+      "type": "photo",
+      "title": {
+        "en": "Hedgehog",
+        "ru": "Ёж",
+        "zh": "刺猬"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "hedgehog",
+        "animal",
+        "wildlife",
+        "ёж",
+        "刺猬"
+      ],
+      "thumbnailUrl": "/library/photos/hedgehog/thumb.webp",
+      "sourceUrl": "/library/photos/hedgehog/source.webp",
+      "originalUrl": "/library/photos/hedgehog/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — hedgehog.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "hedgehog.png",
+      "sourceSha256": "d821520b8dd583d4c4779232101ddfe06a4c61c02c8c7e50174029a044304c90",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "hippopotamus",
+      "type": "photo",
+      "title": {
+        "en": "Hippopotamus",
+        "ru": "Бегемот",
+        "zh": "河马"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "hippopotamus",
+        "animal",
+        "wildlife",
+        "бегемот",
+        "河马"
+      ],
+      "thumbnailUrl": "/library/photos/hippopotamus/thumb.webp",
+      "sourceUrl": "/library/photos/hippopotamus/source.webp",
+      "originalUrl": "/library/photos/hippopotamus/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — hippopotamus.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "hippopotamus.png",
+      "sourceSha256": "607b0d6f023d389df3c9226c87b2a232236523c8ae083b7ffe821ef3f4672d9c",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "horse",
+      "type": "photo",
+      "title": {
+        "en": "Horse",
+        "ru": "Лошадь",
+        "zh": "马"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "horse",
+        "animal",
+        "wildlife",
+        "лошадь",
+        "马"
+      ],
+      "thumbnailUrl": "/library/photos/horse/thumb.webp",
+      "sourceUrl": "/library/photos/horse/source.webp",
+      "originalUrl": "/library/photos/horse/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — horse.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "horse.png",
+      "sourceSha256": "02d7d8018abecbf1ad57b35622715a66ff4989385690a07a2ef104e8a08c7986",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "hummingbird-photo",
+      "type": "photo",
+      "title": {
+        "en": "Hummingbird",
+        "ru": "Колибри",
+        "zh": "蜂鸟"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "hummingbird",
+        "bird",
+        "wildlife",
+        "колибри",
+        "蜂鸟"
+      ],
+      "thumbnailUrl": "/library/photos/hummingbird-photo/thumb.webp",
+      "sourceUrl": "/library/photos/hummingbird-photo/source.webp",
+      "originalUrl": "/library/photos/hummingbird-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — hummingbird.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "hummingbird.png",
+      "sourceSha256": "3ec3388f19dbc948106810079ad16c53c7585ea332577c16aaa5f5ff4af4f28f",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "japanese-pagoda",
+      "type": "photo",
+      "title": {
+        "en": "Japanese Pagoda",
+        "ru": "Японская пагода",
+        "zh": "日本五重塔"
+      },
+      "categoryId": "architecture",
+      "tags": [
+        "japanese",
+        "pagoda",
+        "architecture",
+        "building",
+        "japanese pagoda",
+        "японская пагода",
+        "日本五重塔"
+      ],
+      "thumbnailUrl": "/library/photos/japanese-pagoda/thumb.webp",
+      "sourceUrl": "/library/photos/japanese-pagoda/source.webp",
+      "originalUrl": "/library/photos/japanese-pagoda/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — image14.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "image14.png",
+      "sourceSha256": "558bff711821d240c9998ecc3427917495256da7ae6469983261fca87504aab6",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 928,
+        "height": 1151
+      }
+    },
+    {
+      "id": "kangaroo",
+      "type": "photo",
+      "title": {
+        "en": "Kangaroo",
+        "ru": "Кенгуру",
+        "zh": "袋鼠"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "kangaroo",
+        "animal",
+        "wildlife",
+        "кенгуру",
+        "袋鼠"
+      ],
+      "thumbnailUrl": "/library/photos/kangaroo/thumb.webp",
+      "sourceUrl": "/library/photos/kangaroo/source.webp",
+      "originalUrl": "/library/photos/kangaroo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — kangaroo.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "kangaroo.png",
+      "sourceSha256": "9bfc41209b92f253e6dd1653cca6fe43a13a7c090f7c6710b2caa58dd782aae8",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "kiwi",
+      "type": "photo",
+      "title": {
+        "en": "Kiwi",
+        "ru": "Киви",
+        "zh": "几维鸟"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "kiwi",
+        "bird",
+        "wildlife",
+        "киви",
+        "几维鸟"
+      ],
+      "thumbnailUrl": "/library/photos/kiwi/thumb.webp",
+      "sourceUrl": "/library/photos/kiwi/source.webp",
+      "originalUrl": "/library/photos/kiwi/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — kiwi.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "kiwi.png",
+      "sourceSha256": "684b26712c63fa163a3ac3e047e37b7c0c9a8211d1f6ea32995fc4307a8bfa89",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "koala",
+      "type": "photo",
+      "title": {
+        "en": "Koala",
+        "ru": "Коала",
+        "zh": "考拉"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "koala",
+        "animal",
+        "wildlife",
+        "коала",
+        "考拉"
+      ],
+      "thumbnailUrl": "/library/photos/koala/thumb.webp",
+      "sourceUrl": "/library/photos/koala/source.webp",
+      "originalUrl": "/library/photos/koala/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — koala.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "koala.png",
+      "sourceSha256": "d747c50d4ab70bd297566b3ada63dadffbeeab344300c9631be5c14179994d89",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "ladybug",
+      "type": "photo",
+      "title": {
+        "en": "Ladybug",
+        "ru": "Божья коровка",
+        "zh": "瓢虫"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "ladybug",
+        "insect",
+        "wildlife",
+        "божья коровка",
+        "瓢虫"
+      ],
+      "thumbnailUrl": "/library/photos/ladybug/thumb.webp",
+      "sourceUrl": "/library/photos/ladybug/source.webp",
+      "originalUrl": "/library/photos/ladybug/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — ladybug.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "ladybug.png",
+      "sourceSha256": "898d313454f34a23b4f4a43b73d03ef0f12523928211e50aa9f51d03c4166818",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "leaning-tower-of-pisa",
+      "type": "photo",
+      "title": {
+        "en": "Leaning Tower of Pisa",
+        "ru": "Пизанская башня",
+        "zh": "比萨斜塔"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "leaning",
+        "tower",
+        "of",
+        "pisa",
+        "landmark",
+        "architecture",
+        "leaning tower of pisa",
+        "пизанская башня",
+        "比萨斜塔"
+      ],
+      "thumbnailUrl": "/library/photos/leaning-tower-of-pisa/thumb.webp",
+      "sourceUrl": "/library/photos/leaning-tower-of-pisa/source.webp",
+      "originalUrl": "/library/photos/leaning-tower-of-pisa/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Leaning Tower of Pisa.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Leaning Tower of Pisa.png",
+      "sourceSha256": "ecc4ecac54430de54aef48b39d9e8c744649076a38fa98dda03714558ef65b47",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1408,
+        "height": 768
+      }
+    },
+    {
+      "id": "leopard",
+      "type": "photo",
+      "title": {
+        "en": "Leopard",
+        "ru": "Леопард",
+        "zh": "花豹"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "leopard",
+        "animal",
+        "wildlife",
+        "леопард",
+        "花豹"
+      ],
+      "thumbnailUrl": "/library/photos/leopard/thumb.webp",
+      "sourceUrl": "/library/photos/leopard/source.webp",
+      "originalUrl": "/library/photos/leopard/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — leopard.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "leopard.png",
+      "sourceSha256": "063c714f47f19ee2395cbb839887fcfded7cefb03a4d88f866fefd8c21a4b8ea",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "lion",
+      "type": "photo",
+      "title": {
+        "en": "Lion",
+        "ru": "Лев",
+        "zh": "狮子"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "lion",
+        "animal",
+        "wildlife",
+        "лев",
+        "狮子"
+      ],
+      "thumbnailUrl": "/library/photos/lion/thumb.webp",
+      "sourceUrl": "/library/photos/lion/source.webp",
+      "originalUrl": "/library/photos/lion/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — lion.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "lion.png",
+      "sourceSha256": "09148c2f4b889b57e0b8b275a4f5d2078b2c1ddc9fed19d883a776088f46d0b9",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "lynx",
+      "type": "photo",
+      "title": {
+        "en": "Lynx",
+        "ru": "Рысь",
+        "zh": "猞猁"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "lynx",
+        "animal",
+        "wildlife",
+        "рысь",
+        "猞猁"
+      ],
+      "thumbnailUrl": "/library/photos/lynx/thumb.webp",
+      "sourceUrl": "/library/photos/lynx/source.webp",
+      "originalUrl": "/library/photos/lynx/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — lynx.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "lynx.png",
+      "sourceSha256": "983dfc21b4accd5c8e0931e51a9b56d955d2749e46d31dcf8ee327a75d551903",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "macaw",
+      "type": "photo",
+      "title": {
+        "en": "Macaw",
+        "ru": "Ара",
+        "zh": "金刚鹦鹉"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "macaw",
+        "bird",
+        "wildlife",
+        "ара",
+        "金刚鹦鹉"
+      ],
+      "thumbnailUrl": "/library/photos/macaw/thumb.webp",
+      "sourceUrl": "/library/photos/macaw/source.webp",
+      "originalUrl": "/library/photos/macaw/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — macaw.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "macaw.png",
+      "sourceSha256": "5e07ce3134d370d4129f35eeb9fb3ff938c0fc686effa621149cb77448405a07",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "moose",
+      "type": "photo",
+      "title": {
+        "en": "Moose",
+        "ru": "Лось",
+        "zh": "驼鹿"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "moose",
+        "animal",
+        "wildlife",
+        "лось",
+        "驼鹿"
+      ],
+      "thumbnailUrl": "/library/photos/moose/thumb.webp",
+      "sourceUrl": "/library/photos/moose/source.webp",
+      "originalUrl": "/library/photos/moose/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — moose.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "moose.png",
+      "sourceSha256": "f26ac22da410dcf915b977186641819de7180c702072a1123934386b9ab1cdfa",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "octopus-photo",
+      "type": "photo",
+      "title": {
+        "en": "Octopus",
+        "ru": "Осьминог",
+        "zh": "章鱼"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "octopus",
+        "marine",
+        "ocean",
+        "осьминог",
+        "章鱼"
+      ],
+      "thumbnailUrl": "/library/photos/octopus-photo/thumb.webp",
+      "sourceUrl": "/library/photos/octopus-photo/source.webp",
+      "originalUrl": "/library/photos/octopus-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — octopus.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "octopus.png",
+      "sourceSha256": "77731bc8919d8dbf6d25aa24b1c89b7f9c08f396f9c942589fbdc03d1f0078c4",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "okapi",
+      "type": "photo",
+      "title": {
+        "en": "Okapi",
+        "ru": "Окапи",
+        "zh": "霍加狓"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "okapi",
+        "animal",
+        "wildlife",
+        "окапи",
+        "霍加狓"
+      ],
+      "thumbnailUrl": "/library/photos/okapi/thumb.webp",
+      "sourceUrl": "/library/photos/okapi/source.webp",
+      "originalUrl": "/library/photos/okapi/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — okapi.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "okapi.png",
+      "sourceSha256": "6ea0064f8827efe4873f5a99fe8c708e964f7f00efa38f7c42133a4d8e4d557f",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "orangutan",
+      "type": "photo",
+      "title": {
+        "en": "Orangutan",
+        "ru": "Орангутан",
+        "zh": "红毛猩猩"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "orangutan",
+        "animal",
+        "wildlife",
+        "орангутан",
+        "红毛猩猩"
+      ],
+      "thumbnailUrl": "/library/photos/orangutan/thumb.webp",
+      "sourceUrl": "/library/photos/orangutan/source.webp",
+      "originalUrl": "/library/photos/orangutan/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — orangutan.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "orangutan.png",
+      "sourceSha256": "12a8496edbd7f26e25c73d0dbe4bbae24da7d9d8ccd1b12d416578b82235a874",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "orca",
+      "type": "photo",
+      "title": {
+        "en": "Orca",
+        "ru": "Косатка",
+        "zh": "虎鲸"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "orca",
+        "marine",
+        "ocean",
+        "косатка",
+        "虎鲸"
+      ],
+      "thumbnailUrl": "/library/photos/orca/thumb.webp",
+      "sourceUrl": "/library/photos/orca/source.webp",
+      "originalUrl": "/library/photos/orca/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — orca.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "orca.png",
+      "sourceSha256": "3f079d54d76c03f660ed32de1b6ff4b61db0daecc13e8ee74aa77b17684ba030",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "ostrich",
+      "type": "photo",
+      "title": {
+        "en": "Ostrich",
+        "ru": "Страус",
+        "zh": "鸵鸟"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "ostrich",
+        "bird",
+        "wildlife",
+        "страус",
+        "鸵鸟"
+      ],
+      "thumbnailUrl": "/library/photos/ostrich/thumb.webp",
+      "sourceUrl": "/library/photos/ostrich/source.webp",
+      "originalUrl": "/library/photos/ostrich/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — ostrich.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "ostrich.png",
+      "sourceSha256": "bd96b8726a436ab97acbecfdcc41ac566198aa7f3bcf846871e147df17760211",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "peacock",
+      "type": "photo",
+      "title": {
+        "en": "Peacock",
+        "ru": "Павлин",
+        "zh": "孔雀"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "peacock",
+        "bird",
+        "wildlife",
+        "павлин",
+        "孔雀"
+      ],
+      "thumbnailUrl": "/library/photos/peacock/thumb.webp",
+      "sourceUrl": "/library/photos/peacock/source.webp",
+      "originalUrl": "/library/photos/peacock/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — peacock.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "peacock.png",
+      "sourceSha256": "460beb0b003630cdbacfc72405fd29c023ee8749c23f7bda0b767ab00008d395",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "penguin-photo",
+      "type": "photo",
+      "title": {
+        "en": "Penguin",
+        "ru": "Пингвин",
+        "zh": "企鹅"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "penguin",
+        "bird",
+        "wildlife",
+        "пингвин",
+        "企鹅"
+      ],
+      "thumbnailUrl": "/library/photos/penguin-photo/thumb.webp",
+      "sourceUrl": "/library/photos/penguin-photo/source.webp",
+      "originalUrl": "/library/photos/penguin-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — penguin.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "penguin.png",
+      "sourceSha256": "2dba0f8a73fdf47a8947d4cfbc9381fe1e22d1876367d9587c6e070dfdb873e4",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "petronas-twin-towers",
+      "type": "photo",
+      "title": {
+        "en": "Petronas Twin Towers",
+        "ru": "Башни Петронас",
+        "zh": "马来西亚国家石油双子塔"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "petronas",
+        "twin",
+        "towers",
+        "landmark",
+        "architecture",
+        "petronas twin towers",
+        "башни петронас",
+        "马来西亚国家石油双子塔"
+      ],
+      "thumbnailUrl": "/library/photos/petronas-twin-towers/thumb.webp",
+      "sourceUrl": "/library/photos/petronas-twin-towers/source.webp",
+      "originalUrl": "/library/photos/petronas-twin-towers/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Petronas Twin Towers .png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Petronas Twin Towers .png",
+      "sourceSha256": "3f3da94779961f9c56cf4c0fbfaa4ab500e525ea4b5084fba0df210e21bf9275",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 848,
+        "height": 1264
+      }
+    },
+    {
+      "id": "polar-bear",
+      "type": "photo",
+      "title": {
+        "en": "Polar Bear",
+        "ru": "Белый медведь",
+        "zh": "北极熊"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "polar",
+        "bear",
+        "animal",
+        "wildlife",
+        "polar bear",
+        "белый медведь",
+        "北极熊"
+      ],
+      "thumbnailUrl": "/library/photos/polar-bear/thumb.webp",
+      "sourceUrl": "/library/photos/polar-bear/source.webp",
+      "originalUrl": "/library/photos/polar-bear/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — polar_bear.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "polar_bear.png",
+      "sourceSha256": "c99b67b3d6dfa5a7968f7431616598085906b93dacf904c4274fefce6eef3aaf",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "praying-mantis",
+      "type": "photo",
+      "title": {
+        "en": "Praying Mantis",
+        "ru": "Богомол",
+        "zh": "螳螂"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "praying",
+        "mantis",
+        "insect",
+        "wildlife",
+        "praying mantis",
+        "богомол",
+        "螳螂"
+      ],
+      "thumbnailUrl": "/library/photos/praying-mantis/thumb.webp",
+      "sourceUrl": "/library/photos/praying-mantis/source.webp",
+      "originalUrl": "/library/photos/praying-mantis/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — praying_mantis.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "praying_mantis.png",
+      "sourceSha256": "fa6ea5a628f68a36579954981878705e20346d5111527eb28fecad288a65c25e",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "quail",
+      "type": "photo",
+      "title": {
+        "en": "Quail",
+        "ru": "Перепел",
+        "zh": "鹌鹑"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "quail",
+        "bird",
+        "wildlife",
+        "перепел",
+        "鹌鹑"
+      ],
+      "thumbnailUrl": "/library/photos/quail/thumb.webp",
+      "sourceUrl": "/library/photos/quail/source.webp",
+      "originalUrl": "/library/photos/quail/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — quail.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "quail.png",
+      "sourceSha256": "bb9128e7fffbcb64457458ceb37259696f616cc7fa1e88eed888654be4e37415",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "quail-2",
+      "type": "photo",
+      "title": {
+        "en": "Quail 2",
+        "ru": "Перепел 2",
+        "zh": "鹌鹑 2"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "quail",
+        "bird",
+        "wildlife",
+        "quail 2",
+        "перепел 2",
+        "鹌鹑 2"
+      ],
+      "thumbnailUrl": "/library/photos/quail-2/thumb.webp",
+      "sourceUrl": "/library/photos/quail-2/source.webp",
+      "originalUrl": "/library/photos/quail-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — quail copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "quail copy.png",
+      "sourceSha256": "9502a1a9d45d9621f0d5f6279ba692534a4d596fe5499d875285e046c97a586d",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "rabbit",
+      "type": "photo",
+      "title": {
+        "en": "Rabbit",
+        "ru": "Кролик",
+        "zh": "兔子"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "rabbit",
+        "animal",
+        "wildlife",
+        "кролик",
+        "兔子"
+      ],
+      "thumbnailUrl": "/library/photos/rabbit/thumb.webp",
+      "sourceUrl": "/library/photos/rabbit/source.webp",
+      "originalUrl": "/library/photos/rabbit/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — rabbit.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "rabbit.png",
+      "sourceSha256": "ff9e69d2b76a330fd0f504e5f2536c5a246aedd1d4e0bc00f76deadcc2c88784",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "raccoon",
+      "type": "photo",
+      "title": {
+        "en": "Raccoon",
+        "ru": "Енот",
+        "zh": "浣熊"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "raccoon",
+        "animal",
+        "wildlife",
+        "енот",
+        "浣熊"
+      ],
+      "thumbnailUrl": "/library/photos/raccoon/thumb.webp",
+      "sourceUrl": "/library/photos/raccoon/source.webp",
+      "originalUrl": "/library/photos/raccoon/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — raccoon.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "raccoon.png",
+      "sourceSha256": "092c80f086140afb29f0d608fe4528cff6eb75660f829d45c4aaba379f4d35a9",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "red-fox",
+      "type": "photo",
+      "title": {
+        "en": "Red Fox",
+        "ru": "Рыжая лиса",
+        "zh": "赤狐"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "red",
+        "fox",
+        "animal",
+        "wildlife",
+        "red fox",
+        "рыжая лиса",
+        "赤狐"
+      ],
+      "thumbnailUrl": "/library/photos/red-fox/thumb.webp",
+      "sourceUrl": "/library/photos/red-fox/source.webp",
+      "originalUrl": "/library/photos/red-fox/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — red_fox.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "red_fox.png",
+      "sourceSha256": "3af50ff2c37ea2f415438b44ed159ecf689688cddac95d69437f32801088e765",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "red-fox-2",
+      "type": "photo",
+      "title": {
+        "en": "Red Fox 2",
+        "ru": "Рыжая лиса 2",
+        "zh": "赤狐 2"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "red",
+        "fox",
+        "animal",
+        "wildlife",
+        "red fox 2",
+        "рыжая лиса 2",
+        "赤狐 2"
+      ],
+      "thumbnailUrl": "/library/photos/red-fox-2/thumb.webp",
+      "sourceUrl": "/library/photos/red-fox-2/source.webp",
+      "originalUrl": "/library/photos/red-fox-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — red_fox copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "red_fox copy.png",
+      "sourceSha256": "2a35b918356381a3c3fd600c86efd1be1b2690e2df4adbb068e95c283f65aca5",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "red-fox-3",
+      "type": "photo",
+      "title": {
+        "en": "Red Fox 3",
+        "ru": "Рыжая лиса 3",
+        "zh": "赤狐 3"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "red",
+        "fox",
+        "animal",
+        "wildlife",
+        "red fox 3",
+        "рыжая лиса 3",
+        "赤狐 3"
+      ],
+      "thumbnailUrl": "/library/photos/red-fox-3/thumb.webp",
+      "sourceUrl": "/library/photos/red-fox-3/source.webp",
+      "originalUrl": "/library/photos/red-fox-3/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — red_fox copy 2.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "red_fox copy 2.png",
+      "sourceSha256": "0434976b938cfcca742ed86212c3819fb82300dc808ef7da43c43d70fc8d10c1",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "red-panda",
+      "type": "photo",
+      "title": {
+        "en": "Red Panda",
+        "ru": "Красная панда",
+        "zh": "小熊猫"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "red",
+        "panda",
+        "animal",
+        "wildlife",
+        "red panda",
+        "красная панда",
+        "小熊猫"
+      ],
+      "thumbnailUrl": "/library/photos/red-panda/thumb.webp",
+      "sourceUrl": "/library/photos/red-panda/source.webp",
+      "originalUrl": "/library/photos/red-panda/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — red_panda.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "red_panda.png",
+      "sourceSha256": "dad3398c1bc112fb716d210d63e5ccc66aa412a3e879ba073ce90acb4279f079",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "rhinoceros",
+      "type": "photo",
+      "title": {
+        "en": "Rhinoceros",
+        "ru": "Носорог",
+        "zh": "犀牛"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "rhinoceros",
+        "animal",
+        "wildlife",
+        "носорог",
+        "犀牛"
+      ],
+      "thumbnailUrl": "/library/photos/rhinoceros/thumb.webp",
+      "sourceUrl": "/library/photos/rhinoceros/source.webp",
+      "originalUrl": "/library/photos/rhinoceros/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — rhinoceros.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "rhinoceros.png",
+      "sourceSha256": "f80a613d4246624adc601637352ecc59b9cd421e2d1153640a9d017d0589008e",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "rooster",
+      "type": "photo",
+      "title": {
+        "en": "Rooster",
+        "ru": "Петух",
+        "zh": "公鸡"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "rooster",
+        "bird",
+        "wildlife",
+        "петух",
+        "公鸡"
+      ],
+      "thumbnailUrl": "/library/photos/rooster/thumb.webp",
+      "sourceUrl": "/library/photos/rooster/source.webp",
+      "originalUrl": "/library/photos/rooster/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — rooster.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "rooster.png",
+      "sourceSha256": "255f63ea8ecc24b99cd14f54f749da50c997ce08c070a90a7b1d4ee0a62d0650",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "rooster-2",
+      "type": "photo",
+      "title": {
+        "en": "Rooster 2",
+        "ru": "Петух 2",
+        "zh": "公鸡 2"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "rooster",
+        "bird",
+        "wildlife",
+        "rooster 2",
+        "петух 2",
+        "公鸡 2"
+      ],
+      "thumbnailUrl": "/library/photos/rooster-2/thumb.webp",
+      "sourceUrl": "/library/photos/rooster-2/source.webp",
+      "originalUrl": "/library/photos/rooster-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — rooster copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "rooster copy.png",
+      "sourceSha256": "409825983bf0a1a5437e0731a7515a3ddb4d780c2234db0dd015b94f121585d3",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "sea-turtle",
+      "type": "photo",
+      "title": {
+        "en": "Sea Turtle",
+        "ru": "Морская черепаха",
+        "zh": "海龟"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "sea",
+        "turtle",
+        "marine",
+        "ocean",
+        "sea turtle",
+        "морская черепаха",
+        "海龟"
+      ],
+      "thumbnailUrl": "/library/photos/sea-turtle/thumb.webp",
+      "sourceUrl": "/library/photos/sea-turtle/source.webp",
+      "originalUrl": "/library/photos/sea-turtle/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — sea_turtle.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "sea_turtle.png",
+      "sourceSha256": "df4115a5f809df3e769bb2513df008bbb160ed6c3a6e7ba1e4779bfe7904ed05",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "seagull",
+      "type": "photo",
+      "title": {
+        "en": "Seagull",
+        "ru": "Чайка",
+        "zh": "海鸥"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "seagull",
+        "bird",
+        "wildlife",
+        "чайка",
+        "海鸥"
+      ],
+      "thumbnailUrl": "/library/photos/seagull/thumb.webp",
+      "sourceUrl": "/library/photos/seagull/source.webp",
+      "originalUrl": "/library/photos/seagull/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — seagull.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "seagull.png",
+      "sourceSha256": "83778a9bf23fb6c3e2224861ba8385cb5bebfc5b9dfdb41c0a79055ad03654cd",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "shark",
+      "type": "photo",
+      "title": {
+        "en": "Shark",
+        "ru": "Акула",
+        "zh": "鲨鱼"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "shark",
+        "marine",
+        "ocean",
+        "акула",
+        "鲨鱼"
+      ],
+      "thumbnailUrl": "/library/photos/shark/thumb.webp",
+      "sourceUrl": "/library/photos/shark/source.webp",
+      "originalUrl": "/library/photos/shark/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — shark.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "shark.png",
+      "sourceSha256": "b82ec412dd39be76526d7131e43118bafcc81ff5ff913c4b113dbcabbf8aea65",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "sitting-koala",
+      "type": "photo",
+      "title": {
+        "en": "Sitting Koala",
+        "ru": "Сидящая коала",
+        "zh": "坐着的考拉"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "sitting",
+        "koala",
+        "animal",
+        "wildlife",
+        "sitting koala",
+        "сидящая коала",
+        "坐着的考拉"
+      ],
+      "thumbnailUrl": "/library/photos/sitting-koala/thumb.webp",
+      "sourceUrl": "/library/photos/sitting-koala/source.webp",
+      "originalUrl": "/library/photos/sitting-koala/original.psd",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — 123.psd",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "123.psd",
+      "sourceSha256": "ff2b38d2bca6d9a644bb32424e6f40950842d756366d083f1d510852a3fac98e",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "sloth",
+      "type": "photo",
+      "title": {
+        "en": "Sloth",
+        "ru": "Ленивец",
+        "zh": "树懒"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "sloth",
+        "animal",
+        "wildlife",
+        "ленивец",
+        "树懒"
+      ],
+      "thumbnailUrl": "/library/photos/sloth/thumb.webp",
+      "sourceUrl": "/library/photos/sloth/source.webp",
+      "originalUrl": "/library/photos/sloth/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — sloth.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "sloth.png",
+      "sourceSha256": "1282501a12de667fbfa6de9bc56ba9acd101693fdc8ab6f80dff0bd2646b295c",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "snow-leopard",
+      "type": "photo",
+      "title": {
+        "en": "Snow Leopard",
+        "ru": "Снежный барс",
+        "zh": "雪豹"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "snow",
+        "leopard",
+        "animal",
+        "wildlife",
+        "snow leopard",
+        "снежный барс",
+        "雪豹"
+      ],
+      "thumbnailUrl": "/library/photos/snow-leopard/thumb.webp",
+      "sourceUrl": "/library/photos/snow-leopard/source.webp",
+      "originalUrl": "/library/photos/snow-leopard/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — snow_leopard.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "snow_leopard.png",
+      "sourceSha256": "84abdcff043b3b8d0edf36b10c5227d4013771658309391f832bfd43cf289d2d",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "snow-leopard-2",
+      "type": "photo",
+      "title": {
+        "en": "Snow Leopard 2",
+        "ru": "Снежный барс 2",
+        "zh": "雪豹 2"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "snow",
+        "leopard",
+        "animal",
+        "wildlife",
+        "snow leopard 2",
+        "снежный барс 2",
+        "雪豹 2"
+      ],
+      "thumbnailUrl": "/library/photos/snow-leopard-2/thumb.webp",
+      "sourceUrl": "/library/photos/snow-leopard-2/source.webp",
+      "originalUrl": "/library/photos/snow-leopard-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — snow_leopard copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "snow_leopard copy.png",
+      "sourceSha256": "e79c57f89dab46ee23df1cc9ad234e306e8848c1d01b3b83e09cb2c0c9bf7249",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "spider",
+      "type": "photo",
+      "title": {
+        "en": "Spider",
+        "ru": "Паук",
+        "zh": "蜘蛛"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "spider",
+        "insect",
+        "wildlife",
+        "паук",
+        "蜘蛛"
+      ],
+      "thumbnailUrl": "/library/photos/spider/thumb.webp",
+      "sourceUrl": "/library/photos/spider/source.webp",
+      "originalUrl": "/library/photos/spider/original.avif",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — spider.avif",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "spider.avif",
+      "sourceSha256": "d2669dc66923c41001d1bf1abd51e997418a62194124350204f406888aa69fc0",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 740,
+        "height": 740
+      }
+    },
+    {
+      "id": "spider-2",
+      "type": "photo",
+      "title": {
+        "en": "Spider 2",
+        "ru": "Паук 2",
+        "zh": "蜘蛛 2"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "spider",
+        "insect",
+        "wildlife",
+        "spider 2",
+        "паук 2",
+        "蜘蛛 2"
+      ],
+      "thumbnailUrl": "/library/photos/spider-2/thumb.webp",
+      "sourceUrl": "/library/photos/spider-2/source.webp",
+      "originalUrl": "/library/photos/spider-2/original.jpg",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — spider_2.jpg",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "spider_2.jpg",
+      "sourceSha256": "3090957578384550febb077ba179532d4e685534dc632d3576e18e6fc58bb81b",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 600,
+        "height": 400
+      }
+    },
+    {
+      "id": "spider-3",
+      "type": "photo",
+      "title": {
+        "en": "Spider 3",
+        "ru": "Паук 3",
+        "zh": "蜘蛛 3"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "spider",
+        "insect",
+        "wildlife",
+        "spider 3",
+        "паук 3",
+        "蜘蛛 3"
+      ],
+      "thumbnailUrl": "/library/photos/spider-3/thumb.webp",
+      "sourceUrl": "/library/photos/spider-3/source.webp",
+      "originalUrl": "/library/photos/spider-3/original.jpeg",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — spider_3.jpeg",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "spider_3.jpeg",
+      "sourceSha256": "aeec158e8bb550272eb126b9be56f3def7d444bc8a16cc0e40e504e89545c993",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 471,
+        "height": 424
+      }
+    },
+    {
+      "id": "squirrel",
+      "type": "photo",
+      "title": {
+        "en": "Squirrel",
+        "ru": "Белка",
+        "zh": "松鼠"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "squirrel",
+        "animal",
+        "wildlife",
+        "белка",
+        "松鼠"
+      ],
+      "thumbnailUrl": "/library/photos/squirrel/thumb.webp",
+      "sourceUrl": "/library/photos/squirrel/source.webp",
+      "originalUrl": "/library/photos/squirrel/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — squirrel.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "squirrel.png",
+      "sourceSha256": "09084edb015d58dd1f3b019883529801f919afcb71012e7ca0f18e02e72c36c1",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "stag-beetle",
+      "type": "photo",
+      "title": {
+        "en": "Stag Beetle",
+        "ru": "Жук-олень",
+        "zh": "锹形虫"
+      },
+      "categoryId": "insects",
+      "tags": [
+        "stag",
+        "beetle",
+        "insect",
+        "wildlife",
+        "stag beetle",
+        "жук-олень",
+        "锹形虫"
+      ],
+      "thumbnailUrl": "/library/photos/stag-beetle/thumb.webp",
+      "sourceUrl": "/library/photos/stag-beetle/source.webp",
+      "originalUrl": "/library/photos/stag-beetle/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — stag_beetle.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "stag_beetle.png",
+      "sourceSha256": "0b2d041e41cb4a4bb532020565a78972bf88c29af4e671630f2c26ec5ed7ded5",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "starfish",
+      "type": "photo",
+      "title": {
+        "en": "Starfish",
+        "ru": "Морская звезда",
+        "zh": "海星"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "starfish",
+        "marine",
+        "ocean",
+        "морская звезда",
+        "海星"
+      ],
+      "thumbnailUrl": "/library/photos/starfish/thumb.webp",
+      "sourceUrl": "/library/photos/starfish/source.webp",
+      "originalUrl": "/library/photos/starfish/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — starfish.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "starfish.png",
+      "sourceSha256": "168380618b19f49aca3c18a5cf2c78755ac8b3f16689e39d90b43898f7411486",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "statue-of-liberty",
+      "type": "photo",
+      "title": {
+        "en": "Statue of Liberty",
+        "ru": "Статуя Свободы",
+        "zh": "自由女神像"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "statue",
+        "of",
+        "liberty",
+        "landmark",
+        "architecture",
+        "statue of liberty",
+        "статуя свободы",
+        "自由女神像"
+      ],
+      "thumbnailUrl": "/library/photos/statue-of-liberty/thumb.webp",
+      "sourceUrl": "/library/photos/statue-of-liberty/source.webp",
+      "originalUrl": "/library/photos/statue-of-liberty/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Statue of Liberty .png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Statue of Liberty .png",
+      "sourceSha256": "9f4726f95951a3ca1908ac6e52dab9aab6079e8b1937e8de24bec4452e2e2f3c",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "stingray",
+      "type": "photo",
+      "title": {
+        "en": "Stingray",
+        "ru": "Скат",
+        "zh": "黄貂鱼"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "stingray",
+        "marine",
+        "ocean",
+        "скат",
+        "黄貂鱼"
+      ],
+      "thumbnailUrl": "/library/photos/stingray/thumb.webp",
+      "sourceUrl": "/library/photos/stingray/source.webp",
+      "originalUrl": "/library/photos/stingray/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — stingray.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "stingray.png",
+      "sourceSha256": "cf36fae7ed7232846ced432ec63639467b34f3fae5578c4e4cb40541a7232886",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "swan-photo",
+      "type": "photo",
+      "title": {
+        "en": "Swan",
+        "ru": "Лебедь",
+        "zh": "天鹅"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "swan",
+        "bird",
+        "wildlife",
+        "лебедь",
+        "天鹅"
+      ],
+      "thumbnailUrl": "/library/photos/swan-photo/thumb.webp",
+      "sourceUrl": "/library/photos/swan-photo/source.webp",
+      "originalUrl": "/library/photos/swan-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — swan.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "swan.png",
+      "sourceSha256": "04d552a53058e04b49473d021b2b90cc8cf2fe46a860527459dc6818c0f05de4",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "swan-photo-2",
+      "type": "photo",
+      "title": {
+        "en": "Swan 2",
+        "ru": "Лебедь 2",
+        "zh": "天鹅 2"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "swan",
+        "bird",
+        "wildlife",
+        "swan 2",
+        "лебедь 2",
+        "天鹅 2"
+      ],
+      "thumbnailUrl": "/library/photos/swan-photo-2/thumb.webp",
+      "sourceUrl": "/library/photos/swan-photo-2/source.webp",
+      "originalUrl": "/library/photos/swan-photo-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — swan copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "swan copy.png",
+      "sourceSha256": "87a59ab4e2e1eacc049271d419cdb1884ed7efbb28af5be8c28007c3353be62e",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "sydney-opera-house",
+      "type": "photo",
+      "title": {
+        "en": "Sydney Opera House",
+        "ru": "Сиднейский оперный театр",
+        "zh": "悉尼歌剧院"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "sydney",
+        "opera",
+        "house",
+        "landmark",
+        "architecture",
+        "sydney opera house",
+        "сиднейский оперный театр",
+        "悉尼歌剧院"
+      ],
+      "thumbnailUrl": "/library/photos/sydney-opera-house/thumb.webp",
+      "sourceUrl": "/library/photos/sydney-opera-house/source.webp",
+      "originalUrl": "/library/photos/sydney-opera-house/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Sydney Opera House.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Sydney Opera House.png",
+      "sourceSha256": "1c3638c3cf0e3241ad70eca33cd18c75bb4622375fe6a8c497c047b7d45eb3fa",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1264,
+        "height": 843
+      }
+    },
+    {
+      "id": "taj-mahal",
+      "type": "photo",
+      "title": {
+        "en": "Taj Mahal",
+        "ru": "Тадж-Махал",
+        "zh": "泰姬陵"
+      },
+      "categoryId": "landmarks",
+      "tags": [
+        "taj",
+        "mahal",
+        "landmark",
+        "architecture",
+        "taj mahal",
+        "тадж-махал",
+        "泰姬陵"
+      ],
+      "thumbnailUrl": "/library/photos/taj-mahal/thumb.webp",
+      "sourceUrl": "/library/photos/taj-mahal/source.webp",
+      "originalUrl": "/library/photos/taj-mahal/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — Taj Mahal.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "Taj Mahal.png",
+      "sourceSha256": "a91480cbbfebb681ebaa9e13fd25174a569c84f87b352a368d232716137dc607",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "tapir",
+      "type": "photo",
+      "title": {
+        "en": "Tapir",
+        "ru": "Тапир",
+        "zh": "貘"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "tapir",
+        "animal",
+        "wildlife",
+        "тапир",
+        "貘"
+      ],
+      "thumbnailUrl": "/library/photos/tapir/thumb.webp",
+      "sourceUrl": "/library/photos/tapir/source.webp",
+      "originalUrl": "/library/photos/tapir/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — tapir.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "tapir.png",
+      "sourceSha256": "85ceab14d1ee43c5a01cbfe9be5dd8a95bf327d7c1b502a4fca0cd6765103cc1",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "tree-frog",
+      "type": "photo",
+      "title": {
+        "en": "Tree Frog",
+        "ru": "Древесная лягушка",
+        "zh": "树蛙"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "tree",
+        "frog",
+        "animal",
+        "wildlife",
+        "tree frog",
+        "древесная лягушка",
+        "树蛙"
+      ],
+      "thumbnailUrl": "/library/photos/tree-frog/thumb.webp",
+      "sourceUrl": "/library/photos/tree-frog/source.webp",
+      "originalUrl": "/library/photos/tree-frog/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — tree_frog.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "tree_frog.png",
+      "sourceSha256": "ec6ec3c359865fc4f83b8c07058dd44ff10094aee47613bf21cfeee0eccd6a0d",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "turkey",
+      "type": "photo",
+      "title": {
+        "en": "Turkey",
+        "ru": "Индейка",
+        "zh": "火鸡"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "turkey",
+        "bird",
+        "wildlife",
+        "индейка",
+        "火鸡"
+      ],
+      "thumbnailUrl": "/library/photos/turkey/thumb.webp",
+      "sourceUrl": "/library/photos/turkey/source.webp",
+      "originalUrl": "/library/photos/turkey/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — turkey.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "turkey.png",
+      "sourceSha256": "333fbe59072faf6fed25c1abec63ba4d2ad3fcf4508bdba1bf4bce9775d6d76c",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "turkey-2",
+      "type": "photo",
+      "title": {
+        "en": "Turkey 2",
+        "ru": "Индейка 2",
+        "zh": "火鸡 2"
+      },
+      "categoryId": "birds",
+      "tags": [
+        "turkey",
+        "bird",
+        "wildlife",
+        "turkey 2",
+        "индейка 2",
+        "火鸡 2"
+      ],
+      "thumbnailUrl": "/library/photos/turkey-2/thumb.webp",
+      "sourceUrl": "/library/photos/turkey-2/source.webp",
+      "originalUrl": "/library/photos/turkey-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — turkey copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "turkey copy.png",
+      "sourceSha256": "7b86defe4307120406e4c5f1d212b77d8fa48c91e6372773c3fd7b77dcc657e9",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "whale-photo",
+      "type": "photo",
+      "title": {
+        "en": "Whale",
+        "ru": "Кит",
+        "zh": "鲸鱼"
+      },
+      "categoryId": "marine",
+      "tags": [
+        "whale",
+        "marine",
+        "ocean",
+        "кит",
+        "鲸鱼"
+      ],
+      "thumbnailUrl": "/library/photos/whale-photo/thumb.webp",
+      "sourceUrl": "/library/photos/whale-photo/source.webp",
+      "originalUrl": "/library/photos/whale-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — whale.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "whale.png",
+      "sourceSha256": "a25a2678293126527c5fcc13cd7fa9025bd1ace22cb724064c8351d5f955651b",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "wild-boar",
+      "type": "photo",
+      "title": {
+        "en": "Wild Boar",
+        "ru": "Дикий кабан",
+        "zh": "野猪"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "wild",
+        "boar",
+        "animal",
+        "wildlife",
+        "wild boar",
+        "дикий кабан",
+        "野猪"
+      ],
+      "thumbnailUrl": "/library/photos/wild-boar/thumb.webp",
+      "sourceUrl": "/library/photos/wild-boar/source.webp",
+      "originalUrl": "/library/photos/wild-boar/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — wild_boar.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "wild_boar.png",
+      "sourceSha256": "b1cc4be39bf93fb7965e707c5162964b43be82d33985970f9742204e175cfa2d",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "wolf-photo",
+      "type": "photo",
+      "title": {
+        "en": "Wolf",
+        "ru": "Волк",
+        "zh": "狼"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "wolf",
+        "animal",
+        "wildlife",
+        "волк",
+        "狼"
+      ],
+      "thumbnailUrl": "/library/photos/wolf-photo/thumb.webp",
+      "sourceUrl": "/library/photos/wolf-photo/source.webp",
+      "originalUrl": "/library/photos/wolf-photo/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — wolf.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "wolf.png",
+      "sourceSha256": "e9767feb56dbbb40e68178745ccf738644294dd410aa9a1c0eefa2e0131bd085",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "wolf-photo-2",
+      "type": "photo",
+      "title": {
+        "en": "Wolf 2",
+        "ru": "Волк 2",
+        "zh": "狼 2"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "wolf",
+        "animal",
+        "wildlife",
+        "wolf 2",
+        "волк 2",
+        "狼 2"
+      ],
+      "thumbnailUrl": "/library/photos/wolf-photo-2/thumb.webp",
+      "sourceUrl": "/library/photos/wolf-photo-2/source.webp",
+      "originalUrl": "/library/photos/wolf-photo-2/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — wolf copy.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "wolf copy.png",
+      "sourceSha256": "d05fb15485b38eeaaa679be40e8fd7c777b402079f6c5bd7fb16097cdb32645a",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "yak",
+      "type": "photo",
+      "title": {
+        "en": "Yak",
+        "ru": "Як",
+        "zh": "牦牛"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "yak",
+        "animal",
+        "wildlife",
+        "як",
+        "牦牛"
+      ],
+      "thumbnailUrl": "/library/photos/yak/thumb.webp",
+      "sourceUrl": "/library/photos/yak/source.webp",
+      "originalUrl": "/library/photos/yak/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — yak.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "yak.png",
+      "sourceSha256": "ff3d18de86ffe310d99ec7dd63e7948bf7cb35eb23c049107f5440b5b0270ba1",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "id": "zebra",
+      "type": "photo",
+      "title": {
+        "en": "Zebra",
+        "ru": "Зебра",
+        "zh": "斑马"
+      },
+      "categoryId": "animals",
+      "tags": [
+        "zebra",
+        "animal",
+        "wildlife",
+        "зебра",
+        "斑马"
+      ],
+      "thumbnailUrl": "/library/photos/zebra/thumb.webp",
+      "sourceUrl": "/library/photos/zebra/source.webp",
+      "originalUrl": "/library/photos/zebra/original.png",
+      "featured": false,
+      "sortOrder": 100,
+      "sourceName": "Prismosaic curated collection — zebra.png",
+      "author": "Unknown (provided by project owner)",
+      "license": "Provided by project owner",
+      "licenseUrl": "/library/provenance/project-owner.txt",
+      "sourceFileName": "zebra.png",
+      "sourceSha256": "36359487578b8924006f6fa2a562b949f50d6561b624facad7566b7e0fdd1251",
+      "collection": "prismosaic-curated",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
       }
     },
     {

@@ -2,7 +2,7 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const T=require('../tile-layout'),Optimized=require('../optimized-contour');
-const root=path.resolve(__dirname,'..'),manifest=require('../library/manifest.json');
+const root=path.resolve(__dirname,'..'),manifest=require('../library/manifest.json'),photoValidationPath=path.join(root,'library/photo-pipeline-validation.json'),photoValidation=fs.existsSync(photoValidationPath)?JSON.parse(fs.readFileSync(photoValidationPath,'utf8')):null;
 const formats=[
   {id:'40x40',options:{format:'40x40',orientation:'auto'}},
   {id:'30x40-portrait',options:{format:'30x40',orientation:'portrait'}},
@@ -15,6 +15,11 @@ function photoSources(asset){const bundle=JSON.parse(fs.readFileSync(publicFile(
 function sources(asset){if(asset.type==='photo')return photoSources(asset);const result1=silhouetteSource(asset),result2=Optimized.generate(result1);return {result1,result2};}
 function title(asset){return asset.title.en||asset.title.ru||Object.values(asset.title)[0];}
 function validateAsset(asset){
+  if(asset.type==='photo'&&!asset.precomputed){
+    const sourceSha256=crypto.createHash('sha256').update(fs.readFileSync(publicFile(asset.sourceUrl))).digest('hex'),stored=photoValidation?.assets?.find(item=>item.id===asset.id);
+    if(!stored||photoValidation.processingVersion!==require('./library-version.cjs').processingVersion()||photoValidation.solverVersion!==T.version||stored.sourceSha256!==sourceSha256||stored.status!=='pass'||stored.canvases?.length!==formats.length)return {id:asset.id,title:title(asset),type:asset.type,status:'fail',durationMs:0,canvases:[],error:'PHOTO_PIPELINE_VALIDATION_MISSING_OR_STALE'};
+    return {id:asset.id,title:title(asset),type:asset.type,status:'pass',durationMs:stored.durationMs,canvases:stored.canvases.map(canvas=>({...canvas,initialStatus:canvas.status,emergencyFallback:false}))};
+  }
   const source=sources(asset),started=Date.now(),canvases=[];
   for(const format of formats){
     const began=Date.now();
@@ -25,6 +30,6 @@ function validateAsset(asset){
 }
 const assets=[];for(const asset of manifest.assets){const result=validateAsset(asset);assets.push(result);console.log(result.status.toUpperCase(),asset.id,result.canvases.map(c=>`${c.format}:${c.fallbackProfile||c.status}/${c.tiles}`).join(' '));}
 const initialFailures=assets.reduce((n,a)=>n+a.canvases.filter(c=>c.initialStatus==='fail').length,0),initialAssetsFailed=assets.filter(a=>a.canvases.some(c=>c.initialStatus==='fail')).length,failures=assets.filter(a=>a.status==='fail');
-const report={schemaVersion:1,generatedAt:new Date().toISOString(),solverVersion:T.version,manifestSha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'library/manifest.json'))).digest('hex'),summary:{assets:assets.length,silhouettes:assets.filter(a=>a.type==='silhouette').length,photos:assets.filter(a=>a.type==='photo').length,passed:assets.length-failures.length,failed:failures.length,initialAssetsFailed,initialCanvasFailures:initialFailures,canvasConfigurations:assets.length*formats.length},assets};
+const report={schemaVersion:1,generatedAt:new Date().toISOString(),solverVersion:T.version,manifestSha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'library/manifest.json'))).digest('hex'),summary:{assets:assets.length,silhouettes:assets.filter(a=>a.type==='silhouette').length,photos:assets.filter(a=>a.type==='photo').length,passed:assets.length-failures.length,failed:failures.length,initialAssetsFailed,initialCanvasFailures:initialFailures,canvasConfigurations:assets.reduce((total,asset)=>total+asset.canvases.length,0)},assets};
 if(process.argv.includes('--write'))fs.writeFileSync(path.join(root,'library/result3-validation.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report.summary));if(failures.length)process.exitCode=1;

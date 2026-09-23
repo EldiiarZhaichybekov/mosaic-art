@@ -1,6 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),crypto=require('node:crypto');
 const L=require('../asset-library'),{processingVersion}=require('../scripts/library-version.cjs');
+const Importer=require('../scripts/import-library-batch.cjs');
 const catalog=JSON.parse(fs.readFileSync('library/manifest.json','utf8')),repo=L.createRepository({load:()=>catalog});
 test('R1 server and refinement source frozen',()=>{
  for(const [file,hash]of Object.entries({'api/contour.py':'c981d0fefaa59a6ec31334d001368d35660cfcf973c5e4c7b847abdb4e49572e','contour_refinement.py':'6389ba6ffc27a9095069e74272fa17f06215cc81ebeccaffab8a8a90dc7f30c9'}))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),hash);
@@ -10,7 +11,7 @@ test('catalog, provenance and all 14 original preset geometries preserved',async
  const presets=context.module.exports.PRESETS;assert.ok(catalog.assets.filter(a=>a.type==='silhouette').length>=Object.keys(presets).length);
  for(const [id,p]of Object.entries(presets)){const a=await repo.getAsset(id);assert.ok(a);assert.equal(JSON.stringify(JSON.parse(fs.readFileSync('.'+a.sourceUrl)).polys),JSON.stringify(p.polys));}
  for(const asset of catalog.assets){for(const lang of ['ru','en','zh'])assert.ok(asset.title[lang]);for(const url of [asset.sourceUrl,asset.thumbnailUrl])assert.ok(fs.statSync('.'+url).size>0);if(asset.type==='photo')for(const key of ['sourceName','author','license','licenseUrl'])assert.ok(asset[key]);}
- assert.equal(await repo.getAsset('unknown'),null);assert.deepEqual((await repo.getCategories('photo')).map(c=>c.id),['nature']);
+ assert.equal(await repo.getAsset('unknown'),null);assert.deepEqual((await repo.getCategories('photo')).map(c=>c.id),['animals','birds','marine','insects','nature','architecture','landmarks']);
  assert.equal((await repo.getAssets({search:'Волк'})).items[0].id,'wolf');assert.equal((await repo.getAssets({search:'蝴蝶'})).items[0].id,'butterfly');assert.equal((await repo.getAssets({type:'photo',search:'fruit'})).items[0].id,'apple');
  assert.equal((await repo.getAssets({category:'not-a-category'})).total,0);assert.equal(L.localized({en:'Fallback'},'zh'),'Fallback');
 });
@@ -33,6 +34,14 @@ test('prepared results validate version, source, asset, canvas and geometry',()=
 test('all shared UI strings have RU/EN/ZH values',()=>{
  require('../workspace-i18n');require('../workspace-refinement');require('../asset-library-ui');const m=globalThis.WorkspaceMessages;
  for(const key of Object.keys(m.en).filter(k=>k.startsWith('lib.')))for(const lang of ['ru','en','zh'])assert.ok(m[lang][key]);
+});
+test('curated photo collection is complete, deterministic and searchable',async()=>{
+ const curated=catalog.assets.filter(a=>a.type==='photo'&&a.collection==='prismosaic-curated'),report=JSON.parse(fs.readFileSync('library/curated-photo-import-report.json','utf8'));
+ assert.equal(curated.length,102);assert.equal(report.summary.discovered,102);assert.equal(report.summary.duplicates,0);assert.equal(report.summary.unsupported,0);assert.equal(new Set(curated.map(a=>a.id)).size,curated.length);
+ for(const asset of curated){for(const lang of ['ru','en','zh'])assert.ok(asset.title[lang]);assert.match(asset.sourceSha256,/^[a-f0-9]{64}$/);assert.ok(asset.originalUrl);assert.ok(fs.statSync('.'+asset.originalUrl).size);assert.equal(asset.licenseUrl,'/library/provenance/project-owner.txt');assert.ok(asset.tags.length>=3);}
+ const planned=Importer.planCuratedPhotos('../Pictures',JSON.parse(fs.readFileSync('library/manifest.json','utf8')));assert.equal(planned.files.length,102);assert.equal(planned.unsupported.length,0);assert.equal(planned.files.filter(item=>item.duplicateOf).length,0);
+ assert.equal((await repo.getAssets({type:'photo',search:'Сидящая коала',lang:'ru'})).items[0].id,'sitting-koala');assert.equal((await repo.getAssets({type:'photo',search:'大本钟',lang:'zh'})).items[0].id,'big-ben-elizabeth-tower');assert.equal((await repo.getAssets({type:'photo',category:'landmarks'})).total,13);
+ const first=await repo.getAssets({type:'photo'}),second=await repo.getAssets({type:'photo',page:2});assert.equal(first.items.length,L.PAGE_SIZE);assert.equal(second.items.length,L.PAGE_SIZE);assert.ok(first.hasMore);assert.ok(!second.items.some(a=>first.items.some(b=>a.id===b.id)));
 });
 test('source loader: absent/corrupt/stale cache safely returns original file',async()=>{
  const originalFetch=globalThis.fetch,asset=catalog.assets.find(a=>a.id==='apple'),bytes=fs.readFileSync('.'+asset.sourceUrl),bundle=JSON.parse(fs.readFileSync('.'+asset.precomputed.url));

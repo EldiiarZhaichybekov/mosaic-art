@@ -1,0 +1,1462 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-23T06:51:40.010Z",
+  "sourceRoot": "/Users/eldiiarzhaichybekov/Sites/DrawACRL/Pictures",
+  "supportedExtensions": [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".avif",
+    ".psd"
+  ],
+  "summary": {
+    "discovered": 102,
+    "imported": 102,
+    "skipped": 0,
+    "unchanged": 0,
+    "duplicates": 0,
+    "failed": 0,
+    "unsupported": 0,
+    "countsByCategory": {
+      "animals": 49,
+      "birds": 22,
+      "landmarks": 13,
+      "insects": 9,
+      "marine": 8,
+      "architecture": 1
+    },
+    "totalCatalogAssets": 163
+  },
+  "unsupported": [],
+  "assets": [
+    {
+      "sourceFile": "123.psd",
+      "id": "sitting-koala",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "ff2b38d2bca6d9a644bb32424e6f40950842d756366d083f1d510852a3fac98e",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/sitting-koala/original.psd",
+      "sourceUrl": "/library/photos/sitting-koala/source.webp",
+      "thumbnailUrl": "/library/photos/sitting-koala/thumb.webp"
+    },
+    {
+      "sourceFile": "alpaca.png",
+      "id": "alpaca",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "4fb77e982958c12ba4d146cd1afa6e4cc78c2278c583bb37731e7e4d19ae76da",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/alpaca/original.png",
+      "sourceUrl": "/library/photos/alpaca/source.webp",
+      "thumbnailUrl": "/library/photos/alpaca/thumb.webp"
+    },
+    {
+      "sourceFile": "armadillo.png",
+      "id": "armadillo",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "4f2ffd8eb5e3e3bc6341fc846d6451355c945b63642da708f1f9f53b500445b2",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/armadillo/original.png",
+      "sourceUrl": "/library/photos/armadillo/source.webp",
+      "thumbnailUrl": "/library/photos/armadillo/thumb.webp"
+    },
+    {
+      "sourceFile": "bald_eagle.png",
+      "id": "bald-eagle",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "8d2ecfdb6776ef45f67344e51ec61462807d941b88bf5af7dc557da9e9bdd8c8",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/bald-eagle/original.png",
+      "sourceUrl": "/library/photos/bald-eagle/source.webp",
+      "thumbnailUrl": "/library/photos/bald-eagle/thumb.webp"
+    },
+    {
+      "sourceFile": "barn_swallow.png",
+      "id": "barn-swallow",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "d9076b5e09bec9c801ee7594f5b6c80cc2e5bfd05aa60714cfd276fa14442cfe",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/barn-swallow/original.png",
+      "sourceUrl": "/library/photos/barn-swallow/source.webp",
+      "thumbnailUrl": "/library/photos/barn-swallow/thumb.webp"
+    },
+    {
+      "sourceFile": "bat_source.webp",
+      "id": "flying-bat",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "28b9cd5764c2852ba9a86cb795f4f6df8701ee181524b64540087eece94a2c5c",
+      "sourceDimensions": {
+        "width": 1545,
+        "height": 830
+      },
+      "originalUrl": "/library/photos/flying-bat/original.webp",
+      "sourceUrl": "/library/photos/flying-bat/source.webp",
+      "thumbnailUrl": "/library/photos/flying-bat/thumb.webp"
+    },
+    {
+      "sourceFile": "Big Ben : Elizabeth Tower.png",
+      "id": "big-ben-elizabeth-tower",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "c10f060a9a742f84e382b0a565e29efe1c33743182f919784d1801733780013d",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/big-ben-elizabeth-tower/original.png",
+      "sourceUrl": "/library/photos/big-ben-elizabeth-tower/source.webp",
+      "thumbnailUrl": "/library/photos/big-ben-elizabeth-tower/thumb.webp"
+    },
+    {
+      "sourceFile": "black_panther.png",
+      "id": "black-panther",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "b96be7adb2a2264369db2ccb6ecf282fc9019bbd45ebd8bae73ae372cd5712ee",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/black-panther/original.png",
+      "sourceUrl": "/library/photos/black-panther/source.webp",
+      "thumbnailUrl": "/library/photos/black-panther/thumb.webp"
+    },
+    {
+      "sourceFile": "brown_bear.png",
+      "id": "brown-bear",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "b3b632963782bd3f61b518488c57387fc157d88c6262354af380bf9386ce142b",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/brown-bear/original.png",
+      "sourceUrl": "/library/photos/brown-bear/source.webp",
+      "thumbnailUrl": "/library/photos/brown-bear/thumb.webp"
+    },
+    {
+      "sourceFile": "Burj Khalifa.png",
+      "id": "burj-khalifa",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "80ebf75505c37e336ccb3d48b0b10523b4a9f809478122b591a91a0f5d52528d",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/burj-khalifa/original.png",
+      "sourceUrl": "/library/photos/burj-khalifa/source.webp",
+      "thumbnailUrl": "/library/photos/burj-khalifa/thumb.webp"
+    },
+    {
+      "sourceFile": "butterfly.png",
+      "id": "butterfly-photo",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "2118d281b5283687c14a0960603aa0df53fe33627618a26458322d1b832048ed",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/butterfly-photo/original.png",
+      "sourceUrl": "/library/photos/butterfly-photo/source.webp",
+      "thumbnailUrl": "/library/photos/butterfly-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "camel.png",
+      "id": "camel",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "c516916f2b1fe15402dc8764392c9594382111ed5d272b485e8b05d4f6058ff6",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/camel/original.png",
+      "sourceUrl": "/library/photos/camel/source.webp",
+      "thumbnailUrl": "/library/photos/camel/thumb.webp"
+    },
+    {
+      "sourceFile": "Canton Tower .png",
+      "id": "canton-tower",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "26fea4c6428b0f4fa939de8d38e1a2a01a010b91a8320f5579e503770ca48766",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/canton-tower/original.png",
+      "sourceUrl": "/library/photos/canton-tower/source.webp",
+      "thumbnailUrl": "/library/photos/canton-tower/thumb.webp"
+    },
+    {
+      "sourceFile": "caracal.png",
+      "id": "caracal",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "a61175a1bade09048773189eb7f2f82beea46d0831272e231f55f0fd908e66ce",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/caracal/original.png",
+      "sourceUrl": "/library/photos/caracal/source.webp",
+      "thumbnailUrl": "/library/photos/caracal/thumb.webp"
+    },
+    {
+      "sourceFile": "cassowary.png",
+      "id": "cassowary",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "50289aa2662a2d1b6f9c5d50181abfbc3026dcadbd8d5942879fa134a08d90ad",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/cassowary/original.png",
+      "sourceUrl": "/library/photos/cassowary/source.webp",
+      "thumbnailUrl": "/library/photos/cassowary/thumb.webp"
+    },
+    {
+      "sourceFile": "cat.png",
+      "id": "cat-photo",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "92b1eedc6b7954a330bb9e92170e84a1567d8ca0338882d5084912b287d88dea",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/cat-photo/original.png",
+      "sourceUrl": "/library/photos/cat-photo/source.webp",
+      "thumbnailUrl": "/library/photos/cat-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "chameleon.png",
+      "id": "chameleon",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "3cd36b7a2928cb9bd30ee229c9b8b9edb987442ee44fd57b11973cb369d34bc1",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/chameleon/original.png",
+      "sourceUrl": "/library/photos/chameleon/source.webp",
+      "thumbnailUrl": "/library/photos/chameleon/thumb.webp"
+    },
+    {
+      "sourceFile": "cheetah.png",
+      "id": "cheetah",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "5a7de4720576e8f9415e86b68949d90dd9c4dbbd2cd7e41f2f054b8e9c042a81",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/cheetah/original.png",
+      "sourceUrl": "/library/photos/cheetah/source.webp",
+      "thumbnailUrl": "/library/photos/cheetah/thumb.webp"
+    },
+    {
+      "sourceFile": "chimpanzee.png",
+      "id": "chimpanzee",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "f3bd0c024c009c7ca39dd58a923866e88cfe369c05dc6851e46b8dca617f364d",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/chimpanzee/original.png",
+      "sourceUrl": "/library/photos/chimpanzee/source.webp",
+      "thumbnailUrl": "/library/photos/chimpanzee/thumb.webp"
+    },
+    {
+      "sourceFile": "Christ the Redeemer.png",
+      "id": "christ-the-redeemer",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "54d84549985b94ceadcc79473deb2b588c753f7aa1ac275e04b5919b24ee3b4b",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/christ-the-redeemer/original.png",
+      "sourceUrl": "/library/photos/christ-the-redeemer/source.webp",
+      "thumbnailUrl": "/library/photos/christ-the-redeemer/thumb.webp"
+    },
+    {
+      "sourceFile": "Colosseum.png",
+      "id": "colosseum",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "4f8f0dc2ae51ed60b5f4c4c911f52b40e29e8847b2113057d8f51fe51e56d1f7",
+      "sourceDimensions": {
+        "width": 1408,
+        "height": 768
+      },
+      "originalUrl": "/library/photos/colosseum/original.png",
+      "sourceUrl": "/library/photos/colosseum/source.webp",
+      "thumbnailUrl": "/library/photos/colosseum/thumb.webp"
+    },
+    {
+      "sourceFile": "cow.png",
+      "id": "cow",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "5a42f4571b464d1e4dba4cee64f9320b794ff01f1016e8551c74506d90c932dd",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/cow/original.png",
+      "sourceUrl": "/library/photos/cow/source.webp",
+      "thumbnailUrl": "/library/photos/cow/thumb.webp"
+    },
+    {
+      "sourceFile": "dolphin.png",
+      "id": "dolphin-photo",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "2a71ee62123951857080503aa56a4c5923ac282b04e65503109cf76ef4b33b2b",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/dolphin-photo/original.png",
+      "sourceUrl": "/library/photos/dolphin-photo/source.webp",
+      "thumbnailUrl": "/library/photos/dolphin-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "dragonfly.png",
+      "id": "dragonfly-photo",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "a867effb4587a43d2dd58d4802bedada42c46fd992ee7db818748d6b6788f333",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/dragonfly-photo/original.png",
+      "sourceUrl": "/library/photos/dragonfly-photo/source.webp",
+      "thumbnailUrl": "/library/photos/dragonfly-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "Eiffel Tower.png",
+      "id": "eiffel-tower",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "02fecb91c57872f2dacfa597a35673b55a65d728419be2dd55efccba7ec23069",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/eiffel-tower/original.png",
+      "sourceUrl": "/library/photos/eiffel-tower/source.webp",
+      "thumbnailUrl": "/library/photos/eiffel-tower/thumb.webp"
+    },
+    {
+      "sourceFile": "elephant.png",
+      "id": "elephant",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "3b351dbce17fccf7064edc07a37453da2c7fa6803bae64c758a20c62d83ff5d3",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/elephant/original.png",
+      "sourceUrl": "/library/photos/elephant/source.webp",
+      "thumbnailUrl": "/library/photos/elephant/thumb.webp"
+    },
+    {
+      "sourceFile": "emu.png",
+      "id": "emu",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "ea6e8ed7a2939cdbae7f8efbdffbcb6b661dc3fc7affd9a8e9284120403a6d38",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/emu/original.png",
+      "sourceUrl": "/library/photos/emu/source.webp",
+      "thumbnailUrl": "/library/photos/emu/thumb.webp"
+    },
+    {
+      "sourceFile": "flamingo.png",
+      "id": "flamingo",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "01ff71e4102327a3015826b98c9e97db0584fa7da667bfdaf69b62650ad8d5a6",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/flamingo/original.png",
+      "sourceUrl": "/library/photos/flamingo/source.webp",
+      "thumbnailUrl": "/library/photos/flamingo/thumb.webp"
+    },
+    {
+      "sourceFile": "german_shepherd.png",
+      "id": "german-shepherd",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "2408c89cf8252238e75263f14596485195cfd6a927b0570e1a453a88f99dc5d2",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/german-shepherd/original.png",
+      "sourceUrl": "/library/photos/german-shepherd/source.webp",
+      "thumbnailUrl": "/library/photos/german-shepherd/thumb.webp"
+    },
+    {
+      "sourceFile": "giant_anteater.png",
+      "id": "giant-anteater",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "ad5e83c79c3e1fad7d38d985bd0dfe2439ea062d237b91eb9c498f6443bff1d0",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/giant-anteater/original.png",
+      "sourceUrl": "/library/photos/giant-anteater/source.webp",
+      "thumbnailUrl": "/library/photos/giant-anteater/thumb.webp"
+    },
+    {
+      "sourceFile": "giant_panda.png",
+      "id": "giant-panda",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "5a513d01e62e0c934848834e2533e75f626b317fe9ea3233c6989478aed02a2c",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/giant-panda/original.png",
+      "sourceUrl": "/library/photos/giant-panda/source.webp",
+      "thumbnailUrl": "/library/photos/giant-panda/thumb.webp"
+    },
+    {
+      "sourceFile": "golden_retriever.png",
+      "id": "golden-retriever",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "1352c05edd7f8b92e5a208d3d603f3cd2694c8ddc9c36c52c2095b3ec22fea37",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/golden-retriever/original.png",
+      "sourceUrl": "/library/photos/golden-retriever/source.webp",
+      "thumbnailUrl": "/library/photos/golden-retriever/thumb.webp"
+    },
+    {
+      "sourceFile": "goose copy.png",
+      "id": "goose-2",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "8780bb6cb7b1a376f9a71c26a5ed87dc13e9f943431451f3419e8d5c26251f4e",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/goose-2/original.png",
+      "sourceUrl": "/library/photos/goose-2/source.webp",
+      "thumbnailUrl": "/library/photos/goose-2/thumb.webp"
+    },
+    {
+      "sourceFile": "goose.png",
+      "id": "goose",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "b308d21d235183115266ebafb64c0272d70f2d5f5f4045f62e6c880173813daa",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/goose/original.png",
+      "sourceUrl": "/library/photos/goose/source.webp",
+      "thumbnailUrl": "/library/photos/goose/thumb.webp"
+    },
+    {
+      "sourceFile": "gorilla.png",
+      "id": "gorilla",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "5bc1510a959fc9e8be6c7e01ba2026c9546d9290db68b96d663a40a3c54a6e51",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/gorilla/original.png",
+      "sourceUrl": "/library/photos/gorilla/source.webp",
+      "thumbnailUrl": "/library/photos/gorilla/thumb.webp"
+    },
+    {
+      "sourceFile": "Great Pyramid of Giza.png",
+      "id": "great-pyramid-of-giza",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "9473aeac2e2bcfbbe3c8df5dd014f70be3519d9f15bceb263ab2c08ffb8e192c",
+      "sourceDimensions": {
+        "width": 1264,
+        "height": 843
+      },
+      "originalUrl": "/library/photos/great-pyramid-of-giza/original.png",
+      "sourceUrl": "/library/photos/great-pyramid-of-giza/source.webp",
+      "thumbnailUrl": "/library/photos/great-pyramid-of-giza/thumb.webp"
+    },
+    {
+      "sourceFile": "Great Wall of China.png",
+      "id": "great-wall-of-china",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "5309ae7d83f2e2e1e7a5131b6b298119785b5f7e8268953818c0300414059458",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/great-wall-of-china/original.png",
+      "sourceUrl": "/library/photos/great-wall-of-china/source.webp",
+      "thumbnailUrl": "/library/photos/great-wall-of-china/thumb.webp"
+    },
+    {
+      "sourceFile": "hedgehog.png",
+      "id": "hedgehog",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "d821520b8dd583d4c4779232101ddfe06a4c61c02c8c7e50174029a044304c90",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/hedgehog/original.png",
+      "sourceUrl": "/library/photos/hedgehog/source.webp",
+      "thumbnailUrl": "/library/photos/hedgehog/thumb.webp"
+    },
+    {
+      "sourceFile": "hippopotamus.png",
+      "id": "hippopotamus",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "607b0d6f023d389df3c9226c87b2a232236523c8ae083b7ffe821ef3f4672d9c",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/hippopotamus/original.png",
+      "sourceUrl": "/library/photos/hippopotamus/source.webp",
+      "thumbnailUrl": "/library/photos/hippopotamus/thumb.webp"
+    },
+    {
+      "sourceFile": "horse.png",
+      "id": "horse",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "02d7d8018abecbf1ad57b35622715a66ff4989385690a07a2ef104e8a08c7986",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/horse/original.png",
+      "sourceUrl": "/library/photos/horse/source.webp",
+      "thumbnailUrl": "/library/photos/horse/thumb.webp"
+    },
+    {
+      "sourceFile": "hummingbird.png",
+      "id": "hummingbird-photo",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "3ec3388f19dbc948106810079ad16c53c7585ea332577c16aaa5f5ff4af4f28f",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/hummingbird-photo/original.png",
+      "sourceUrl": "/library/photos/hummingbird-photo/source.webp",
+      "thumbnailUrl": "/library/photos/hummingbird-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "image14.png",
+      "id": "japanese-pagoda",
+      "status": "imported",
+      "categoryId": "architecture",
+      "sourceSha256": "558bff711821d240c9998ecc3427917495256da7ae6469983261fca87504aab6",
+      "sourceDimensions": {
+        "width": 928,
+        "height": 1151
+      },
+      "originalUrl": "/library/photos/japanese-pagoda/original.png",
+      "sourceUrl": "/library/photos/japanese-pagoda/source.webp",
+      "thumbnailUrl": "/library/photos/japanese-pagoda/thumb.webp"
+    },
+    {
+      "sourceFile": "kangaroo.png",
+      "id": "kangaroo",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "9bfc41209b92f253e6dd1653cca6fe43a13a7c090f7c6710b2caa58dd782aae8",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/kangaroo/original.png",
+      "sourceUrl": "/library/photos/kangaroo/source.webp",
+      "thumbnailUrl": "/library/photos/kangaroo/thumb.webp"
+    },
+    {
+      "sourceFile": "kiwi.png",
+      "id": "kiwi",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "684b26712c63fa163a3ac3e047e37b7c0c9a8211d1f6ea32995fc4307a8bfa89",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/kiwi/original.png",
+      "sourceUrl": "/library/photos/kiwi/source.webp",
+      "thumbnailUrl": "/library/photos/kiwi/thumb.webp"
+    },
+    {
+      "sourceFile": "koala.png",
+      "id": "koala",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "d747c50d4ab70bd297566b3ada63dadffbeeab344300c9631be5c14179994d89",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/koala/original.png",
+      "sourceUrl": "/library/photos/koala/source.webp",
+      "thumbnailUrl": "/library/photos/koala/thumb.webp"
+    },
+    {
+      "sourceFile": "ladybug.png",
+      "id": "ladybug",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "898d313454f34a23b4f4a43b73d03ef0f12523928211e50aa9f51d03c4166818",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/ladybug/original.png",
+      "sourceUrl": "/library/photos/ladybug/source.webp",
+      "thumbnailUrl": "/library/photos/ladybug/thumb.webp"
+    },
+    {
+      "sourceFile": "Leaning Tower of Pisa.png",
+      "id": "leaning-tower-of-pisa",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "ecc4ecac54430de54aef48b39d9e8c744649076a38fa98dda03714558ef65b47",
+      "sourceDimensions": {
+        "width": 1408,
+        "height": 768
+      },
+      "originalUrl": "/library/photos/leaning-tower-of-pisa/original.png",
+      "sourceUrl": "/library/photos/leaning-tower-of-pisa/source.webp",
+      "thumbnailUrl": "/library/photos/leaning-tower-of-pisa/thumb.webp"
+    },
+    {
+      "sourceFile": "leopard.png",
+      "id": "leopard",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "063c714f47f19ee2395cbb839887fcfded7cefb03a4d88f866fefd8c21a4b8ea",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/leopard/original.png",
+      "sourceUrl": "/library/photos/leopard/source.webp",
+      "thumbnailUrl": "/library/photos/leopard/thumb.webp"
+    },
+    {
+      "sourceFile": "lion.png",
+      "id": "lion",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "09148c2f4b889b57e0b8b275a4f5d2078b2c1ddc9fed19d883a776088f46d0b9",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/lion/original.png",
+      "sourceUrl": "/library/photos/lion/source.webp",
+      "thumbnailUrl": "/library/photos/lion/thumb.webp"
+    },
+    {
+      "sourceFile": "lynx.png",
+      "id": "lynx",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "983dfc21b4accd5c8e0931e51a9b56d955d2749e46d31dcf8ee327a75d551903",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/lynx/original.png",
+      "sourceUrl": "/library/photos/lynx/source.webp",
+      "thumbnailUrl": "/library/photos/lynx/thumb.webp"
+    },
+    {
+      "sourceFile": "macaw.png",
+      "id": "macaw",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "5e07ce3134d370d4129f35eeb9fb3ff938c0fc686effa621149cb77448405a07",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/macaw/original.png",
+      "sourceUrl": "/library/photos/macaw/source.webp",
+      "thumbnailUrl": "/library/photos/macaw/thumb.webp"
+    },
+    {
+      "sourceFile": "moose.png",
+      "id": "moose",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "f26ac22da410dcf915b977186641819de7180c702072a1123934386b9ab1cdfa",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/moose/original.png",
+      "sourceUrl": "/library/photos/moose/source.webp",
+      "thumbnailUrl": "/library/photos/moose/thumb.webp"
+    },
+    {
+      "sourceFile": "octopus.png",
+      "id": "octopus-photo",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "77731bc8919d8dbf6d25aa24b1c89b7f9c08f396f9c942589fbdc03d1f0078c4",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/octopus-photo/original.png",
+      "sourceUrl": "/library/photos/octopus-photo/source.webp",
+      "thumbnailUrl": "/library/photos/octopus-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "okapi.png",
+      "id": "okapi",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "6ea0064f8827efe4873f5a99fe8c708e964f7f00efa38f7c42133a4d8e4d557f",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/okapi/original.png",
+      "sourceUrl": "/library/photos/okapi/source.webp",
+      "thumbnailUrl": "/library/photos/okapi/thumb.webp"
+    },
+    {
+      "sourceFile": "orangutan.png",
+      "id": "orangutan",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "12a8496edbd7f26e25c73d0dbe4bbae24da7d9d8ccd1b12d416578b82235a874",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/orangutan/original.png",
+      "sourceUrl": "/library/photos/orangutan/source.webp",
+      "thumbnailUrl": "/library/photos/orangutan/thumb.webp"
+    },
+    {
+      "sourceFile": "orca.png",
+      "id": "orca",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "3f079d54d76c03f660ed32de1b6ff4b61db0daecc13e8ee74aa77b17684ba030",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/orca/original.png",
+      "sourceUrl": "/library/photos/orca/source.webp",
+      "thumbnailUrl": "/library/photos/orca/thumb.webp"
+    },
+    {
+      "sourceFile": "ostrich.png",
+      "id": "ostrich",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "bd96b8726a436ab97acbecfdcc41ac566198aa7f3bcf846871e147df17760211",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/ostrich/original.png",
+      "sourceUrl": "/library/photos/ostrich/source.webp",
+      "thumbnailUrl": "/library/photos/ostrich/thumb.webp"
+    },
+    {
+      "sourceFile": "peacock.png",
+      "id": "peacock",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "460beb0b003630cdbacfc72405fd29c023ee8749c23f7bda0b767ab00008d395",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/peacock/original.png",
+      "sourceUrl": "/library/photos/peacock/source.webp",
+      "thumbnailUrl": "/library/photos/peacock/thumb.webp"
+    },
+    {
+      "sourceFile": "penguin.png",
+      "id": "penguin-photo",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "2dba0f8a73fdf47a8947d4cfbc9381fe1e22d1876367d9587c6e070dfdb873e4",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/penguin-photo/original.png",
+      "sourceUrl": "/library/photos/penguin-photo/source.webp",
+      "thumbnailUrl": "/library/photos/penguin-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "Petronas Twin Towers .png",
+      "id": "petronas-twin-towers",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "3f3da94779961f9c56cf4c0fbfaa4ab500e525ea4b5084fba0df210e21bf9275",
+      "sourceDimensions": {
+        "width": 848,
+        "height": 1264
+      },
+      "originalUrl": "/library/photos/petronas-twin-towers/original.png",
+      "sourceUrl": "/library/photos/petronas-twin-towers/source.webp",
+      "thumbnailUrl": "/library/photos/petronas-twin-towers/thumb.webp"
+    },
+    {
+      "sourceFile": "polar_bear.png",
+      "id": "polar-bear",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "c99b67b3d6dfa5a7968f7431616598085906b93dacf904c4274fefce6eef3aaf",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/polar-bear/original.png",
+      "sourceUrl": "/library/photos/polar-bear/source.webp",
+      "thumbnailUrl": "/library/photos/polar-bear/thumb.webp"
+    },
+    {
+      "sourceFile": "praying_mantis.png",
+      "id": "praying-mantis",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "fa6ea5a628f68a36579954981878705e20346d5111527eb28fecad288a65c25e",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/praying-mantis/original.png",
+      "sourceUrl": "/library/photos/praying-mantis/source.webp",
+      "thumbnailUrl": "/library/photos/praying-mantis/thumb.webp"
+    },
+    {
+      "sourceFile": "quail copy.png",
+      "id": "quail-2",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "9502a1a9d45d9621f0d5f6279ba692534a4d596fe5499d875285e046c97a586d",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/quail-2/original.png",
+      "sourceUrl": "/library/photos/quail-2/source.webp",
+      "thumbnailUrl": "/library/photos/quail-2/thumb.webp"
+    },
+    {
+      "sourceFile": "quail.png",
+      "id": "quail",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "bb9128e7fffbcb64457458ceb37259696f616cc7fa1e88eed888654be4e37415",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/quail/original.png",
+      "sourceUrl": "/library/photos/quail/source.webp",
+      "thumbnailUrl": "/library/photos/quail/thumb.webp"
+    },
+    {
+      "sourceFile": "rabbit.png",
+      "id": "rabbit",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "ff9e69d2b76a330fd0f504e5f2536c5a246aedd1d4e0bc00f76deadcc2c88784",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/rabbit/original.png",
+      "sourceUrl": "/library/photos/rabbit/source.webp",
+      "thumbnailUrl": "/library/photos/rabbit/thumb.webp"
+    },
+    {
+      "sourceFile": "raccoon.png",
+      "id": "raccoon",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "092c80f086140afb29f0d608fe4528cff6eb75660f829d45c4aaba379f4d35a9",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/raccoon/original.png",
+      "sourceUrl": "/library/photos/raccoon/source.webp",
+      "thumbnailUrl": "/library/photos/raccoon/thumb.webp"
+    },
+    {
+      "sourceFile": "red_fox copy 2.png",
+      "id": "red-fox-3",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "0434976b938cfcca742ed86212c3819fb82300dc808ef7da43c43d70fc8d10c1",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/red-fox-3/original.png",
+      "sourceUrl": "/library/photos/red-fox-3/source.webp",
+      "thumbnailUrl": "/library/photos/red-fox-3/thumb.webp"
+    },
+    {
+      "sourceFile": "red_fox copy.png",
+      "id": "red-fox-2",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "2a35b918356381a3c3fd600c86efd1be1b2690e2df4adbb068e95c283f65aca5",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/red-fox-2/original.png",
+      "sourceUrl": "/library/photos/red-fox-2/source.webp",
+      "thumbnailUrl": "/library/photos/red-fox-2/thumb.webp"
+    },
+    {
+      "sourceFile": "red_fox.png",
+      "id": "red-fox",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "3af50ff2c37ea2f415438b44ed159ecf689688cddac95d69437f32801088e765",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/red-fox/original.png",
+      "sourceUrl": "/library/photos/red-fox/source.webp",
+      "thumbnailUrl": "/library/photos/red-fox/thumb.webp"
+    },
+    {
+      "sourceFile": "red_panda.png",
+      "id": "red-panda",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "dad3398c1bc112fb716d210d63e5ccc66aa412a3e879ba073ce90acb4279f079",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/red-panda/original.png",
+      "sourceUrl": "/library/photos/red-panda/source.webp",
+      "thumbnailUrl": "/library/photos/red-panda/thumb.webp"
+    },
+    {
+      "sourceFile": "rhinoceros.png",
+      "id": "rhinoceros",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "f80a613d4246624adc601637352ecc59b9cd421e2d1153640a9d017d0589008e",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/rhinoceros/original.png",
+      "sourceUrl": "/library/photos/rhinoceros/source.webp",
+      "thumbnailUrl": "/library/photos/rhinoceros/thumb.webp"
+    },
+    {
+      "sourceFile": "rooster copy.png",
+      "id": "rooster-2",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "409825983bf0a1a5437e0731a7515a3ddb4d780c2234db0dd015b94f121585d3",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/rooster-2/original.png",
+      "sourceUrl": "/library/photos/rooster-2/source.webp",
+      "thumbnailUrl": "/library/photos/rooster-2/thumb.webp"
+    },
+    {
+      "sourceFile": "rooster.png",
+      "id": "rooster",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "255f63ea8ecc24b99cd14f54f749da50c997ce08c070a90a7b1d4ee0a62d0650",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/rooster/original.png",
+      "sourceUrl": "/library/photos/rooster/source.webp",
+      "thumbnailUrl": "/library/photos/rooster/thumb.webp"
+    },
+    {
+      "sourceFile": "sea_turtle.png",
+      "id": "sea-turtle",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "df4115a5f809df3e769bb2513df008bbb160ed6c3a6e7ba1e4779bfe7904ed05",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/sea-turtle/original.png",
+      "sourceUrl": "/library/photos/sea-turtle/source.webp",
+      "thumbnailUrl": "/library/photos/sea-turtle/thumb.webp"
+    },
+    {
+      "sourceFile": "seagull.png",
+      "id": "seagull",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "83778a9bf23fb6c3e2224861ba8385cb5bebfc5b9dfdb41c0a79055ad03654cd",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/seagull/original.png",
+      "sourceUrl": "/library/photos/seagull/source.webp",
+      "thumbnailUrl": "/library/photos/seagull/thumb.webp"
+    },
+    {
+      "sourceFile": "shark.png",
+      "id": "shark",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "b82ec412dd39be76526d7131e43118bafcc81ff5ff913c4b113dbcabbf8aea65",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/shark/original.png",
+      "sourceUrl": "/library/photos/shark/source.webp",
+      "thumbnailUrl": "/library/photos/shark/thumb.webp"
+    },
+    {
+      "sourceFile": "sloth.png",
+      "id": "sloth",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "1282501a12de667fbfa6de9bc56ba9acd101693fdc8ab6f80dff0bd2646b295c",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/sloth/original.png",
+      "sourceUrl": "/library/photos/sloth/source.webp",
+      "thumbnailUrl": "/library/photos/sloth/thumb.webp"
+    },
+    {
+      "sourceFile": "snow_leopard copy.png",
+      "id": "snow-leopard-2",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "e79c57f89dab46ee23df1cc9ad234e306e8848c1d01b3b83e09cb2c0c9bf7249",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/snow-leopard-2/original.png",
+      "sourceUrl": "/library/photos/snow-leopard-2/source.webp",
+      "thumbnailUrl": "/library/photos/snow-leopard-2/thumb.webp"
+    },
+    {
+      "sourceFile": "snow_leopard.png",
+      "id": "snow-leopard",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "84abdcff043b3b8d0edf36b10c5227d4013771658309391f832bfd43cf289d2d",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/snow-leopard/original.png",
+      "sourceUrl": "/library/photos/snow-leopard/source.webp",
+      "thumbnailUrl": "/library/photos/snow-leopard/thumb.webp"
+    },
+    {
+      "sourceFile": "spider_2.jpg",
+      "id": "spider-2",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "3090957578384550febb077ba179532d4e685534dc632d3576e18e6fc58bb81b",
+      "sourceDimensions": {
+        "width": 600,
+        "height": 400
+      },
+      "originalUrl": "/library/photos/spider-2/original.jpg",
+      "sourceUrl": "/library/photos/spider-2/source.webp",
+      "thumbnailUrl": "/library/photos/spider-2/thumb.webp"
+    },
+    {
+      "sourceFile": "spider_3.jpeg",
+      "id": "spider-3",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "aeec158e8bb550272eb126b9be56f3def7d444bc8a16cc0e40e504e89545c993",
+      "sourceDimensions": {
+        "width": 471,
+        "height": 424
+      },
+      "originalUrl": "/library/photos/spider-3/original.jpeg",
+      "sourceUrl": "/library/photos/spider-3/source.webp",
+      "thumbnailUrl": "/library/photos/spider-3/thumb.webp"
+    },
+    {
+      "sourceFile": "spider.avif",
+      "id": "spider",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "d2669dc66923c41001d1bf1abd51e997418a62194124350204f406888aa69fc0",
+      "sourceDimensions": {
+        "width": 740,
+        "height": 740
+      },
+      "originalUrl": "/library/photos/spider/original.avif",
+      "sourceUrl": "/library/photos/spider/source.webp",
+      "thumbnailUrl": "/library/photos/spider/thumb.webp"
+    },
+    {
+      "sourceFile": "squirrel.png",
+      "id": "squirrel",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "09084edb015d58dd1f3b019883529801f919afcb71012e7ca0f18e02e72c36c1",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/squirrel/original.png",
+      "sourceUrl": "/library/photos/squirrel/source.webp",
+      "thumbnailUrl": "/library/photos/squirrel/thumb.webp"
+    },
+    {
+      "sourceFile": "stag_beetle.png",
+      "id": "stag-beetle",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "0b2d041e41cb4a4bb532020565a78972bf88c29af4e671630f2c26ec5ed7ded5",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/stag-beetle/original.png",
+      "sourceUrl": "/library/photos/stag-beetle/source.webp",
+      "thumbnailUrl": "/library/photos/stag-beetle/thumb.webp"
+    },
+    {
+      "sourceFile": "starfish.png",
+      "id": "starfish",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "168380618b19f49aca3c18a5cf2c78755ac8b3f16689e39d90b43898f7411486",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/starfish/original.png",
+      "sourceUrl": "/library/photos/starfish/source.webp",
+      "thumbnailUrl": "/library/photos/starfish/thumb.webp"
+    },
+    {
+      "sourceFile": "Statue of Liberty .png",
+      "id": "statue-of-liberty",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "9f4726f95951a3ca1908ac6e52dab9aab6079e8b1937e8de24bec4452e2e2f3c",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/statue-of-liberty/original.png",
+      "sourceUrl": "/library/photos/statue-of-liberty/source.webp",
+      "thumbnailUrl": "/library/photos/statue-of-liberty/thumb.webp"
+    },
+    {
+      "sourceFile": "stingray.png",
+      "id": "stingray",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "cf36fae7ed7232846ced432ec63639467b34f3fae5578c4e4cb40541a7232886",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/stingray/original.png",
+      "sourceUrl": "/library/photos/stingray/source.webp",
+      "thumbnailUrl": "/library/photos/stingray/thumb.webp"
+    },
+    {
+      "sourceFile": "swan copy.png",
+      "id": "swan-photo-2",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "87a59ab4e2e1eacc049271d419cdb1884ed7efbb28af5be8c28007c3353be62e",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/swan-photo-2/original.png",
+      "sourceUrl": "/library/photos/swan-photo-2/source.webp",
+      "thumbnailUrl": "/library/photos/swan-photo-2/thumb.webp"
+    },
+    {
+      "sourceFile": "swan.png",
+      "id": "swan-photo",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "04d552a53058e04b49473d021b2b90cc8cf2fe46a860527459dc6818c0f05de4",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/swan-photo/original.png",
+      "sourceUrl": "/library/photos/swan-photo/source.webp",
+      "thumbnailUrl": "/library/photos/swan-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "Sydney Opera House.png",
+      "id": "sydney-opera-house",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "1c3638c3cf0e3241ad70eca33cd18c75bb4622375fe6a8c497c047b7d45eb3fa",
+      "sourceDimensions": {
+        "width": 1264,
+        "height": 843
+      },
+      "originalUrl": "/library/photos/sydney-opera-house/original.png",
+      "sourceUrl": "/library/photos/sydney-opera-house/source.webp",
+      "thumbnailUrl": "/library/photos/sydney-opera-house/thumb.webp"
+    },
+    {
+      "sourceFile": "Taj Mahal.png",
+      "id": "taj-mahal",
+      "status": "imported",
+      "categoryId": "landmarks",
+      "sourceSha256": "a91480cbbfebb681ebaa9e13fd25174a569c84f87b352a368d232716137dc607",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/taj-mahal/original.png",
+      "sourceUrl": "/library/photos/taj-mahal/source.webp",
+      "thumbnailUrl": "/library/photos/taj-mahal/thumb.webp"
+    },
+    {
+      "sourceFile": "tapir.png",
+      "id": "tapir",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "85ceab14d1ee43c5a01cbfe9be5dd8a95bf327d7c1b502a4fca0cd6765103cc1",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/tapir/original.png",
+      "sourceUrl": "/library/photos/tapir/source.webp",
+      "thumbnailUrl": "/library/photos/tapir/thumb.webp"
+    },
+    {
+      "sourceFile": "test_butterfly.webp",
+      "id": "blue-butterfly",
+      "status": "imported",
+      "categoryId": "insects",
+      "sourceSha256": "ece40f52cc51c9beaf895fa6cf03711f2622e1725db1325b335148ce2a241173",
+      "sourceDimensions": {
+        "width": 804,
+        "height": 626
+      },
+      "originalUrl": "/library/photos/blue-butterfly/original.webp",
+      "sourceUrl": "/library/photos/blue-butterfly/source.webp",
+      "thumbnailUrl": "/library/photos/blue-butterfly/thumb.webp"
+    },
+    {
+      "sourceFile": "tree_frog.png",
+      "id": "tree-frog",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "ec6ec3c359865fc4f83b8c07058dd44ff10094aee47613bf21cfeee0eccd6a0d",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/tree-frog/original.png",
+      "sourceUrl": "/library/photos/tree-frog/source.webp",
+      "thumbnailUrl": "/library/photos/tree-frog/thumb.webp"
+    },
+    {
+      "sourceFile": "turkey copy.png",
+      "id": "turkey-2",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "7b86defe4307120406e4c5f1d212b77d8fa48c91e6372773c3fd7b77dcc657e9",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/turkey-2/original.png",
+      "sourceUrl": "/library/photos/turkey-2/source.webp",
+      "thumbnailUrl": "/library/photos/turkey-2/thumb.webp"
+    },
+    {
+      "sourceFile": "turkey.png",
+      "id": "turkey",
+      "status": "imported",
+      "categoryId": "birds",
+      "sourceSha256": "333fbe59072faf6fed25c1abec63ba4d2ad3fcf4508bdba1bf4bce9775d6d76c",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/turkey/original.png",
+      "sourceUrl": "/library/photos/turkey/source.webp",
+      "thumbnailUrl": "/library/photos/turkey/thumb.webp"
+    },
+    {
+      "sourceFile": "whale.png",
+      "id": "whale-photo",
+      "status": "imported",
+      "categoryId": "marine",
+      "sourceSha256": "a25a2678293126527c5fcc13cd7fa9025bd1ace22cb724064c8351d5f955651b",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/whale-photo/original.png",
+      "sourceUrl": "/library/photos/whale-photo/source.webp",
+      "thumbnailUrl": "/library/photos/whale-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "wild_boar.png",
+      "id": "wild-boar",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "b1cc4be39bf93fb7965e707c5162964b43be82d33985970f9742204e175cfa2d",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/wild-boar/original.png",
+      "sourceUrl": "/library/photos/wild-boar/source.webp",
+      "thumbnailUrl": "/library/photos/wild-boar/thumb.webp"
+    },
+    {
+      "sourceFile": "wolf copy.png",
+      "id": "wolf-photo-2",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "d05fb15485b38eeaaa679be40e8fd7c777b402079f6c5bd7fb16097cdb32645a",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/wolf-photo-2/original.png",
+      "sourceUrl": "/library/photos/wolf-photo-2/source.webp",
+      "thumbnailUrl": "/library/photos/wolf-photo-2/thumb.webp"
+    },
+    {
+      "sourceFile": "wolf.png",
+      "id": "wolf-photo",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "e9767feb56dbbb40e68178745ccf738644294dd410aa9a1c0eefa2e0131bd085",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/wolf-photo/original.png",
+      "sourceUrl": "/library/photos/wolf-photo/source.webp",
+      "thumbnailUrl": "/library/photos/wolf-photo/thumb.webp"
+    },
+    {
+      "sourceFile": "yak.png",
+      "id": "yak",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "ff3d18de86ffe310d99ec7dd63e7948bf7cb35eb23c049107f5440b5b0270ba1",
+      "sourceDimensions": {
+        "width": 800,
+        "height": 800
+      },
+      "originalUrl": "/library/photos/yak/original.png",
+      "sourceUrl": "/library/photos/yak/source.webp",
+      "thumbnailUrl": "/library/photos/yak/thumb.webp"
+    },
+    {
+      "sourceFile": "zebra.png",
+      "id": "zebra",
+      "status": "imported",
+      "categoryId": "animals",
+      "sourceSha256": "36359487578b8924006f6fa2a562b949f50d6561b624facad7566b7e0fdd1251",
+      "sourceDimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "originalUrl": "/library/photos/zebra/original.png",
+      "sourceUrl": "/library/photos/zebra/source.webp",
+      "thumbnailUrl": "/library/photos/zebra/thumb.webp"
+    }
+  ]
+}
